@@ -10,12 +10,13 @@ class TradeMetric(ABC):
     __TITLE__: str
     __SUBTITLE__: Optional[str] = None
 
-    def __init__(self) -> None:
-        self._result: Optional[pd.DataFrame] = None
-
     @abstractmethod
-    def run(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _run(self, df: pd.DataFrame) -> pd.DataFrame:
         pass
+
+    def to_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Convert the metric to a DataFrame."""
+        return self._run(df)
 
     @abstractmethod
     def to_chart(self, df: pd.DataFrame) -> go.Figure:

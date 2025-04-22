@@ -11,7 +11,8 @@ from models.credential_setting import CredentialSetting
 from pages.base_page import BasePage
 from quant_core.clients.mt5.mt5_client import Mt5Client
 from quant_core.enums.platform import Platform
-from quant_core.metrics.account.account_growth_over_time import AccountGrowthAbsoluteOverTime
+from quant_core.metrics.account.absolute_account_growth_over_time import AccountGrowthAbsoluteOverTime
+from quant_core.metrics.account.percentage_account_growth_over_time import AccountGrowthPercentageOverTime
 from quant_core.services.core_logger import CoreLogger
 
 dash.register_page(__name__, path="/analysis", name="Analysis")
@@ -49,7 +50,7 @@ def load_mt5_history(_):
         try:
             CoreLogger().info(f"🔍 Loading MT5 trades for {cred.uid}...")
             client = Mt5Client(secret_id=cred.secret_name)
-            df = client.get_history_df(days=90)
+            df = client.get_history_df(days=9999)
             df["Account"] = cred.friendly_name or cred.uid
             all_dfs.append(df)
             client.shutdown()
@@ -62,10 +63,13 @@ def load_mt5_history(_):
     merged_df = pd.concat(all_dfs, ignore_index=True)
 
     fig_balance = AccountGrowthAbsoluteOverTime().to_chart(merged_df)
+    fig_percentage = AccountGrowthPercentageOverTime().to_chart(merged_df)
 
     return dbc.Container([
         dbc.Row([
             dbc.Col(dcc.Graph(figure=fig_balance), width=12),
-            # Future charts can go here in additional dbc.Col()
+        ]),
+        dbc.Row([
+            dbc.Col(dcc.Graph(figure=fig_percentage), width=12),
         ])
     ], fluid=True)
