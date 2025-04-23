@@ -23,8 +23,8 @@ class LineChart(Chart):
                     go.Scatter(
                         x=group_data[x_col],
                         y=group_data[y],
-                        mode='lines',  # Use lines for a line chart
-                        name=f"{group_name} - {y}" if group_name else y
+                        mode="lines",  # Use lines for a line chart
+                        name=f"{group_name} - {y}" if group_name else y,
                     )
                 )
 
@@ -46,9 +46,9 @@ class LineChart(Chart):
                     text=self.subtitle,
                     showarrow=False,
                     font=dict(size=12, color="black"),
-                    align="center"
+                    align="center",
                 )
-            ]
+            ],
         }
 
         fig.update_layout(**layout_kwargs)

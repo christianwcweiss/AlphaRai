@@ -17,3 +17,4 @@ infrastructure/manual/terraform.tfstate.backup
 infrastructure/modules/technical/lambda/.terraform.lock.hcl
 infrastructure/modules/technical/lambda/.terraform/
 strategies/*
+/code/app/logs/app.log

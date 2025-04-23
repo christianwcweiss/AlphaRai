@@ -11,7 +11,6 @@ class Strategy(abc.ABC):
     __ID__: str
     __FEATURES__: list[DataFeature] = []
 
-
     def has_features(self) -> bool:
         return len(self.__FEATURES__) > 0
 

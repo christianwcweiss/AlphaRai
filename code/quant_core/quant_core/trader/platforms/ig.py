@@ -60,14 +60,14 @@ class IgTrader(Trader):
         return account.balance["balance"]
 
     def open_position(
-            self,
-            symbol: str,
-            trade_direction: TradeDirection,
-            order_type: OrderType,
-            size: float,
-            stop_loss: float,
-            take_profit: float,
-            limit_level: Optional[float] = None
+        self,
+        symbol: str,
+        trade_direction: TradeDirection,
+        order_type: OrderType,
+        size: float,
+        stop_loss: float,
+        take_profit: float,
+        limit_level: Optional[float] = None,
     ) -> Any:
         currency_code = DataBroker().convert_epic_to_polygon(symbol)[-3:]
         if order_type is OrderType.MARKET:
@@ -90,7 +90,8 @@ class IgTrader(Trader):
             )
         elif order_type is OrderType.LIMIT:
             CoreLogger().info(
-                f"Opening Limit position: {trade_direction} {size} SL={stop_loss} TP={take_profit} Entry={limit_level}")
+                f"Opening Limit position: {trade_direction} {size} SL={stop_loss} TP={take_profit} Entry={limit_level}"
+            )
             return self._api.post_working_otc(
                 IGApiPostWorkingOrderBody(
                     currency_code=currency_code,

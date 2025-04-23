@@ -1,4 +1,3 @@
-
 from entities.trade_details import TradeDetails
 from quant_core.enums.time_period import TimePeriod
 from services.trade_parser import TradeMessageParser
@@ -31,7 +30,7 @@ class TestTradeMessageParser:
             take_profit_1=32691.4532201026,
             take_profit_2=32227.1064402051,
             take_profit_3=31762.7596603077,
-            ai_confidence=61.5
+            ai_confidence=61.5,
         )
 
         trade_details = TradeMessageParser.parse(message)

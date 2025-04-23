@@ -13,7 +13,6 @@ from quant_core.enums.trade_direction import TradeDirection
 from quant_core.services.core_logger import CoreLogger
 
 
-
 ORDER_TYPE_MAP = {
     0: "Buy",
     1: "Sell",
@@ -24,6 +23,7 @@ ORDER_TYPE_MAP = {
     6: "Buy Stop Limit",
     7: "Sell Stop Limit",
 }
+
 
 class Mt5Client:
     def __init__(self, secret_id: str):
@@ -144,7 +144,7 @@ class Mt5Client:
                 swap=deal.swap,
                 profit=deal.profit,
                 magic=getattr(deal, "magic", None),
-                comment=getattr(deal, "comment", None)
+                comment=getattr(deal, "comment", None),
             )
             for deal in raw_trades
         ]
@@ -153,21 +153,23 @@ class Mt5Client:
         """
         Returns a Pandas DataFrame of all closed trades from the last X days.
         """
-        return pd.DataFrame([
-            {
-                "ticket": t.ticket,
-                "order": t.order,
-                "time": t.time,
-                "type": t.type_code,
-                "entry": t.entry_type,
-                "size": t.size,
-                "symbol": t.symbol,
-                "price": t.price,
-                "commission": t.commission,
-                "swap": t.swap,
-                "profit": t.profit,
-                "magic": t.magic,
-                "comment": t.comment,
-            }
-            for t in self.get_history(days=days)
-        ])
+        return pd.DataFrame(
+            [
+                {
+                    "ticket": t.ticket,
+                    "order": t.order,
+                    "time": t.time,
+                    "type": t.type_code,
+                    "entry": t.entry_type,
+                    "size": t.size,
+                    "symbol": t.symbol,
+                    "price": t.price,
+                    "commission": t.commission,
+                    "swap": t.swap,
+                    "profit": t.profit,
+                    "magic": t.magic,
+                    "comment": t.comment,
+                }
+                for t in self.get_history(days=days)
+            ]
+        )

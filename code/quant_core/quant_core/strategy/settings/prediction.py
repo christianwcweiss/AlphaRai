@@ -1,4 +1,3 @@
-
 from typing import Dict, Any, Union, LiteralString
 
 import yaml
@@ -21,7 +20,6 @@ class StrategySettingsPrediction(StrategySettings):
         self._labeling_mode = labeling_mode
         self._threshold = threshold
         self._threshold_strong = threshold_strong
-
 
     @property
     def mode(self) -> PredictionGoal:
@@ -59,7 +57,6 @@ class StrategySettingsPrediction(StrategySettings):
     def to_yaml(self, file_path: str) -> None:
         with open(file_path, "w") as file:
             yaml.dump(self.to_dict(), file)
-
 
     def to_dict(self) -> Dict[str, Any]:
         return {

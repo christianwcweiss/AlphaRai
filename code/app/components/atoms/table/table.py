@@ -19,10 +19,5 @@ class AlphaTable(html.Div):
         A styled table-like layout using Dash Bootstrap Rows and Columns.
         """
         super().__init__(
-            id=table_id,
-            className=f"styled-table bg-white p-3 rounded {class_name}",
-            children=[
-                header_row,
-                *rows
-            ]
+            id=table_id, className=f"styled-table bg-white p-3 rounded {class_name}", children=[header_row, *rows]
         )

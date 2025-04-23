@@ -1,4 +1,3 @@
-
 from typing import Dict, Any, Union, LiteralString
 
 import yaml
@@ -31,7 +30,6 @@ class StrategySettingsPositionEntry(StrategySettings):
     def to_yaml(self, file_path: str) -> None:
         with open(file_path, "w") as file:
             yaml.dump(self.to_dict(), file)
-
 
     def to_dict(self) -> Dict[str, Any]:
         return {

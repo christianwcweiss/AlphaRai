@@ -14,7 +14,10 @@ def _fibonacci_staggering(a: float, b: float, k) -> List[float]:
         fibonacci_numbers.append(fibonacci_numbers[-1] + fibonacci_numbers[-2])
     fib_sum = sum(fibonacci_numbers)
 
-    distances = [modifier * distance_available * (sum(fibonacci_numbers[:i + 1]) / fib_sum) for i in range(len(fibonacci_numbers))]
+    distances = [
+        modifier * distance_available * (sum(fibonacci_numbers[: i + 1]) / fib_sum)
+        for i in range(len(fibonacci_numbers))
+    ]
 
     return [a + distance for distance in distances][:-1]
 
@@ -26,6 +29,7 @@ def _linear_staggering(a: float, b: float, k: int) -> List[float]:
     step = distance_available / (k)
 
     return [a + modifier * step * i for i in range(k)]
+
 
 def _logarithmic_staggering(a: float, b: float, k: int) -> List[float]:
     """Calculate logarithmic levels between two prices"""

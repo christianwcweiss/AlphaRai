@@ -1,4 +1,3 @@
-
 class MT5TradeSymbolConfig:
     def __init__(self, symbol: str, mt5_symbol: str, size: float, n_staggering: int, decimal_points: int) -> None:
         self._symbol = symbol

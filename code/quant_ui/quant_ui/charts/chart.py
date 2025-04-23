@@ -4,11 +4,18 @@ from typing import Optional, List
 import pandas as pd
 import plotly.graph_objects as go
 
+
 class Chart(abc.ABC):
     __BACKGROUND__ = "lightgray"  # Fixed background color for all charts
 
-    def __init__(self, title: str, subtitle: str = "", show_legend: bool = True,
-                 show_x_title: bool = True, show_y_title: bool = True) -> None:
+    def __init__(
+        self,
+        title: str,
+        subtitle: str = "",
+        show_legend: bool = True,
+        show_x_title: bool = True,
+        show_y_title: bool = True,
+    ) -> None:
         if not title:
             raise ValueError("Title is mandatory.")
         self.title = title

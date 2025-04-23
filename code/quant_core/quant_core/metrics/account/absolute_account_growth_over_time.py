@@ -32,11 +32,7 @@ class AccountGrowthAbsoluteOverTime(TradeMetric):
     def to_chart(self, df: pd.DataFrame) -> go.Figure:
         result_df = self._run(df)
 
-        fig = LineChart(
-            title=self.__TITLE__,
-            subtitle=self.__SUBTITLE__,
-            show_legend=False
-        ).plot(
+        fig = LineChart(title=self.__TITLE__, subtitle=self.__SUBTITLE__, show_legend=False).plot(
             data_frame=result_df,
             x_col="time",
             y_col=["absolute_balance"],

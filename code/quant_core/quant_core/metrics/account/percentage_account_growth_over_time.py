@@ -3,6 +3,7 @@ import plotly.graph_objects as go
 from quant_core.metrics.trade_metric import TradeMetric
 from quant_ui.charts.line_chart import LineChart
 
+
 class AccountGrowthPercentageOverTime(TradeMetric):
     __TITLE__ = "Account Growth Percentage Over Time"
     __SUBTITLE__ = "Shows percentage growth of account balance from trades"
@@ -27,11 +28,7 @@ class AccountGrowthPercentageOverTime(TradeMetric):
 
     def to_chart(self, df: pd.DataFrame) -> go.Figure:
         result_df = self._run(df)
-        fig = LineChart(
-            title=self.__TITLE__,
-            subtitle=self.__SUBTITLE__,
-            show_legend=False
-        ).plot(
+        fig = LineChart(title=self.__TITLE__, subtitle=self.__SUBTITLE__, show_legend=False).plot(
             data_frame=result_df,
             x_col="time",
             y_col=["percentage_growth"],

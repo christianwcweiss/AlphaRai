@@ -17,6 +17,7 @@ else:
     mt5.ORDER_TYPE_BUY_STOP = 4
     mt5.ORDER_TYPE_SELL_STOP = 5
 
+
 class TradeDirection(Enum):
     LONG = "LONG"
     BUY = "BUY"

@@ -1,4 +1,3 @@
-
 from dash import dcc, page_container, Dash, callback, Output, Input, State, ctx, dash
 import dash_bootstrap_components as dbc
 
@@ -13,18 +12,10 @@ app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.COSMO])
 server = app.server
 
 
-app.layout = dbc.Container([
-    dcc.Location(id="url", refresh=False),
-    TopBar(),
-    LogViewer(),
-    page_container
-], fluid=True)
+app.layout = dbc.Container([dcc.Location(id="url", refresh=False), TopBar(), LogViewer(), page_container], fluid=True)
 
 
-@callback(
-    Output("log-preview", "children"),
-    Input("log-refresh", "n_intervals")
-)
+@callback(Output("log-preview", "children"), Input("log-refresh", "n_intervals"))
 def update_log_preview(_):
     try:
         with open(CoreLogger().log_file_path, "r", encoding="utf-8") as f:
@@ -39,7 +30,7 @@ def update_log_preview(_):
     Output("full-log-output", "children"),
     Input("log-preview", "n_clicks"),
     State("log-modal", "is_open"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def toggle_log_modal(_, is_open):
     if not is_open:
@@ -51,5 +42,6 @@ def toggle_log_modal(_, is_open):
         return True, full_logs
     return False, dash.no_update
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(debug=True)
