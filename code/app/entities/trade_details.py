@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from quant_core.enums.time_period import TimePeriod
 from quant_core.enums.trade_direction import TradeDirection
@@ -63,3 +63,17 @@ class TradeDetails:
     @property
     def ai_confidence(self) -> Optional[float]:
         return self._ai_confidence
+
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "symbol": self.symbol,
+            "direction": self.direction.value,
+            "timeframe": self.timeframe.value,
+            "entry": self.entry,
+            "stop_loss": self.stop_loss,
+            "take_profit_1": self.take_profit_1,
+            "take_profit_2": self.take_profit_2,
+            "take_profit_3": self.take_profit_3,
+            "ai_confidence": self.ai_confidence,
+        }

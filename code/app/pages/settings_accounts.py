@@ -70,10 +70,10 @@ class SettingsPage(BasePage):
                 PageHeader("Settings"),
                 MainContent(
                     [
-                        SectionHeader(title="Metatrader5 Accounts", subtitle="Manage your MT5 accounts"),
+                        SectionHeader(title="Metatrader5 Accounts", subtitle="Manage your MT5 accounts").render(),
                         AlphaTable(table_id="mt5-rows", header_row=render_header_row(), rows=[]),
                         dbc.Button("Add MT5 Account", id="add-mt5-btn", size="sm", color="secondary", className="mb-3"),
-                        SectionHeader(title="IG Accounts", subtitle="Manage your IG accounts"),
+                        SectionHeader(title="IG Accounts", subtitle="Manage your IG accounts").render(),
                         AlphaTable(table_id="ig-rows", header_row=render_header_row(), rows=[]),
                         dbc.Button("Add IG Account", id="add-ig-btn", size="sm", color="secondary", className="mb-3"),
                         html.Hr(),

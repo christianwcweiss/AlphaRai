@@ -1,19 +1,21 @@
-import dash
-from dash import html, dcc, Input, Output, State, callback
-import dash_bootstrap_components as dbc
+from typing import Tuple, Any, Dict, Union
 
-from components.atoms.buttons.main_button import AlphaButton
+import dash
+import dash_bootstrap_components as dbc
+from dash import html, dcc, Input, Output, State, callback
+
+from components.atoms.buttons.button import AlphaButton
 from components.atoms.content import MainContent
 from components.atoms.text.page import PageHeader
+from components.atoms.text.section import SectionHeader
 from components.frame.body import PageBody
 from constants import colors
+from constants.style import HIDDEN
+from entities.trade_details import TradeDetails
 from pages.base_page import BasePage
 from quant_core.services.core_logger import CoreLogger
-
-from services.trade_router import TradeRouter
 from services.trade_parser import TradeMessageParser
-from entities.trade_details import TradeDetails
-
+from services.trade_router import TradeRouter
 
 dash.register_page(__name__, path="/trades", name="Trades")
 
@@ -22,39 +24,80 @@ class TradesPage(BasePage):
     def render(self):
         return PageBody(
             [
-                PageHeader(f"{self.title}"),
+                PageHeader(self._title),
                 MainContent(
                     [
-                        html.H5("Paste Trade Signal"),
-                        dcc.Textarea(
-                            id="signal-input",
-                            style={"width": "100%", "height": "250px"},
-                            placeholder="Paste AI signal here...",
+                        SectionHeader(title="Paste Trade Signal").render(),
+                        dbc.Row(
+                           dbc.Col(
+                               dcc.Textarea(
+                                   id="signal-input-text-area",
+                                   style={"width": "100%", "height": "300px"},
+                                   placeholder="Paste signal here...",
+                               ),
+                               xs=12,
+                             sm=12,
+                                md=12,
+                                lg=12,
+                                xl=12,
+                           )
                         ),
                         dbc.Row(
                             [
                                 dbc.Col(
-                                    AlphaButton("Parse Signal", id="parse-trade-btn", color=colors.PRIMARY_COLOR), width="auto"
+                                    AlphaButton(label="Parse Signal", id="parse-trade-btn").render(),
+                                    xs=12,
+                                    sm=12,
+                                    md=4,
+                                    lg=4,
+                                    xl=4,
                                 ),
                                 dbc.Col(
-                                    AlphaButton("Clear", id="clear-trade-btn", color=colors.PRIMARY_COLOR, className="ms-2"),
-                                    width="auto",
+                                    AlphaButton(label="Clear", id="clear-trade-btn").render(),
+                                    xs=12,
+                                    sm=12,
+                                    md=4,
+                                    lg=4,
+                                    xl=4,
                                 ),
                                 dbc.Col(
                                     AlphaButton(
-                                        "Execute Trade",
+                                        label="Execute Trade",
                                         id="submit-trade-btn",
-                                        color=colors.PRIMARY_COLOR,
-                                        className="ms-2",
-                                        style={"display": "none"},
-                                    ),
-                                    width="auto",
+                                        style=HIDDEN,
+                                    ).render(),
+                                    xs=12,
+                                    sm=12,
+                                    md=4,
+                                    lg=4,
+                                    xl=4,
                                 ),
                             ],
-                            className="mt-2",
                         ),
-                        html.Div(id="parsed-trade-output", className="mt-3"),
-                        html.Div(id="trade-status", className="mt-3"),
+                        dbc.Row(
+                            [
+                                dbc.Col(
+                                    html.Div(id="parsed-trade-output"),
+                                    xs=12,
+                                    sm=12,
+                                    md=12,
+                                    lg=12,
+                                    xl=12,
+                                ),
+                            ]
+                        ),
+                        dbc.Row(
+                            [
+                                dbc.Col(
+                                    html.Div(id="trade-status"),
+                                    xs=12,
+                                    sm=12,
+                                    md=12,
+                                    lg=12,
+                                    xl=12,
+                                ),
+                            ]
+                        ),
                         dcc.Store(id="parsed-trade-store"),
                     ]
                 ),
@@ -62,8 +105,7 @@ class TradesPage(BasePage):
         )
 
 
-page = TradesPage(title="Trades")
-layout = page.layout
+layout = TradesPage(title="Trades").layout
 
 
 @callback(
@@ -71,12 +113,12 @@ layout = page.layout
     Output("parsed-trade-store", "data", allow_duplicate=True),
     Output("submit-trade-btn", "style", allow_duplicate=True),
     Input("parse-trade-btn", "n_clicks"),
-    State("signal-input", "value"),
+    State("signal-input-text-area", "value"),
     prevent_initial_call=True,
 )
-def parse_trade_signal(_, signal_input):
+def parse_trade_signal(_, signal_input: str) -> Union[Tuple[dbc.Alert, Any, Dict[str, Any]], Tuple[html.Ul, Dict[str, Any], Dict[str, Any]]]:
     if not signal_input:
-        return dbc.Alert("Please paste a signal.", color="warning"), dash.no_update, {"display": "none"}
+        return dbc.Alert("Please paste a signal...", color=colors.WARNING_COLOR), dash.no_update, HIDDEN
 
     try:
         trade_details = TradeMessageParser.parse(signal_input)
@@ -93,15 +135,16 @@ def parse_trade_signal(_, signal_input):
                 html.Li(f"AI Confidence: {trade_details.ai_confidence or '-'}%"),
             ]
         )
-        return preview, trade_details.__dict__, {"display": "inline-block"}
+
+        return preview, trade_details.to_dict(), {"display": "inline-block"}
 
     except Exception as e:
         CoreLogger().error(f"Failed to parse signal: {e}")
-        return dbc.Alert(f"Error parsing signal: {e}", color="danger"), dash.no_update, {"display": "none"}
+        return dbc.Alert(f"Error parsing signal: {e}", color=colors.ERROR_COLOR), dash.no_update, HIDDEN
 
 
 @callback(
-    Output("signal-input", "value", allow_duplicate=True),
+    Output("signal-input-text-area", "value", allow_duplicate=True),
     Output("parsed-trade-output", "children", allow_duplicate=True),
     Output("parsed-trade-store", "data", allow_duplicate=True),
     Output("submit-trade-btn", "style", allow_duplicate=True),
@@ -109,7 +152,7 @@ def parse_trade_signal(_, signal_input):
     prevent_initial_call=True,
 )
 def clear_trade_ui(_):
-    return "", None, None, {"display": "none"}
+    return "", None, None, HIDDEN
 
 
 @callback(
@@ -118,12 +161,14 @@ def clear_trade_ui(_):
     State("parsed-trade-store", "data"),
     prevent_initial_call=True,
 )
-def execute_trade(_, trade_data):
+def execute_trade(_, trade_data: Dict[str, Any]):
     try:
-        CoreLogger().info(f"Executing trade: {trade_data}")
-        trade = TradeDetails(**{key.strip("_"): value for key, value in trade_data.items()})
+        CoreLogger().info(f"Routing Trade: {trade_data}")
+        trade = TradeDetails(**trade_data)
+
         TradeRouter(trade).route_trade()
-        return dbc.Alert("✅ Trade successfully routed!", color="success", dismissable=True)
+
+        return dbc.Alert("✅ Trade successfully routed!", color=colors.SUCCESS_COLOR, dismissable=True)
     except Exception as e:
         CoreLogger().error(f"Execution failed: {e}")
-        return dbc.Alert(f"Trade execution failed: {e}", color="danger", dismissable=True)
+        return dbc.Alert(f"Trade execution failed: {e}", color=colors.ERROR_COLOR, dismissable=True)

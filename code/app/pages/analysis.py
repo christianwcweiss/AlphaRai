@@ -3,7 +3,7 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, dcc, callback, Input, Output
 
-from components.atoms.buttons.main_button import AlphaButton
+from components.atoms.buttons.button import AlphaButton
 from components.atoms.content import MainContent
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
@@ -28,10 +28,8 @@ class AnalysisPage(BasePage):
                 MainContent(
                     [
                         AlphaButton(
-                            "Load MT5 Trade History",
+                            label="Load MT5 Trade History",
                             id="load-analysis-btn",
-                            color=colors.PRIMARY_COLOR,
-                            className="mb-3",
                         ),
                         dcc.Loading(html.Div(id="analysis-output"), type="circle"),
                     ]

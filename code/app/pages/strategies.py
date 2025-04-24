@@ -28,7 +28,7 @@ class StrategiesPage(BasePage):
     def render(self):
         return PageBody(
             [
-                PageHeader(f"{self.title}"),
+                PageHeader(f"{self._title}"),
                 MainContent(
                     [
                         dcc.Store(id="refresh-strategies", data=str(uuid.uuid4())),
@@ -84,7 +84,7 @@ def render_strategy_lists(_):
 
     return html.Div(
         [
-            SectionHeader("Strategy Management", subtitle="Register/Unregister strategies"),
+            SectionHeader("Strategy Management", subtitle="Register/Unregister strategies").render(),
             SubsectionHeader("Registered Strategies"),
             html.Div([strategy_card(s, registered=True) for s in registered]),
             html.Hr(),

@@ -45,10 +45,10 @@ class CockpitPage(BasePage):
 
         return PageBody(
             [
-                PageHeader(f"{self.title}"),
+                PageHeader(f"{self._title}"),
                 MainContent(
                     [
-                        SectionHeader("Account Management", subtitle="Enable/Disable accounts"),
+                        SectionHeader("Account Management", subtitle="Enable/Disable accounts").render(),
                         html.Div(account_buttons, id="account-toggle-container"),
                     ]
                 ),

@@ -7,12 +7,9 @@ class BasePage(abc.ABC):
     def __init__(
         self,
         title: str,
-        *args: List[Any],
-        **kwargs: Dict[str, Any],
     ) -> None:
-        self.title = title
-        self.args = args
-        self.kwargs = kwargs
+        self._title = title
+
 
     @abc.abstractmethod
     def render(self) -> Component:
