@@ -170,7 +170,7 @@ def extract_uid_from_url(pathname: str):
         CoreLogger().error(f"Account with UID {uid} not found.")
         raise dash.exceptions.PreventUpdate
 
-    return uid, PageHeader(f"Trade Settings for {account.friendly_name}")
+    return uid, PageHeader(f"Trade Settings for \"{account.friendly_name}\"")
 
 
 @callback(
