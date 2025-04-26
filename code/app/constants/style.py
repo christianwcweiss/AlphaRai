@@ -1,3 +1,1 @@
-
-
 HIDDEN = {"display": "none"}

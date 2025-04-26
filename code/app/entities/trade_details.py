@@ -64,7 +64,6 @@ class TradeDetails:
     def ai_confidence(self) -> Optional[float]:
         return self._ai_confidence
 
-
     def to_dict(self) -> Dict[str, Any]:
         return {
             "symbol": self.symbol,

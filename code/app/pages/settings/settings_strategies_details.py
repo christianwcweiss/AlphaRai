@@ -21,7 +21,7 @@ from dash.exceptions import PreventUpdate
 app = dash.get_app()
 app.config.suppress_callback_exceptions = True
 
-dash.register_page(__name__, path_template="/strategies/<uid>", name="Strategy Details")
+dash.register_page(__name__, path_template="/settings/strategies/<uid>", name="Strategy Details")
 
 
 class StrategyDetailsPage(BasePage):

@@ -19,9 +19,9 @@ from services.strategy import (
     unregister_strategy,
 )
 
-STRATEGY_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "strategies"))
+STRATEGY_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "strategies"))
 
-dash.register_page(__name__, path="/strategies", name="Strategies")
+dash.register_page(__name__, path="/settings/strategies", name="Strategies")
 
 
 class StrategiesPage(BasePage):

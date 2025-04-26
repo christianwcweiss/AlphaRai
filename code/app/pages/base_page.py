@@ -10,7 +10,6 @@ class BasePage(abc.ABC):
     ) -> None:
         self._title = title
 
-
     @abc.abstractmethod
     def render(self) -> Component:
         """Render and return the Dash layout component."""

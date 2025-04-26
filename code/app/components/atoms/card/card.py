@@ -1,12 +1,27 @@
 from typing import Optional, Union, List
+
 from dash import html
+from dash.development.base_component import Component
 
+from components.atoms.atom import Atom
 from components.atoms.text.paragraph import Paragraph
-from components.atoms.text.subsubsection import SubSubsectionHeader
 from constants import colors
+from exceptions.ui import ComponentPropertyError
 
 
-class AlphaCard(html.Div):
+class AlphaCard(Atom):
+    DEFAULT_STYLE = {
+        "padding": "1.5rem",
+        "borderRadius": "0.5rem",
+        "backgroundColor": colors.PRIMARY_COLOR,
+        "boxShadow": "0 4px 8px rgba(0, 0, 0, 0.05)",
+        "marginBottom": "1rem",
+        "transition": "transform 0.2s ease",
+        "display": "flex",
+        "flexDirection": "column",
+        "justifyContent": "flex-start",
+    }
+
     def __init__(
         self,
         children: Union[html.Div, List[html.Div]],
@@ -16,69 +31,71 @@ class AlphaCard(html.Div):
         aspect_ratio: Optional[str] = None,
         height: Optional[str] = None,
         width: Optional[str] = None,
-        **kwargs
-    ):
-        card_children = []
+    ) -> None:
+        self._children = children
+        self._title = title
+        self._subtitle = subtitle
+        self._href = href
+        self._aspect_ratio = aspect_ratio
+        self._height = height
+        self._width = width
 
-        # Header section with centered title and subtitle
-        if title or subtitle:
-            header_items = []
+        self.validate()
 
-            if title:
-                header_items.append(
-                    html.H4(
-                        children=title,
-                        style={"textAlign": "center", "marginTop": "0px", "color": colors.LIGHT_TEXT_COLOR},
-                    )
+    def validate(self) -> None:
+        if self._aspect_ratio is not None and self._width is not None and self._height is not None:
+            raise ComponentPropertyError(
+                "You cannot set both aspect_ratio and width/height properties at the same time."
+            )
+
+
+    def _render_header(self) -> html.Div:
+        header_items = []
+
+        if self._title:
+            header_items.append(
+                html.H4(
+                    children=self._title,
+                    style={"textAlign": "center", "marginTop": "0px", "color": colors.LIGHT_TEXT_COLOR},
                 )
+            )
 
-            if subtitle:
-                header_items.append(
-                    Paragraph(
-                        text=subtitle,
-                    )
+        if self._subtitle:
+            header_items.append(
+                Paragraph(
+                    text=self._subtitle,
                 )
+            )
 
-            header_section = html.Div(header_items)
+        return html.Div(header_items)
 
-            divider = html.Hr(style={"border": "none", "borderTop": "1px solid #ddd", "margin": "1rem 0"})
-
-            card_children.extend([header_section, divider])
-
-        # Add main content
+    def _render_children(self) -> List[Component]:
+        children = self._children
         if isinstance(children, list):
-            card_children.extend(children)
+            return children
         else:
-            card_children.append(children)
+            return [children]
 
-        # Build card style
-        card_style = {
-            "padding": "1.5rem",
-            "borderRadius": "0.5rem",
-            "backgroundColor": colors.PRIMARY_COLOR,
-            "boxShadow": "0 4px 8px rgba(0, 0, 0, 0.05)",
-            "marginBottom": "1rem",
-            "cursor": "pointer" if href else "default",
-            "transition": "transform 0.2s ease",
-            "display": "flex",
-            "flexDirection": "column",
-            "justifyContent": "flex-start",
-        }
+    def _render_card(
+        self,
+        header_section: html.Div,
+        main_section: List[Component],
+    ) -> Union[html.Div, html.A]:
+        card_style = self.DEFAULT_STYLE
+        card_style["width"] = self._width if self._width else None
+        card_style["height"] = self._height if self._height else None
+        card_style["aspectRatio"] = self._aspect_ratio if self._aspect_ratio else None
+        card_style["cursor"] = "pointer" if self._href else None
 
-        if width:
-            card_style["width"] = width
-        if height:
-            card_style["height"] = height
-        if aspect_ratio:
-            card_style["aspectRatio"] = aspect_ratio
+        card_style = {k: v for k, v in card_style.items() if v is not None}
 
-        card_div = html.Div(children=card_children, style=card_style, className="alpha-card")
-
-        # Wrap in <a> if href is provided
-        if href:
-            super().__init__(
+        card_div = html.Div(
+            children=[header_section] + main_section,
+        )
+        link_component = (
+            html.Div(
                 children=html.A(
-                    href=href,
+                    href=self._href,
                     children=card_div,
                     style={
                         "textDecoration": "none",
@@ -88,8 +105,15 @@ class AlphaCard(html.Div):
                         "width": "100%",
                     },
                 ),
-                style={"height": height, "width": width} if height or width else {},
-                **kwargs
+                style=card_style
             )
-        else:
-            super().__init__(children=card_div, **kwargs)
+        ) if self._href else None
+
+        return link_component if link_component else card_div
+
+
+    def render(self) -> html.Div:
+        header_section = self._render_header()
+        main_section = self._render_children()
+
+        return self._render_card(header_section, main_section)

@@ -5,12 +5,19 @@ from dash.development.base_component import Component
 
 from components.atoms.atom import Atom
 from constants import colors
+from exceptions.ui import ComponentPropertyError
 
 
 class SectionHeader(Atom):
     def __init__(self, title: str, subtitle: Optional[str] = None) -> None:
         self._title = title
         self._subtitle = subtitle
+
+    def validate(self) -> None:
+        if self._title == "":
+            raise ComponentPropertyError(
+                "Title cannot be empty. Please provide a valid title for the SectionHeader component."
+            )
 
     def render(self) -> Component:
         return html.Div(

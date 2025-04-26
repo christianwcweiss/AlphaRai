@@ -29,8 +29,8 @@ class AnalysisPage(BasePage):
                     [
                         AlphaButton(
                             label="Load MT5 Trade History",
-                            id="load-analysis-btn",
-                        ),
+                            button_id="load-analysis-btn",
+                        ).render(),
                         dcc.Loading(html.Div(id="analysis-output"), type="circle"),
                     ]
                 ),
