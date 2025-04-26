@@ -21,11 +21,7 @@ from quant_core.settings.configuration import Configuration
 
 @lru_cache(1)
 class IGApiHeader:
-    def __init__(
-        self,
-        api_key: str,
-        account_id: str
-    ) -> None:
+    def __init__(self, api_key: str, account_id: str) -> None:
         self._api_key = api_key
         self._account_id = account_id
         self._content_type = "application/json"
@@ -48,14 +44,9 @@ class IGApiBody(abc.ABC):
 
 
 class IGApiSessionBody(IGApiBody):
-    def __init__(
-        self,
-        user_name: str,
-        password: str
-    ) -> None:
+    def __init__(self, user_name: str, password: str) -> None:
         self._user_name = user_name
         self._password = password
-
 
     def to_body(
         self,
@@ -1074,10 +1065,12 @@ class IGApi:
     def post_session(self) -> IGApiSession:
         try:
             response = requests.post(
-                f"{IGApi._BASE_URL}/session", headers=self._get_headers(), json=IGApiSessionBody(
+                f"{IGApi._BASE_URL}/session",
+                headers=self._get_headers(),
+                json=IGApiSessionBody(
                     user_name=self._user_name,
                     password=self._password,
-                ).to_body()
+                ).to_body(),
             )
             if response.status_code > 299 or response.status_code < 200:
                 raise ValueError(f"Error getting session: {response.text}")
@@ -1101,7 +1094,6 @@ class IGApi:
 
         except ValueError:
             raise
-
 
     def post_working_otc(self, body: IGApiPostWorkingOrderBody) -> IGPostOrderResponse:
         try:
@@ -1142,6 +1134,7 @@ class IGApi:
 
 
 if __name__ == "__main__":
+
     def _get_ig_credentials(secret_id: str) -> tuple[str, str, str, str]:
         """
         Retrieve IG credentials from secrets manager.
@@ -1159,6 +1152,7 @@ if __name__ == "__main__":
             raise ValueError("Missing IG credentials in secrets manager.")
 
         return user_name, password, api_key, account_id
+
     user_name, password, api_key, account_id = _get_ig_credentials("IG_API_SECRETS_PROD")
 
     ig_api = IGApi(

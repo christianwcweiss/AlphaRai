@@ -37,7 +37,6 @@ class IGAlertBody(AlertBody):
             ")"
         )
 
-
     def to_dict(self) -> Dict[str, Any]:
         return {
             "platform": self._platform.value,
@@ -48,4 +47,3 @@ class IGAlertBody(AlertBody):
             "assetType": self._asset_type.value,
             "strategyId": self._strategy_id,
         }
-

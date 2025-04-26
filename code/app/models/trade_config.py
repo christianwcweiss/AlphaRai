@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+
 class TradeConfig(Base):
     __tablename__ = "trade_config"
 

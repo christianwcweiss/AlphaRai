@@ -18,7 +18,7 @@ class MT5Trade:
         swap: float,
         profit: float,
         magic: Optional[int] = None,
-        comment: Optional[str] = None
+        comment: Optional[str] = None,
     ):
         self._ticket = ticket
         self._order = order
@@ -36,46 +36,60 @@ class MT5Trade:
         self._comment = comment
 
     @property
-    def ticket(self): return self._ticket
+    def ticket(self):
+        return self._ticket
 
     @property
-    def order(self): return self._order
+    def order(self):
+        return self._order
 
     @property
-    def time(self): return self._time
+    def time(self):
+        return self._time
 
     @property
-    def trade_type(self): return self._trade_type
+    def trade_type(self):
+        return self._trade_type
 
     @property
-    def size(self): return self._size
+    def size(self):
+        return self._size
 
     @property
-    def symbol(self): return self._symbol
+    def symbol(self):
+        return self._symbol
 
     @property
-    def price(self): return self._price
+    def price(self):
+        return self._price
 
     @property
-    def sl(self): return self._sl
+    def sl(self):
+        return self._sl
 
     @property
-    def tp(self): return self._tp
+    def tp(self):
+        return self._tp
 
     @property
-    def commission(self): return self._commission
+    def commission(self):
+        return self._commission
 
     @property
-    def swap(self): return self._swap
+    def swap(self):
+        return self._swap
 
     @property
-    def profit(self): return self._profit
+    def profit(self):
+        return self._profit
 
     @property
-    def magic(self): return self._magic
+    def magic(self):
+        return self._magic
 
     @property
-    def comment(self): return self._comment
+    def comment(self):
+        return self._comment
 
 
 from datetime import datetime
@@ -97,7 +111,7 @@ class CompletedMT5Trade:
         swap: float,
         profit: float,
         magic: Optional[int] = None,
-        comment: Optional[str] = None
+        comment: Optional[str] = None,
     ):
         self._ticket = ticket
         self._order = order
@@ -114,40 +128,53 @@ class CompletedMT5Trade:
         self._comment = comment
 
     @property
-    def ticket(self): return self._ticket
+    def ticket(self):
+        return self._ticket
 
     @property
-    def order(self): return self._order
+    def order(self):
+        return self._order
 
     @property
-    def time(self): return self._time
+    def time(self):
+        return self._time
 
     @property
-    def type_code(self): return self._type_code  # MT5 numeric type (0=buy, 1=sell, etc.)
+    def type_code(self):
+        return self._type_code  # MT5 numeric type (0=buy, 1=sell, etc.)
 
     @property
-    def entry_type(self): return self._entry_type  # 0=open, 1=close
+    def entry_type(self):
+        return self._entry_type  # 0=open, 1=close
 
     @property
-    def size(self): return self._size
+    def size(self):
+        return self._size
 
     @property
-    def symbol(self): return self._symbol
+    def symbol(self):
+        return self._symbol
 
     @property
-    def price(self): return self._price
+    def price(self):
+        return self._price
 
     @property
-    def commission(self): return self._commission
+    def commission(self):
+        return self._commission
 
     @property
-    def swap(self): return self._swap
+    def swap(self):
+        return self._swap
 
     @property
-    def profit(self): return self._profit
+    def profit(self):
+        return self._profit
 
     @property
-    def magic(self): return self._magic
+    def magic(self):
+        return self._magic
 
     @property
-    def comment(self): return self._comment
+    def comment(self):
+        return self._comment

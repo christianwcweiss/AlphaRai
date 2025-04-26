@@ -3,8 +3,9 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
-class CredentialSetting(Base):
-    __tablename__ = "credential_settings"
+
+class Account(Base):
+    __tablename__ = "accounts"
 
     id = Column(Integer, primary_key=True)
     uid = Column(String(8), nullable=False, unique=True)
@@ -15,6 +16,6 @@ class CredentialSetting(Base):
 
     def __repr__(self) -> str:
         return (
-            f"<CredentialSetting(id={self.id}, uid={self.uid}, platform={self.platform}, "
+            f"<Account(id={self.id}, uid={self.uid}, platform={self.platform}, "
             f"friendly_name={self.friendly_name}, secret_name={self.secret_name}, enabled={self.enabled})>"
         )

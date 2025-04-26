@@ -1,6 +1,3 @@
-
-
-
 from typing import List
 
 import numpy as np
@@ -46,7 +43,7 @@ class DataFeatureSortinoRatio(DataFeature):
 
         for i in range(self._rolling_window_bars - 1, len(data_frame)):
             start_idx = i - (self._rolling_window_bars - 1)
-            window_rets = data_frame[return_column].iloc[start_idx: i + 1].dropna()
+            window_rets = data_frame[return_column].iloc[start_idx : i + 1].dropna()
             if len(window_rets) < self._rolling_window_bars:
                 continue
 

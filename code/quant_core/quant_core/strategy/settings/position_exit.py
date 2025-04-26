@@ -1,4 +1,3 @@
-
 from typing import Dict, Any
 
 import yaml
@@ -17,7 +16,7 @@ class StrategySettingsPositionExit(StrategySettings):
         strong_sell_modifier: float = 1.0,
         sell_modifier: float = 1.0,
         buy_modifier: float = 1.0,
-        strong_buy_modifier: float = 1.0
+        strong_buy_modifier: float = 1.0,
     ) -> None:
         self._mode = mode
         self._value = value
@@ -73,7 +72,7 @@ class StrategySettingsPositionExit(StrategySettings):
             strong_sell_modifier=yaml_data.get("strong_sell_modifier", 1.0),
             sell_modifier=yaml_data.get("sell_modifier", 1.0),
             buy_modifier=yaml_data.get("buy_modifier", 1.0),
-            strong_buy_modifier=yaml_data.get("strong_buy_modifier", 1.0)
+            strong_buy_modifier=yaml_data.get("strong_buy_modifier", 1.0),
         )
 
     def to_yaml(self, file_path: str) -> None:
@@ -89,5 +88,5 @@ class StrategySettingsPositionExit(StrategySettings):
             "strong_sell_modifier": self._strong_sell_modifier,
             "sell_modifier": self._sell_modifier,
             "buy_modifier": self._buy_modifier,
-            "strong_buy_modifier": self._strong_buy_modifier
+            "strong_buy_modifier": self._strong_buy_modifier,
         }

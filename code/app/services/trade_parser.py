@@ -38,5 +38,5 @@ class TradeMessageParser:
             take_profit_1=data.get("Take Profit 1"),
             take_profit_2=data.get("Take Profit 2"),
             take_profit_3=data.get("Take Profit 3"),
-            ai_confidence=data.get("AI Confidence")
+            ai_confidence=data.get("AI Confidence"),
         )

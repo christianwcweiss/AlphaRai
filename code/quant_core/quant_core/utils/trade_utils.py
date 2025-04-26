@@ -14,7 +14,10 @@ def _fibonacci_staggering(a: float, b: float, k) -> List[float]:
         fibonacci_numbers.append(fibonacci_numbers[-1] + fibonacci_numbers[-2])
     fib_sum = sum(fibonacci_numbers)
 
-    distances = [modifier * distance_available * (sum(fibonacci_numbers[:i + 1]) / fib_sum) for i in range(len(fibonacci_numbers))]
+    distances = [
+        modifier * distance_available * (sum(fibonacci_numbers[: i + 1]) / fib_sum)
+        for i in range(len(fibonacci_numbers))
+    ]
 
     return [a + distance for distance in distances][:-1]
 
@@ -26,6 +29,7 @@ def _linear_staggering(a: float, b: float, k: int) -> List[float]:
     step = distance_available / (k)
 
     return [a + modifier * step * i for i in range(k)]
+
 
 def _logarithmic_staggering(a: float, b: float, k: int) -> List[float]:
     """Calculate logarithmic levels between two prices"""
@@ -75,3 +79,29 @@ def get_stagger_sizes(size: float, max_size: float, k: int, stagger_method: Stag
         return _logarithmic_staggering(size, max_size, k)
 
     raise ValueError(f"Invalid stagger method: {stagger_method}")
+
+
+def calculate_risk_reward(entry: float, stop_loss: float, take_profit: float) -> float:
+    """
+    Calculate the risk-reward ratio (RRR) based on entry, stop loss and take profit targets.
+    Returns average RRR across all TP levels.
+    """
+    risk = abs(entry - stop_loss)
+    reward = abs(take_profit - entry)
+
+    if risk == 0:
+        return float("inf")
+
+    return round(reward / risk, 2)
+
+def calculate_weighted_risk_reward(risk_rewards: List[float], sizes: List[float]) -> float:
+    """
+    Calculate the weighted average risk-reward ratio based on individual RRRs and sizes.
+    """
+    total_size = sum(sizes)
+    if total_size == 0:
+        return float("inf")
+
+    weighted_risk_reward = sum(risk_reward * size for risk_reward, size in zip(risk_rewards, sizes)) / total_size
+
+    return round(weighted_risk_reward, 2)

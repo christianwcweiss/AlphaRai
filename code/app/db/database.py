@@ -3,7 +3,7 @@ import os
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
 
-from models.credential_setting import CredentialSetting
+from models.account import Account
 from models.strategy import Strategy
 from models.strategy_setting import StrategySetting
 from models.trade_config import TradeConfig
@@ -14,12 +14,7 @@ if not os.path.exists(os.path.dirname(DATABASE_PATH)):
     os.makedirs(os.path.dirname(DATABASE_PATH))
 
 DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
-TABLES = [
-    "credential_settings",
-    "trade_config",
-    "strategy_settings",
-    "strategies"
-]
+TABLES = ["accounts", "trade_config", "strategy_settings", "strategies"]
 
 engine = create_engine(DATABASE_URL, echo=False)
 SessionLocal = sessionmaker(bind=engine)
@@ -40,13 +35,12 @@ def init_db():
         CoreLogger().info("Creating table: strategy_settings")
         StrategySetting.__table__.create(engine)
 
-    if "credential_settings" not in tables:
-        CoreLogger().info("Creating table: credential_settings")
-        CredentialSetting.__table__.create(engine)
+    if "accounts" not in tables:
+        CoreLogger().info("Creating table: accounts")
+        Account.__table__.create(engine)
 
     if "trade_config" not in tables:
         CoreLogger().info("Creating table: trade_config")
         TradeConfig.__table__.create(engine)
 
     CoreLogger().info("✅ Database initialization complete (no tables dropped)")
-

@@ -27,12 +27,14 @@ def register_strategy(strategy_dict: dict):
             existing.strategy_hash = strategy_dict["hash"]
         else:
             CoreLogger().info(f"Registering new strategy: {strategy_dict['id']}")
-            session.add(Strategy(
-                id=strategy_dict["id"],
-                strategy_hash=strategy_dict["hash"],
-                strategy_type=strategy_dict["type"],
-                friendly_name=strategy_dict["id"]
-            ))
+            session.add(
+                Strategy(
+                    id=strategy_dict["id"],
+                    strategy_hash=strategy_dict["hash"],
+                    strategy_type=strategy_dict["type"],
+                    friendly_name=strategy_dict["id"],
+                )
+            )
 
         session.commit()
 

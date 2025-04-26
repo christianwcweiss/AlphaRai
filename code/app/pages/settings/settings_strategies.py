@@ -5,7 +5,9 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc, callback, Input, Output, State, ctx
 
 from components.atoms.content import MainContent
-from components.atoms.header import PageHeader
+from components.atoms.text.page import PageHeader
+from components.atoms.text.section import SectionHeader
+from components.atoms.text.subsection import SubsectionHeader
 from components.frame.body import PageBody
 from pages.base_page import BasePage
 from quant_core.services.core_logger import CoreLogger
@@ -17,31 +19,32 @@ from services.strategy import (
     unregister_strategy,
 )
 
-STRATEGY_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "strategies"))
+STRATEGY_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "strategies"))
 
-dash.register_page(__name__, path="/strategies", name="Strategies")
+dash.register_page(__name__, path="/settings/strategies", name="Strategies")
 
 
 class StrategiesPage(BasePage):
     def render(self):
-        return PageBody([
-            PageHeader(f"{self.title}"),
-            MainContent([
-                dcc.Store(id="refresh-strategies", data=str(uuid.uuid4())),
-                html.Div(id="strategy-lists"),
-                html.Div(id="strategy-register-output", style={"marginTop": "1em"})
-            ])
-        ])
+        return PageBody(
+            [
+                PageHeader(f"{self._title}"),
+                MainContent(
+                    [
+                        dcc.Store(id="refresh-strategies", data=str(uuid.uuid4())),
+                        html.Div(id="strategy-lists"),
+                        html.Div(id="strategy-register-output", style={"marginTop": "1em"}),
+                    ]
+                ),
+            ]
+        )
 
 
 page = StrategiesPage(title="Strategies")
 layout = page.layout
 
 
-@callback(
-    Output("strategy-lists", "children"),
-    Input("refresh-strategies", "data")
-)
+@callback(Output("strategy-lists", "children"), Input("refresh-strategies", "data"))
 def render_strategy_lists(_):
     all_strategies = discover_strategies(STRATEGY_FOLDER)
 
@@ -62,34 +65,33 @@ def render_strategy_lists(_):
     def strategy_card(s, registered=True):
         color = "success" if registered else "danger"
         label = "Unregister" if registered else "Register"
-        button_id = {
-            "type": "unregister-btn" if registered else "register-btn",
-            "index": s["id"]
-        }
+        button_id = {"type": "unregister-btn" if registered else "register-btn", "index": s["id"]}
 
         return dbc.Card(
-            dbc.CardBody([
-                dcc.Link(
-                    html.Div([
-                        html.Strong(s["id"]),
-                        html.Small(f" ({s['type']})", className="ms-1")
-                    ]),
-                    href=f"/strategies/{s['id']}",
-                    style={"color": "inherit", "textDecoration": "none"}
-                ),
-                dbc.Button(label, id=button_id, color="light", size="sm", className="mt-2")
-            ]),
+            dbc.CardBody(
+                [
+                    dcc.Link(
+                        html.Div([html.Strong(s["id"]), html.Small(f" ({s['type']})", className="ms-1")]),
+                        href=f"/strategies/{s['id']}",
+                        style={"color": "inherit", "textDecoration": "none"},
+                    ),
+                    dbc.Button(label, id=button_id, color="light", size="sm", className="mt-2"),
+                ]
+            ),
             className=f"m-2 border border-{color} bg-{color} text-white rounded-3",
-            style={"width": "170px", "display": "inline-block", "textAlign": "center"}
+            style={"width": "170px", "display": "inline-block", "textAlign": "center"},
         )
 
-    return html.Div([
-        html.H4("✅ Registered Strategies"),
-        html.Div([strategy_card(s, registered=True) for s in registered]),
-        html.Hr(),
-        html.H4("🕓 Staged (Unregistered) Strategies"),
-        html.Div([strategy_card(s, registered=False) for s in unregistered]),
-    ])
+    return html.Div(
+        [
+            SectionHeader("Strategy Management", subtitle="Register/Unregister strategies").render(),
+            SubsectionHeader("Registered Strategies"),
+            html.Div([strategy_card(s, registered=True) for s in registered]),
+            html.Hr(),
+            SubsectionHeader("Unregistered Strategies"),
+            html.Div([strategy_card(s, registered=False) for s in unregistered]),
+        ]
+    )
 
 
 @callback(
@@ -99,7 +101,7 @@ def render_strategy_lists(_):
     Input({"type": "unregister-btn", "index": dash.ALL}, "n_clicks"),
     State({"type": "register-btn", "index": dash.ALL}, "id"),
     State({"type": "unregister-btn", "index": dash.ALL}, "id"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def toggle_strategy(register_clicks, unregister_clicks, register_ids, unregister_ids):
     triggered = ctx.triggered_id

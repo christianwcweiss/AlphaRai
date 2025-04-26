@@ -59,7 +59,6 @@ class CoreLogger:
             file_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
             self._logger.addHandler(file_handler)
 
-
     def get_logger(self) -> logging.Logger:
         return self._logger
 

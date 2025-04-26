@@ -23,7 +23,6 @@ class StrategySettingsPositionSize(StrategySettings):
     def value(self) -> float:
         return self._value
 
-
     @staticmethod
     def from_yaml(file_path: str) -> "StrategySettingsPositionSize":
         with open(file_path, "r") as file:

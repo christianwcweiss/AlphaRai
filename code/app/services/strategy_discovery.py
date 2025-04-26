@@ -1,4 +1,3 @@
-
 import hashlib
 import importlib.util
 import os
@@ -26,6 +25,7 @@ def compute_folder_hash(folder_path: str) -> str:
                     hash_obj.update(chunk)
 
     return hash_obj.hexdigest()
+
 
 def discover_strategies(strategy_dir: str) -> List[dict]:
     logger = CoreLogger()
@@ -59,12 +59,14 @@ def discover_strategies(strategy_dir: str) -> List[dict]:
             logger.warning(f"Failed to compute hash for {folder.name}: {e}")
             continue
 
-        strategies.append({
-            "id": getattr(strategy, "__ID__", folder.name),
-            "type": getattr(strategy, "__TYPE__", "unknown"),
-            "path": str(folder),
-            "hash": strategy_hash,
-        })
+        strategies.append(
+            {
+                "id": getattr(strategy, "__ID__", folder.name),
+                "type": getattr(strategy, "__TYPE__", "unknown"),
+                "path": str(folder),
+                "hash": strategy_hash,
+            }
+        )
 
     logger.info(f"Discovered {len(strategies)} strategy folder(s)")
     return strategies

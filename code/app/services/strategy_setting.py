@@ -8,7 +8,9 @@ def get_settings_for_strategy(strategy_id: str) -> list[StrategySetting]:
         return session.query(StrategySetting).filter_by(strategy_id=strategy_id).all()
 
 
-def add_strategy_setting(strategy_id: str, strategy_hash: str, account: str, asset: str, cron_expr: str = None, enabled: bool = False):
+def add_strategy_setting(
+    strategy_id: str, strategy_hash: str, account: str, asset: str, cron_expr: str = None, enabled: bool = False
+):
     with SessionLocal() as session:
         setting = StrategySetting(
             strategy_id=strategy_id,
@@ -16,7 +18,7 @@ def add_strategy_setting(strategy_id: str, strategy_hash: str, account: str, ass
             account=account,
             asset=asset,
             cron_expression=cron_expr,
-            enabled=enabled
+            enabled=enabled,
         )
         session.add(setting)
         session.commit()

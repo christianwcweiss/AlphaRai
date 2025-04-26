@@ -1,0 +1,266 @@
+from typing import Tuple, Any, Dict, Union, Optional, List
+
+import dash
+import dash_bootstrap_components as dbc
+from dash import html, dcc, Input, Output, State, ctx, callback
+from dash.development.base_component import Component
+
+from components.atoms.buttons.button import AlphaButton
+from components.atoms.content import MainContent
+from components.atoms.text.page import PageHeader
+from components.atoms.text.section import SectionHeader
+from components.frame.body import PageBody
+from constants import colors
+from constants.style import HIDDEN
+from entities.trade_details import TradeDetails
+from models.account import Account
+from pages.base_page import BasePage
+from quant_core.enums.stagger_method import StaggerMethod
+from quant_core.services.core_logger import CoreLogger
+from quant_core.utils.trade_utils import get_stagger_levels, calculate_risk_reward, get_stagger_sizes
+from services.trade_parser import TradeMessageParser
+from services.trade_router import TradeRouter
+from services.accounts import get_all_accounts, toggle_account_enabled
+
+# ========== COCKPIT PAGE ==========
+
+COCKPIT_PATH = "/"
+dash.register_page(__name__, path=COCKPIT_PATH, name="Cockpit")
+
+# IDS
+TRADE_INPUT_TEXT_AREA_ID = "trade-input-text-area"
+TRADE_OUTPUT_ID = "parsed-trade-output"
+TRADE_ENTRY_SIMULATION_ID = "parsed-trade-entry-simulation-output"
+TRADE_STORE_ID = "parsed-trade-store"
+
+
+def build_account_cards(accounts: List[Account]) -> List[dbc.Button]:
+    return [
+        dbc.Button(
+            html.Div([
+                html.Div(acc.friendly_name or acc.uid),
+                html.Small(
+                    "ENABLED" if acc.enabled else "DISABLED",
+                    style={"fontSize": "0.7rem", "color": "#f8f9fa" if acc.enabled else "#f8d7da"},
+                ),
+            ]),
+            id={"type": "account-toggle", "index": acc.uid},
+            color="success" if acc.enabled else "danger",
+            className="m-1",
+            n_clicks=0,
+            style={"width": "150px", "height": "60px"},
+        )
+        for acc in accounts
+    ]
+
+
+def trade_detail_row(label, value, emoji=""):
+    return dbc.Row(
+        [
+            dbc.Col(html.Div(f"{emoji} {label}:"), width=4, style={"fontWeight": "bold", "textAlign": "right"}),
+            dbc.Col(html.Div(value), width=8),
+        ],
+        className="mb-2",
+    )
+
+
+class CockpitPage(BasePage):
+    def render(self):
+        accounts = get_all_accounts()
+        account_buttons = build_account_cards(accounts)
+
+        return PageBody(
+            [
+                PageHeader(self._title),
+                MainContent(
+                    [
+                        SectionHeader("Paste Trade Signal").render(),
+                        dbc.Row([
+                            dbc.Col(
+                                dcc.Textarea(
+                                    id=TRADE_INPUT_TEXT_AREA_ID,
+                                    style={"width": "100%", "height": "400px"},
+                                    placeholder="Paste signal here...",
+                                ), lg=6),
+                            dbc.Col([
+                                AlphaButton(label="Parse Signal", button_id="parse-trade-btn").render(),
+                                AlphaButton(label="Clear", button_id="clear-trade-btn").render(),
+                                AlphaButton(label="Execute Trade", button_id="submit-trade-btn", style=HIDDEN).render(),
+                            ], lg=6)
+                        ]),
+                        dbc.Row([
+                            dbc.Col(html.Div(id=TRADE_OUTPUT_ID), lg=6),
+                            dbc.Col(html.Div(id=TRADE_ENTRY_SIMULATION_ID), lg=6)
+                        ]),
+                        dbc.Row([
+                            dbc.Col(html.Div(id="trade-status"))
+                        ]),
+                        html.Div(id="trade-simulation-controls", style=HIDDEN),
+                        dcc.Store(id=TRADE_STORE_ID),
+                        SectionHeader("Account Management", subtitle="Enable/Disable accounts").render(),
+                        html.Div(account_buttons, id="account-toggle-container"),
+                    ]
+                ),
+            ]
+        )
+
+
+layout = CockpitPage(title="Cockpit").layout
+
+
+@callback(
+    Output("account-toggle-container", "children"),
+    Input({"type": "account-toggle", "index": dash.ALL}, "n_clicks"),
+    State({"type": "account-toggle", "index": dash.ALL}, "id"),
+)
+def toggle_accounts(n_clicks_list, id_list):
+    if not ctx.triggered_id:
+        raise dash.exceptions.PreventUpdate
+
+    triggered_uid = ctx.triggered_id["index"]
+    toggle_account_enabled(triggered_uid)
+
+    accounts = get_all_accounts()
+    return build_account_cards(accounts)
+
+
+@callback(
+    Output(TRADE_OUTPUT_ID, "children", allow_duplicate=True),
+    Output(TRADE_STORE_ID, "data", allow_duplicate=True),
+    Output("submit-trade-btn", "style", allow_duplicate=True),
+    Input("parse-trade-btn", "n_clicks"),
+    State(TRADE_INPUT_TEXT_AREA_ID, "value"),
+    prevent_initial_call=True,
+)
+def parse_trade_signal(_, signal_input: str):
+    if not signal_input:
+        return dbc.Alert("Please paste a signal...", color=colors.WARNING_COLOR), dash.no_update, HIDDEN
+
+    try:
+        trade_details = TradeMessageParser.parse(signal_input)
+    except Exception as e:
+        CoreLogger().error(f"Failed to parse signal: {e}")
+        return dbc.Alert(f"Error parsing signal: {e}", color=colors.ERROR_COLOR), dash.no_update, HIDDEN
+
+    preview = html.Div(
+        [
+            trade_detail_row("Symbol", trade_details.symbol, "🎯"),
+            trade_detail_row("Direction", trade_details.direction.normalize().value.capitalize(), "↕️"),
+            trade_detail_row("Timeframe", trade_details.timeframe, "⏱️"),
+            trade_detail_row("Entry Price", trade_details.entry, "💰"),
+            trade_detail_row("Stop Loss", trade_details.stop_loss, "🚩"),
+            trade_detail_row("Take Profit 1", trade_details.take_profit_1, "🎯"),
+            trade_detail_row("Take Profit 2", trade_details.take_profit_2 or "–", "🎯"),
+            trade_detail_row("Take Profit 3", trade_details.take_profit_3 or "–", "🎯"),
+            trade_detail_row("AI Confidence", f"{trade_details.ai_confidence or '–'}%", "🤖"),
+        ],
+        style={"padding": "1rem", "fontSize": "1.05rem", "backgroundColor": "#f9f9fa",
+               "borderRadius": "12px", "boxShadow": "0 2px 6px rgba(0,0,0,0.05)"}
+    )
+
+    return preview, trade_details.to_dict(), AlphaButton.DEFAULT_STYLE
+
+
+@callback(
+    Output(TRADE_INPUT_TEXT_AREA_ID, "value", allow_duplicate=True),
+    Output(TRADE_OUTPUT_ID, "children", allow_duplicate=True),
+    Output(TRADE_STORE_ID, "data", allow_duplicate=True),
+    Output("submit-trade-btn", "style", allow_duplicate=True),
+    Input("clear-trade-btn", "n_clicks"),
+    prevent_initial_call=True,
+)
+def clear_trade_ui(_) -> Tuple[str, Optional[List[Component]], Optional[Dict[str, Any]], Dict[str, Any]]:
+    return "", None, None, HIDDEN
+
+
+@callback(
+    Output("trade-status", "children"),
+    Input("submit-trade-btn", "n_clicks"),
+    State(TRADE_STORE_ID, "data"),
+    prevent_initial_call=True,
+)
+def execute_trade(_, trade_data: Dict[str, Any]) -> dbc.Alert:
+    try:
+        CoreLogger().info(f"Routing Trade: {trade_data}")
+        trade = TradeDetails(**trade_data)
+        TradeRouter(trade).route_trade()
+        return dbc.Alert("✅ Trade successfully routed!", color=colors.SUCCESS_COLOR, dismissable=True)
+    except Exception as e:
+        CoreLogger().error(f"Execution failed: {e}")
+        return dbc.Alert(f"Trade execution failed: {e}", color=colors.ERROR_COLOR, dismissable=True)
+
+
+@callback(
+    Output("trade-simulation-controls", "children"),
+    Output("trade-simulation-controls", "style"),
+    Input(TRADE_STORE_ID, "data"),
+)
+def show_simulation_controls(trade_data):
+    if not trade_data:
+        return None, HIDDEN
+
+    return html.Div([
+        dbc.Label("Stagger Method"),
+        dcc.Dropdown(
+            id="stagger-method",
+            options=[{"label": m.name.title(), "value": m.name} for m in StaggerMethod],
+            value="FIBONACCI"
+        ),
+        dbc.Label("Number of Stagger Levels"),
+        dcc.Input(id="num-staggers", type="number", min=1, value=5),
+
+        dbc.Label("Target Take Profit"),
+        dcc.Dropdown(
+            id="selected-tp",
+            options=[
+                {"label": "TP 1", "value": "tp1"},
+                {"label": "TP 2", "value": "tp2"},
+                {"label": "TP 3", "value": "tp3"},
+            ],
+            value="tp1"
+        ),
+    ]), {"marginBottom": "1rem", "padding": "1rem", "backgroundColor": "#f2f4f8", "borderRadius": "12px"}
+
+
+@callback(
+    Output(TRADE_ENTRY_SIMULATION_ID, "children"),
+    Input("stagger-method", "value"),
+    Input("num-staggers", "value"),
+    Input("selected-tp", "value"),
+    State(TRADE_STORE_ID, "data"),
+    prevent_initial_call=True
+)
+def simulate_trade(method, num_levels, selected_tp, trade_data):
+    if not trade_data:
+        return None
+
+    trade = TradeDetails(**trade_data)
+    from_price = trade.entry
+    to_price = trade.stop_loss
+    method_enum = StaggerMethod(method.lower())
+
+    entries = get_stagger_levels(from_price, to_price, method_enum, num_levels)
+    sizes = get_stagger_sizes(1.0, 2.0, num_levels, method_enum)
+
+    tp = {
+        "tp1": trade.take_profit_1,
+        "tp2": trade.take_profit_2,
+        "tp3": trade.take_profit_3,
+    }.get(selected_tp)
+
+    if tp is None:
+        return dbc.Alert("Selected Take Profit level is missing in signal", color="danger")
+
+    total_size = sum(sizes)
+    weighted_entry = sum([e * s for e, s in zip(entries, sizes)]) / total_size
+    risk = abs(weighted_entry - trade.stop_loss) * total_size
+    reward = abs(tp - weighted_entry) * total_size
+
+    rrr = round(reward / risk, 2) if risk > 0 else float("inf")
+
+    return html.Div([
+        html.H5("🔀 Staggered Entry Levels"),
+        html.Ul([html.Li(f"{round(e, 5)} → size: {round(s, 4)}") for e, s in zip(entries, sizes)]),
+        html.H5("📏 Weighted Risk-Reward Ratio"),
+        html.Div(f"{rrr} {'🔥' if rrr >= 2 else '😏' if rrr >= 1 else '😬'}", style={"fontSize": "1.2rem"}),
+    ])

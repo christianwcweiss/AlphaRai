@@ -8,6 +8,7 @@ def get_tomorrow_formatted() -> str:
 
     return tomorrow.strftime("%d-%b-%y").upper()
 
+
 from croniter import croniter
 from datetime import datetime
 import humanize
