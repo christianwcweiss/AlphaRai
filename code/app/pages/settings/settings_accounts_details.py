@@ -12,9 +12,9 @@ from components.atoms.table.table import AlphaTable
 from pages.base_page import BasePage
 from quant_core.enums.stagger_method import StaggerMethod
 from quant_core.services.core_logger import CoreLogger
-from services.accounts import get_account_by_uid
+from services.db.accounts import get_account_by_uid
 
-from services.trade_config import get_configs_by_uid, upsert_config, delete_config
+from services.db.trade_config import get_configs_by_uid, upsert_config, delete_config
 
 
 dash.register_page(__name__, path_template="/settings/accounts/<uid>", name="Account Settings Details")

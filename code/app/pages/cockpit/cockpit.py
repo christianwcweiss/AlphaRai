@@ -1,4 +1,4 @@
-from typing import Tuple, Any, Dict, Union, Optional, List
+from typing import Tuple, Any, Dict, Optional, List
 
 import dash
 import dash_bootstrap_components as dbc
@@ -17,10 +17,10 @@ from models.account import Account
 from pages.base_page import BasePage
 from quant_core.enums.stagger_method import StaggerMethod
 from quant_core.services.core_logger import CoreLogger
-from quant_core.utils.trade_utils import get_stagger_levels, calculate_risk_reward, get_stagger_sizes
+from quant_core.utils.trade_utils import get_stagger_levels, get_stagger_sizes
 from services.trade_parser import TradeMessageParser
 from services.trade_router import TradeRouter
-from services.accounts import get_all_accounts, toggle_account_enabled
+from services.db.accounts import get_all_accounts, toggle_account_enabled
 
 # ========== COCKPIT PAGE ==========
 

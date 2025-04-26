@@ -8,8 +8,8 @@ from quant_core.services.core_logger import CoreLogger
 from quant_core.trader.platforms.ig import IgTrader
 from quant_core.trader.platforms.metatrader import Mt5Trader
 from quant_core.utils.trade_utils import get_stagger_levels, get_stagger_sizes
-from services.accounts import get_all_accounts
-from services.trade_config import get_configs_by_uid
+from services.db.accounts import get_all_accounts
+from services.db.trade_config import get_configs_by_uid
 
 
 class TradeRouter:
