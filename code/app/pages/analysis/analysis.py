@@ -4,9 +4,10 @@ import pandas as pd
 from dash import html, dcc, callback, Input, Output, ctx
 
 from components.atoms.buttons.button import AlphaButton
-from components.atoms.charts.chart import ChartMargin
-from components.atoms.charts.line.line_chart import LineChart, LineChartStyle
+from components.atoms.charts.chart import ChartMargin, ChartLayoutStyle
+from components.atoms.charts.line.line_chart import LineChart
 from components.atoms.content import MainContent
+from components.atoms.layout.layout import AlphaCol, AlphaRow
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
 from db.database import SessionLocal
@@ -26,7 +27,7 @@ class AnalysisPage(BasePage):
     def render(self):
         return PageBody(
             [
-                PageHeader("📈 Strategy Analysis"),
+                PageHeader("Strategy Analysis"),
                 MainContent(
                     [
                         dcc.Loading(html.Div(id="analysis-output"), type="circle"),
@@ -97,22 +98,27 @@ def handle_analysis_page(load_clicks, pathname):
     if not trades:
         return dbc.Alert("⚠️ No trade data found. Please sync first.", color="warning")
 
-    data_frame = pd.DataFrame([{
-        "ticket": t.ticket,
-        "order": t.order,
-        "time": t.time,
-        "type": t.type,
-        "entry": t.entry,
-        "size": t.size,
-        "symbol": t.symbol,
-        "price": t.price,
-        "commission": t.commission,
-        "swap": t.swap,
-        "profit": t.profit,
-        "magic": t.magic,
-        "comment": t.comment,
-        "Account": t.account_id,
-    } for t in trades])
+    data_frame = pd.DataFrame(
+        [
+            {
+                "ticket": t.ticket,
+                "order": t.order,
+                "time": t.time,
+                "type": t.type,
+                "entry": t.entry,
+                "size": t.size,
+                "symbol": t.symbol,
+                "price": t.price,
+                "commission": t.commission,
+                "swap": t.swap,
+                "profit": t.profit,
+                "magic": t.magic,
+                "comment": t.comment,
+                "Account": t.account_id,
+            }
+            for t in trades
+        ]
+    )
 
     if data_frame.empty:
         return dbc.Alert("⚠️ No trade data available.", color="warning")
@@ -123,31 +129,60 @@ def handle_analysis_page(load_clicks, pathname):
 
     return dbc.Container(
         [
-            dbc.Row(
+            AlphaRow(
                 [
-                    dbc.Col(
-                        dcc.Graph(figure=LineChart(
-                            data_frame=absolute_growth_metric_data_frame).plot(
-                            x_col="time",
-                            y_col="absolute_balance",
-                            group_by="Account",
-                            line_chart_style=LineChartStyle(
-                                title="Absolute Account Growth Over Time",
-                                x_axis_title="Date",
-                                x_axis_title_show=True,
-                                x_grid_show=True,
-                                y_axis_title="Absolute Balance",
-                                y_grid_show=True,
-                                y_axis_title_show=True,
-                                show_legend=True,
-                                margin=ChartMargin(
-                                    left=20,
-                                    right=20,
-                                    top=20,
-                                    bottom=20,
-                                )
+                    AlphaCol(
+                        dcc.Graph(
+                            figure=LineChart(
+                                data_frame=absolute_growth_metric_data_frame,
+                                line_layout_style=ChartLayoutStyle(
+                                    title="Profit/Loss (Absolute)",
+                                    x_axis_title="Date",
+                                    y_axis_title="Absolute Balance",
+                                    show_legend=False,
+                                    margin=ChartMargin(
+                                        left=30,
+                                        right=30,
+                                        top=30,
+                                        bottom=30,
+                                    ),
+                                    y_range=[0, float(absolute_growth_metric_data_frame["absolute_balance"].max()) * 1.1],
+                                ),
+                            ).plot(
+                                x_col="time",
+                                y_col="absolute_balance",
+                                group_by="Account",
                             )
-                        )),
+                        ),
+                        xs=12,
+                        sm=12,
+                        md=6,
+                        lg=4,
+                        xl=4,
+                    ),
+                    AlphaCol(
+                        dcc.Graph(
+                            figure=LineChart(
+                                data_frame=percentage_growth_metric_data_frame,
+                                line_layout_style=ChartLayoutStyle(
+                                    title="Profit/Loss (Percentage)",
+                                    x_axis_title="Date",
+                                    y_axis_title="Percentage Growth",
+                                    show_legend=False,
+                                    margin=ChartMargin(
+                                        left=30,
+                                        right=30,
+                                        top=30,
+                                        bottom=30,
+                                    ),
+                                    y_range=[-10, 10],
+                                ),
+                            ).plot(
+                                x_col="time",
+                                y_col="percentage_growth",
+                                group_by="Account",
+                            )
+                        ),
                         xs=12,
                         sm=12,
                         md=6,
@@ -156,7 +191,7 @@ def handle_analysis_page(load_clicks, pathname):
                     )
                 ]
             ),
-            # dbc.Row([dbc.Col(dcc.Graph(figure=None), width=12)]),
+            # AlphaRow([AlphaCol(dcc.Graph(figure=None), width=12)]),
         ],
         fluid=True,
     )

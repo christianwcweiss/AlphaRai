@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Union
 
 from dash import html
 
@@ -28,12 +28,12 @@ class AlphaButton(Atom):
     def __init__(
         self,
         label: str,
-        button_id: Optional[str] = None,
+        button_id: Optional[Union[str, Dict[str, Any]]] = None,
         href: Optional[str] = None,
         style: Optional[Dict[str, Any]] = None,
     ):
         self._label = label
-        self._id = button_id
+        self._id = button_id if button_id else f"button-{label.replace(' ', '-').lower()}"
         self._href = href
         self._style = {**self.DEFAULT_STYLE, **(style or {})}
 
@@ -41,12 +41,9 @@ class AlphaButton(Atom):
 
     def validate(self) -> None:
         if self._label == "":
-            raise ComponentPropertyError(
-                "Label cannot be empty. Please provide a valid label for the button."
-            )
+            raise ComponentPropertyError("Label cannot be empty. Please provide a valid label for the button.")
 
-
-    def render(self):
+    def render(self) -> html.Div:
         if self._href:
             return html.Div(
                 html.A(

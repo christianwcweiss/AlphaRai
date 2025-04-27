@@ -1,103 +1,82 @@
-from typing import List, Optional, Dict
-
 import pandas as pd
 
+from typing import Optional, List, Dict, Any
+
+import pandas as pd
 import plotly.graph_objects as go
+from plotly import colors
 
-from components.atoms.charts.chart import Chart, ChartStyle, ChartMargin
+from components.atoms.charts.chart import Chart, ChartTraceStyle, ChartLayoutStyle
+from constants.colors import CHART_PALETTE
 
 
-class LineChartStyle(ChartStyle):
+class LineChartTraceStyle(ChartTraceStyle):
     def __init__(
-            self,
-            title: str,
-            x_axis_title: str,
-            x_axis_title_show: bool,
-            x_grid_show: bool,
-            y_axis_title: str,
-            y_axis_title_show: bool,
-            y_grid_show: bool,
-            show_legend: bool,
-            margin: ChartMargin,
+        self,
+        line_width: Optional[float] = None,
+        line_dash: Optional[str] = None,
+        show_markers: bool = False,
     ) -> None:
-        self._title = title
-        self._x_axis_title = x_axis_title
-        self._x_grid_show = x_grid_show
-        self._y_axis_title = y_axis_title
-        self._y_grid_show = y_grid_show
-        self._show_legend = show_legend
-        self._margin = margin
+        self._line_width = line_width
+        self._line_dash = line_dash
+        self._show_markers = show_markers
+        self._use_group_colors = True
+        self._color_palette = CHART_PALETTE
 
-    def to_style_dict(self) -> Dict[str, any]:
-        style_dict = {
-            "title": {
-                "text": self._title,
-                "x": 0.5,
-                "xanchor": "center",
-                "font": {"size": 24, "family": "Arial, sans-serif"}
-            },
-            "xaxis": {
-                "title": self._x_axis_title,
-                "showgrid": self._x_grid_show,
-                "gridcolor": "rgba(200,200,200,0.3)",
-                "zeroline": False,
-                "tickfont": {"size": 14},
-                "titlefont": {"size": 18}
-            },
-            "yaxis": {
-                "title": self._y_axis_title,
-                "showgrid": self._y_grid_show,
-                "gridcolor": "rgba(200,200,200,0.3)",
-                "zeroline": False,
-                "tickfont": {"size": 14},
-                "titlefont": {"size": 18}
-            },
-            "plot_bgcolor": "white",
-            "paper_bgcolor": "white",
-            "margin": self._margin.margins
+    def to_style_dict(self, group_index: Optional[int] = None) -> Dict[str, Any]:
+        style = {
+            "mode": "lines+markers" if self._show_markers else "lines",
+            "line": {}
         }
 
-        if self._show_legend:
-            style_dict["legend"] = {
-                "orientation": "h",
-                "yanchor": 'bottom',
-                "y": -0.2,
-                "xanchor": 'center',
-                "x": 0.5,
-                "font": {"size": 14}
-            }
+        # Dynamically assign a color if needed
+        if self._use_group_colors and group_index is not None:
+            color = self._color_palette[group_index % len(self._color_palette)]
+            style["line"]["color"] = color
 
-        return style_dict
+        if self._line_width is not None:
+            style["line"]["width"] = self._line_width
+        if self._line_dash is not None:
+            style["line"]["dash"] = self._line_dash
 
+        if not style["line"]:
+            style.pop("line")
+
+        return style
 
 class LineChart(Chart):
     def __init__(
         self,
         data_frame: pd.DataFrame,
+        line_layout_style: ChartLayoutStyle,
     ) -> None:
         self._data_frame = data_frame
+        self._line_layout_style = line_layout_style
+
 
     def plot(
         self,
         x_col: str,
         y_col: str,
         group_by: Optional[str] = None,
-        line_chart_style: Optional[LineChartStyle] = None,
     ) -> go.Figure:
         grouped_data = self._data_frame.groupby(group_by) if group_by else [(None, self._data_frame)]
 
         fig = go.Figure()
 
-        for group_name, group_data in grouped_data:
+        for idx, (group_name, group_data) in enumerate(grouped_data):
+            trace_style = LineChartTraceStyle().to_style_dict(group_index=idx)
+
             fig.add_trace(
                 go.Scatter(
                     x=group_data[x_col],
                     y=group_data[y_col],
-                    mode="lines",
                     name=f"{group_name} - {y_col}" if group_name else y_col,
+                    showlegend=True,
+                    **trace_style
                 )
             )
 
-        fig.update_layout(**line_chart_style.to_style_dict())
+        fig.update_layout(**self._line_layout_style.to_layout_dict())
 
         return fig

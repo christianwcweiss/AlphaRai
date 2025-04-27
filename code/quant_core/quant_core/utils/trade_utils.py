@@ -94,6 +94,7 @@ def calculate_risk_reward(entry: float, stop_loss: float, take_profit: float) ->
 
     return round(reward / risk, 2)
 
+
 def calculate_weighted_risk_reward(risk_rewards: List[float], sizes: List[float]) -> float:
     """
     Calculate the weighted average risk-reward ratio based on individual RRRs and sizes.

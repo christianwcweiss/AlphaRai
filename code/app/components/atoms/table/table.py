@@ -4,15 +4,15 @@ import dash_bootstrap_components as dbc
 from dash import html
 from dash.development.base_component import Component
 
-from components.atoms.table.row import AlphaRow
+from components.atoms.table.row import AlphaTableRow
 
 
 class AlphaTable(html.Div):
     def __init__(
         self,
         table_id: str,
-        header_row: AlphaRow,
-        rows: List[AlphaRow],
+        header_row: AlphaTableRow,
+        rows: List[AlphaTableRow],
         class_name: str = "",
     ) -> None:
         """

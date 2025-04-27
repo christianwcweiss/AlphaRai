@@ -7,6 +7,7 @@ from dash.development.base_component import Component
 
 from components.atoms.buttons.button import AlphaButton
 from components.atoms.content import MainContent
+from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.atoms.text.page import PageHeader
 from components.atoms.text.section import SectionHeader
 from components.frame.body import PageBody
@@ -22,8 +23,6 @@ from services.trade_parser import TradeMessageParser
 from services.trade_router import TradeRouter
 from services.db.accounts import get_all_accounts, toggle_account_enabled
 
-# ========== COCKPIT PAGE ==========
-
 COCKPIT_PATH = "/"
 dash.register_page(__name__, path=COCKPIT_PATH, name="Cockpit")
 
@@ -34,40 +33,36 @@ TRADE_ENTRY_SIMULATION_ID = "parsed-trade-entry-simulation-output"
 TRADE_STORE_ID = "parsed-trade-store"
 
 
-def build_account_cards(accounts: List[Account]) -> List[dbc.Button]:
+def build_account_cards(accounts: List[Account]) -> List[AlphaCol]:
     return [
-        dbc.Button(
-            html.Div([
-                html.Div(acc.friendly_name or acc.uid),
-                html.Small(
-                    "ENABLED" if acc.enabled else "DISABLED",
-                    style={"fontSize": "0.7rem", "color": "#f8f9fa" if acc.enabled else "#f8d7da"},
-                ),
-            ]),
-            id={"type": "account-toggle", "index": acc.uid},
-            color="success" if acc.enabled else "danger",
-            className="m-1",
-            n_clicks=0,
-            style={"width": "150px", "height": "60px"},
-        )
-        for acc in accounts
+        AlphaCol(
+            AlphaButton(
+                label=f"{account.platform} {account.friendly_name}",
+                button_id={"type": "account-toggle", "index": account.uid},
+                style={"backgroundColor": colors.PRIMARY_COLOR if account.enabled else colors.ERROR_COLOR},
+            ).render(),
+            xs=12,
+            sm=6,
+            md=6,
+            lg=4,
+            xl=4,
+        ) for account in accounts
     ]
 
 
 def trade_detail_row(label, value, emoji=""):
-    return dbc.Row(
+    return AlphaRow(
         [
-            dbc.Col(html.Div(f"{emoji} {label}:"), width=4, style={"fontWeight": "bold", "textAlign": "right"}),
-            dbc.Col(html.Div(value), width=8),
+            AlphaCol(html.Div(f"{emoji} {label}:"), width=4, style={"fontWeight": "bold", "textAlign": "right"}),
+            AlphaCol(html.Div(value), width=8),
         ],
-        className="mb-2",
     )
 
 
 class CockpitPage(BasePage):
     def render(self):
         accounts = get_all_accounts()
-        account_buttons = build_account_cards(accounts)
+        account_buttons = AlphaRow(build_account_cards(accounts))
 
         return PageBody(
             [
@@ -75,29 +70,38 @@ class CockpitPage(BasePage):
                 MainContent(
                     [
                         SectionHeader("Paste Trade Signal").render(),
-                        dbc.Row([
-                            dbc.Col(
-                                dcc.Textarea(
-                                    id=TRADE_INPUT_TEXT_AREA_ID,
-                                    style={"width": "100%", "height": "400px"},
-                                    placeholder="Paste signal here...",
-                                ), lg=6),
-                            dbc.Col([
-                                AlphaButton(label="Parse Signal", button_id="parse-trade-btn").render(),
-                                AlphaButton(label="Clear", button_id="clear-trade-btn").render(),
-                                AlphaButton(label="Execute Trade", button_id="submit-trade-btn", style=HIDDEN).render(),
-                            ], lg=6)
-                        ]),
-                        dbc.Row([
-                            dbc.Col(html.Div(id=TRADE_OUTPUT_ID), lg=6),
-                            dbc.Col(html.Div(id=TRADE_ENTRY_SIMULATION_ID), lg=6)
-                        ]),
-                        dbc.Row([
-                            dbc.Col(html.Div(id="trade-status"))
-                        ]),
+                        AlphaRow(
+                            [
+                                AlphaCol(
+                                    dcc.Textarea(
+                                        id=TRADE_INPUT_TEXT_AREA_ID,
+                                        style={"width": "100%", "height": "400px"},
+                                        placeholder="Paste signal here...",
+                                    ),
+                                    lg=6,
+                                ),
+                                AlphaCol(
+                                    [
+                                        AlphaButton(label="Parse Signal", button_id="parse-trade-btn").render(),
+                                        AlphaButton(label="Clear", button_id="clear-trade-btn").render(),
+                                        AlphaButton(
+                                            label="Execute Trade", button_id="submit-trade-btn", style=HIDDEN
+                                        ).render(),
+                                    ],
+                                    lg=6,
+                                ),
+                            ]
+                        ),
+                        AlphaRow(
+                            [
+                                AlphaCol(html.Div(id=TRADE_OUTPUT_ID), lg=6),
+                                AlphaCol(html.Div(id=TRADE_ENTRY_SIMULATION_ID), lg=6),
+                            ]
+                        ),
+                        AlphaRow([AlphaCol(html.Div(id="trade-status"))]),
                         html.Div(id="trade-simulation-controls", style=HIDDEN),
                         dcc.Store(id=TRADE_STORE_ID),
-                        SectionHeader("Account Management", subtitle="Enable/Disable accounts").render(),
+                        SectionHeader("Account Management").render(),
                         html.Div(account_buttons, id="account-toggle-container"),
                     ]
                 ),
@@ -121,7 +125,8 @@ def toggle_accounts(n_clicks_list, id_list):
     toggle_account_enabled(triggered_uid)
 
     accounts = get_all_accounts()
-    return build_account_cards(accounts)
+
+    return AlphaRow(build_account_cards(accounts))
 
 
 @callback(
@@ -154,8 +159,13 @@ def parse_trade_signal(_, signal_input: str):
             trade_detail_row("Take Profit 3", trade_details.take_profit_3 or "–", "🎯"),
             trade_detail_row("AI Confidence", f"{trade_details.ai_confidence or '–'}%", "🤖"),
         ],
-        style={"padding": "1rem", "fontSize": "1.05rem", "backgroundColor": "#f9f9fa",
-               "borderRadius": "12px", "boxShadow": "0 2px 6px rgba(0,0,0,0.05)"}
+        style={
+            "padding": "1rem",
+            "fontSize": "1.05rem",
+            "backgroundColor": "#f9f9fa",
+            "borderRadius": "12px",
+            "boxShadow": "0 2px 6px rgba(0,0,0,0.05)",
+        },
     )
 
     return preview, trade_details.to_dict(), AlphaButton.DEFAULT_STYLE
@@ -199,27 +209,28 @@ def show_simulation_controls(trade_data):
     if not trade_data:
         return None, HIDDEN
 
-    return html.Div([
-        dbc.Label("Stagger Method"),
-        dcc.Dropdown(
-            id="stagger-method",
-            options=[{"label": m.name.title(), "value": m.name} for m in StaggerMethod],
-            value="FIBONACCI"
-        ),
-        dbc.Label("Number of Stagger Levels"),
-        dcc.Input(id="num-staggers", type="number", min=1, value=5),
-
-        dbc.Label("Target Take Profit"),
-        dcc.Dropdown(
-            id="selected-tp",
-            options=[
-                {"label": "TP 1", "value": "tp1"},
-                {"label": "TP 2", "value": "tp2"},
-                {"label": "TP 3", "value": "tp3"},
-            ],
-            value="tp1"
-        ),
-    ]), {"marginBottom": "1rem", "padding": "1rem", "backgroundColor": "#f2f4f8", "borderRadius": "12px"}
+    return html.Div(
+        [
+            dbc.Label("Stagger Method"),
+            dcc.Dropdown(
+                id="stagger-method",
+                options=[{"label": m.name.title(), "value": m.name} for m in StaggerMethod],
+                value="FIBONACCI",
+            ),
+            dbc.Label("Number of Stagger Levels"),
+            dcc.Input(id="num-staggers", type="number", min=1, value=5),
+            dbc.Label("Target Take Profit"),
+            dcc.Dropdown(
+                id="selected-tp",
+                options=[
+                    {"label": "TP 1", "value": "tp1"},
+                    {"label": "TP 2", "value": "tp2"},
+                    {"label": "TP 3", "value": "tp3"},
+                ],
+                value="tp1",
+            ),
+        ]
+    ), {"marginBottom": "1rem", "padding": "1rem", "backgroundColor": "#f2f4f8", "borderRadius": "12px"}
 
 
 @callback(
@@ -228,7 +239,7 @@ def show_simulation_controls(trade_data):
     Input("num-staggers", "value"),
     Input("selected-tp", "value"),
     State(TRADE_STORE_ID, "data"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def simulate_trade(method, num_levels, selected_tp, trade_data):
     if not trade_data:
@@ -258,9 +269,11 @@ def simulate_trade(method, num_levels, selected_tp, trade_data):
 
     rrr = round(reward / risk, 2) if risk > 0 else float("inf")
 
-    return html.Div([
-        html.H5("🔀 Staggered Entry Levels"),
-        html.Ul([html.Li(f"{round(e, 5)} → size: {round(s, 4)}") for e, s in zip(entries, sizes)]),
-        html.H5("📏 Weighted Risk-Reward Ratio"),
-        html.Div(f"{rrr} {'🔥' if rrr >= 2 else '😏' if rrr >= 1 else '😬'}", style={"fontSize": "1.2rem"}),
-    ])
+    return html.Div(
+        [
+            html.H5("🔀 Staggered Entry Levels"),
+            html.Ul([html.Li(f"{round(e, 5)} → size: {round(s, 4)}") for e, s in zip(entries, sizes)]),
+            html.H5("📏 Weighted Risk-Reward Ratio"),
+            html.Div(f"{rrr} {'🔥' if rrr >= 2 else '😏' if rrr >= 1 else '😬'}", style={"fontSize": "1.2rem"}),
+        ]
+    )

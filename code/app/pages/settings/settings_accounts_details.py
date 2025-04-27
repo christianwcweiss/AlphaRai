@@ -5,9 +5,10 @@ import dash_bootstrap_components as dbc
 from dash import html, Input, Output, State, ctx, callback, dcc, ALL
 
 from components.atoms.content import MainContent
+from components.atoms.layout.layout import AlphaCol
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
-from components.atoms.table.row import AlphaRow
+from components.atoms.table.row import AlphaTableRow
 from components.atoms.table.table import AlphaTable
 from pages.base_page import BasePage
 from quant_core.enums.stagger_method import StaggerMethod
@@ -29,17 +30,17 @@ DECIMALS_WIDTH = 1
 DELETE_WIDTH = 1
 
 
-def render_header_row() -> AlphaRow:
-    return AlphaRow(
+def render_header_row() -> AlphaTableRow:
+    return AlphaTableRow(
         [
-            dbc.Col(html.Label("Signal Asset ID"), width=SIGNAL_ID_WIDTH),
-            dbc.Col(html.Label("Platform Asset ID"), width=PLATFORM_ID_WIDTH),
-            dbc.Col(html.Label("Entry Stagger"), width=ENTRY_STAGGER_WIDTH),
-            dbc.Col(html.Label("Size Stagger"), width=SIZE_STAGGER_WIDTH),
-            dbc.Col(html.Label("# Staggers"), width=N_STAGGERS_WIDTH),
-            dbc.Col(html.Label("Size"), width=SIZE_WIDTH),
-            dbc.Col(html.Label("Decimals"), width=DECIMALS_WIDTH),
-            dbc.Col(html.Label("Delete"), width=DELETE_WIDTH),
+            AlphaCol(html.Label("Signal Asset ID"), width=SIGNAL_ID_WIDTH),
+            AlphaCol(html.Label("Platform Asset ID"), width=PLATFORM_ID_WIDTH),
+            AlphaCol(html.Label("Entry Stagger"), width=ENTRY_STAGGER_WIDTH),
+            AlphaCol(html.Label("Size Stagger"), width=SIZE_STAGGER_WIDTH),
+            AlphaCol(html.Label("# Staggers"), width=N_STAGGERS_WIDTH),
+            AlphaCol(html.Label("Size"), width=SIZE_WIDTH),
+            AlphaCol(html.Label("Decimals"), width=DECIMALS_WIDTH),
+            AlphaCol(html.Label("Delete"), width=DELETE_WIDTH),
         ],
         id="details-header",
     )
@@ -55,7 +56,7 @@ def render_config_row(
     n_staggers: int = 1,
     size: float = 0.0,
     decimal_points: int = 2,
-) -> AlphaRow:
+) -> AlphaTableRow:
     select_entry = dbc.Select(
         id={"type": "entry-stagger", "index": idx},
         options=[{"label": m.value.capitalize(), "value": m.value} for m in StaggerMethod],
@@ -67,27 +68,27 @@ def render_config_row(
         value=size_stagger or StaggerMethod.LINEAR.value,
     )
 
-    return AlphaRow(
+    return AlphaTableRow(
         [
-            dbc.Col(dbc.Input(value=signal_asset_id, id={"type": "signal-asset", "index": idx}), width=SIGNAL_ID_WIDTH),
-            dbc.Col(
+            AlphaCol(dbc.Input(value=signal_asset_id, id={"type": "signal-asset", "index": idx}), width=SIGNAL_ID_WIDTH),
+            AlphaCol(
                 dbc.Input(value=platform_asset_id, id={"type": "platform-asset", "index": idx}), width=PLATFORM_ID_WIDTH
             ),
-            dbc.Col(select_entry, width=ENTRY_STAGGER_WIDTH),
-            dbc.Col(select_size, width=SIZE_STAGGER_WIDTH),
-            dbc.Col(
+            AlphaCol(select_entry, width=ENTRY_STAGGER_WIDTH),
+            AlphaCol(select_size, width=SIZE_STAGGER_WIDTH),
+            AlphaCol(
                 dbc.Input(type="number", value=n_staggers, id={"type": "n-staggers", "index": idx}, min=1),
                 width=N_STAGGERS_WIDTH,
             ),
-            dbc.Col(
+            AlphaCol(
                 dbc.Input(type="number", value=size, id={"type": "size", "index": idx}, step=0.01, min=0.01),
                 width=SIZE_WIDTH,
             ),
-            dbc.Col(
+            AlphaCol(
                 dbc.Input(type="number", value=decimal_points, id={"type": "decimals", "index": idx}, min=0, step=1),
                 width=DECIMALS_WIDTH,
             ),
-            dbc.Col(
+            AlphaCol(
                 dbc.Button("🗑️", id={"type": "delete-config", "index": idx}, color="danger", size="sm"),
                 width=DELETE_WIDTH,
             ),

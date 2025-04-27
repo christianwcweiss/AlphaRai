@@ -1,7 +1,5 @@
 import pandas as pd
-import plotly.graph_objects as go
 
-from components.atoms.charts.line.line_chart import LineChart, LineChartStyle
 from quant_core.metrics.trade_metric import TradeMetric
 
 
@@ -20,7 +18,9 @@ class AccountGrowthAbsoluteOverTime(TradeMetric):
             data_frame.loc[data_frame["Account"] == account, "initial_balance"] = balance
 
         data_frame["initial_balance"] = data_frame.groupby("Account")["initial_balance"].transform("max")
-        data_frame["cumulative_net"] = data_frame.where(data_frame["type"] != 2).groupby("Account")["net"].cumsum().fillna(0.0)
+        data_frame["cumulative_net"] = (
+            data_frame.where(data_frame["type"] != 2).groupby("Account")["net"].cumsum().fillna(0.0)
+        )
         data_frame["absolute_balance"] = data_frame["initial_balance"] + data_frame["cumulative_net"]
 
         return data_frame

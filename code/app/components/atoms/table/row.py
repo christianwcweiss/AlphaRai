@@ -4,7 +4,7 @@ from dash.development.base_component import Component
 import dash_bootstrap_components as dbc
 
 
-class AlphaRow(dbc.Row):
+class AlphaTableRow(dbc.Row):
     def __init__(
         self, children: List[Component], id: Optional[Union[str, dict]] = None, class_name: str = "", **kwargs
     ) -> None:

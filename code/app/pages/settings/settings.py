@@ -4,6 +4,7 @@ from dash import html
 
 from components.atoms.card.card import AlphaCard
 from components.atoms.content import MainContent
+from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
 from pages.base_page import BasePage
@@ -19,9 +20,9 @@ class SettingsPage(BasePage):
                 PageHeader("Settings"),
                 MainContent(
                     [
-                        dbc.Row(
+                        AlphaRow(
                             [
-                                dbc.Col(
+                                AlphaCol(
                                     AlphaCard(
                                         title="Accounts",
                                         href="/settings/accounts",
@@ -35,7 +36,7 @@ class SettingsPage(BasePage):
                                     lg=4,
                                     xl=4,
                                 ),
-                                dbc.Col(
+                                AlphaCol(
                                     AlphaCard(
                                         title="Strategies",
                                         href="/settings/strategies",
@@ -48,7 +49,7 @@ class SettingsPage(BasePage):
                                     md=6,
                                     lg=4,
                                     xl=4,
-                                )
+                                ),
                             ]
                         )
                     ]
