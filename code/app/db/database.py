@@ -20,7 +20,7 @@ TABLES = [
     ("strategies", Strategy),
     ("strategy_settings", StrategySetting),
     ("trade_config", TradeConfig),
-    ("trades", Trade)
+    ("trades", Trade),
 ]
 
 engine = create_engine(DATABASE_URL, echo=False)
