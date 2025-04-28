@@ -35,8 +35,6 @@ class SubsectionHeader(Atom):
 
     def render(self) -> html.Div:
         return html.Div(
-            children=[
-                html.H3(self._title, style=self.TITLE_STYLE)
-            ],
+            children=[html.H3(self._title, style=self.TITLE_STYLE)],
             style=self._style,
         )
