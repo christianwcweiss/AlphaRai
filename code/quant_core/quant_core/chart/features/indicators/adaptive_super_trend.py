@@ -202,7 +202,7 @@ class DataFeatureAdaptiveSuperTrend(DataFeature):
             cluster_rank[cid] = rank
 
         # Map each label => [0,1,2]
-        factor_ranks = np.array([cluster_rank[l] for l in labels])
+        factor_ranks = np.array([cluster_rank[label] for label in labels])
 
         pick_map = {"Worst": 0, "Average": 1, "Best": 2}
         chosen_rank = pick_map.get(self._from_cluster, 2)

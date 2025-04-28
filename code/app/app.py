@@ -1,4 +1,4 @@
-from dash import dcc, page_container, Dash, callback, Output, Input, State, ctx, dash
+from dash import dcc, page_container, Dash, callback, Output, Input, State, dash
 import dash_bootstrap_components as dbc
 
 from components.atoms.logs.log_viewer import LogViewer

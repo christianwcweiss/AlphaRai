@@ -146,7 +146,10 @@ def handle_analysis_page(load_clicks, pathname):
                                         top=30,
                                         bottom=30,
                                     ),
-                                    y_range=[0, float(absolute_growth_metric_data_frame["absolute_balance"].max()) * 1.1],
+                                    y_range=[
+                                        0,
+                                        float(absolute_growth_metric_data_frame["absolute_balance"].max()) * 1.1,
+                                    ],
                                 ),
                             ).plot(
                                 x_col="time",
@@ -188,7 +191,7 @@ def handle_analysis_page(load_clicks, pathname):
                         md=6,
                         lg=4,
                         xl=4,
-                    )
+                    ),
                 ]
             ),
             # AlphaRow([AlphaCol(dcc.Graph(figure=None), width=12)]),

@@ -1,8 +1,8 @@
-from typing import Optional, Dict, Any
-from dash import html
 import dash_bootstrap_components as dbc
+from dash import html
 
 from components.atoms.atom import Atom
+
 
 class AlphaModal(Atom):
     def __init__(
@@ -46,9 +46,11 @@ class AlphaModal(Atom):
             children=[
                 dbc.ModalHeader(dbc.ModalTitle(self._title)),
                 dbc.ModalBody(self._body_content),
-                dbc.ModalFooter([
-                    dbc.Button(self._confirm_label, id=self._confirm_id, color=self._confirm_color),
-                    dbc.Button(self._cancel_label, id=self._cancel_id, color=self._cancel_color, className="ms-2"),
-                ]),
+                dbc.ModalFooter(
+                    [
+                        dbc.Button(self._confirm_label, id=self._confirm_id, color=self._confirm_color),
+                        dbc.Button(self._cancel_label, id=self._cancel_id, color=self._cancel_color, className="ms-2"),
+                    ]
+                ),
             ],
         )

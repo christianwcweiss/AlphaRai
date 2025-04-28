@@ -46,7 +46,8 @@ def build_account_cards(accounts: List[Account]) -> List[AlphaCol]:
             md=6,
             lg=4,
             xl=4,
-        ) for account in accounts
+        )
+        for account in accounts
     ]
 
 

@@ -7,11 +7,10 @@ import MetaTrader5 as mt5
 import boto3
 import pandas as pd
 
-from quant_core.entities.mt5.mt5_trade import MT5Trade, CompletedMT5Trade
+from quant_core.entities.mt5.mt5_trade import CompletedMT5Trade
 from quant_core.enums.order_type import OrderType
 from quant_core.enums.trade_direction import TradeDirection
 from quant_core.services.core_logger import CoreLogger
-
 
 ORDER_TYPE_MAP = {
     0: "Buy",

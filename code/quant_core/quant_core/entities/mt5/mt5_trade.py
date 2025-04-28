@@ -92,10 +92,6 @@ class MT5Trade:
         return self._comment
 
 
-from datetime import datetime
-from typing import Optional
-
-
 class CompletedMT5Trade:
     def __init__(
         self,

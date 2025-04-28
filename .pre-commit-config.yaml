@@ -6,6 +6,9 @@ repos:
       - id: end-of-file-fixer
       - id: detect-private-key
       - id: check-added-large-files
+      - id: check-yaml        # Validate YAML syntax
+      - id: check-json        # Validate JSON syntax
+      - id: check-merge-conflict  # Detect unresolved merge conflicts
 
   - repo: https://github.com/psf/black
     rev: 24.2.0

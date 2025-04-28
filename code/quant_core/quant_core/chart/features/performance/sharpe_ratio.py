@@ -21,9 +21,15 @@ class DataFeatureSharpeRatio(DataFeature):
         self._rolling_window_bars = rolling_window_bars
 
     def get_columns(self) -> List[str]:
-        return [
-            f"sharpe_ratio_{self._rolling_window_bars}_{round(self._annual_risk_free_percent, 2)}_{self._direction.value.lower()}"
-        ]
+        suffix = "_".join(
+            [
+                str(self._rolling_window_bars),
+                str(round(self._annual_risk_free_percent, 2)),
+                self._direction.value.lower(),
+            ]
+        )
+
+        return [f"sharpe_ratio_{suffix}"]
 
     def add_feature(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         sharpe_column = self.get_columns()[0]

@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Optional, Dict, Any
 
 from quant_core.enums.time_period import TimePeriod

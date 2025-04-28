@@ -3,7 +3,6 @@ from typing import Dict, Any, Union, LiteralString
 import yaml
 
 from quant_core.enums.order_type import OrderType
-from quant_core.enums.strategy import ExitCalculationMode
 from quant_core.strategy.setting import StrategySettings
 
 

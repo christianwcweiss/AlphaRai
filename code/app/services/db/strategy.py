@@ -42,7 +42,7 @@ def register_strategy(strategy_dict: dict):
 def unregister_strategy(strategy_id: str):
     with SessionLocal() as session:
         deleted_settings = session.query(StrategySetting).filter_by(strategy_id=strategy_id).delete()
-        deleted_strategy = session.query(Strategy).filter_by(id=strategy_id).delete()
+        session.query(Strategy).filter_by(id=strategy_id).delete()
         session.commit()
         CoreLogger().info(f"🗑️ Unregistered strategy {strategy_id}, removed {deleted_settings} settings.")
 

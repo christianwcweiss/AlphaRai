@@ -57,14 +57,14 @@ class ChartLayoutStyle:
                 "range": self._x_range,
                 "automargin": True,
                 "showgrid": True,
-                "gridcolor": "rgba(200, 200, 200, 0.3)"
+                "gridcolor": "rgba(200, 200, 200, 0.3)",
             },
             "yaxis": {
                 "title": self._y_axis_title,
                 "range": self._y_range,
                 "automargin": True,
                 "showgrid": True,
-                "gridcolor": "rgba(200, 200, 200, 0.3)"
+                "gridcolor": "rgba(200, 200, 200, 0.3)",
             },
             "plot_bgcolor": "white",
             "paper_bgcolor": "white",

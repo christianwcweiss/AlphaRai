@@ -5,8 +5,8 @@ Currently the project supports two different platforms to place trades.
 ## Supported Platforms
 
 ### Metatrader 5
-Metatrader 5 is a popular trading platform that allows you to trade Forex, stocks, and commodities. 
-It is widely used by traders around the world and offers a range of features and tools to help you analyze the market 
+Metatrader 5 is a popular trading platform that allows you to trade Forex, stocks, and commodities.
+It is widely used by traders around the world and offers a range of features and tools to help you analyze the market
 and make informed trading decisions.
 
 ### IG
@@ -43,9 +43,3 @@ IG is a leading online trading platform that offers a wide range of financial in
    1. For Metatrader 5, use the following format: `mt5/<YOUR_MT5_USER_NAME>`.
    2. For IG, use the following format: `ig/<YOUR_IG_USERNAME>`.
 6. Click on "Next" until you can store the secret.<br/>
-
-
-
-
-
-

@@ -39,7 +39,7 @@ def discover_strategies(strategy_dir: str) -> List[dict]:
             spec = importlib.util.spec_from_file_location("strategy_module", strategy_py)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
-        except Exception as e:
+        except Exception:
             logger.warning(f"Failed to import strategy in {folder.name}:\n{traceback.format_exc()}")
             continue
 

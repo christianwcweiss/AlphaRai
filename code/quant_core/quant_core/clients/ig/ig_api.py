@@ -1,13 +1,11 @@
 import abc
 import json
-import os
 from functools import lru_cache
 from pprint import pprint
 from typing import Dict, Any, List, Optional, Union
 
 import boto3
 import requests
-from poetry.console.commands import self
 
 from quant_core.enums.environment import Environment
 from quant_core.enums.ig.instrument_type import InstrumentType
@@ -308,7 +306,10 @@ class IGApiGetPricesBody(IGApiBody):
         }
 
     def to_path_params(self) -> str:
-        return f"{self.epic}?resolution={self.resolution}&max={self.max_items}&pageSize={self.page_size}&pageNumber={self.page_number}"
+        return (
+            f"{self.epic}?"
+            f"resolution={self.resolution}&max={self.max_items}&pageSize={self.page_size}&pageNumber={self.page_number}"
+        )
 
 
 # RESPONSES

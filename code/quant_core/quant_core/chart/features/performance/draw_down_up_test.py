@@ -1,13 +1,9 @@
 from typing import List
 
-import pandas as pd
 import pytest
 
-from quant_core.chart.feature import DataFeature
 from quant_core.chart.features.performance.draw_down_up import DataFeatureDrawDownAndUp
-from quant_core.chart.features.performance.returns import DataFeatureReturns
 from quant_core.enums.trade_direction import TradeDirection
-from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows
 from quant_dev.builder import Builder
 
 
@@ -28,7 +24,8 @@ class TestDataFeatureDrawDownAndUp:
         assert all(column in data_frame.columns for feature in features for column in feature.get_columns())
 
     @pytest.mark.parametrize(
-        "file_name,direction,horizon,expected_draw_down_values,expected_draw_up_values,expected_draw_down_feature_values,expected_draw_up_feature_values",
+        "file_name,direction,horizon,expected_draw_down_values,expected_draw_up_values,"
+        "expected_draw_down_feature_values,expected_draw_up_feature_values",
         [
             (
                 "appl_1440.csv",

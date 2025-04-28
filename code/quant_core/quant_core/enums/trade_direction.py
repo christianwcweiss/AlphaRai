@@ -1,6 +1,6 @@
 import platform
 from enum import Enum
-from typing import Union, Any
+from typing import Any
 
 from quant_core.enums.order_type import OrderType
 

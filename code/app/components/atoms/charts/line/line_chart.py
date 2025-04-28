@@ -1,10 +1,7 @@
-import pandas as pd
-
-from typing import Optional, List, Dict, Any
+from typing import Optional, Dict, Any
 
 import pandas as pd
 import plotly.graph_objects as go
-from plotly import colors
 
 from components.atoms.charts.chart import Chart, ChartTraceStyle, ChartLayoutStyle
 from constants.colors import CHART_PALETTE
@@ -24,10 +21,7 @@ class LineChartTraceStyle(ChartTraceStyle):
         self._color_palette = CHART_PALETTE
 
     def to_style_dict(self, group_index: Optional[int] = None) -> Dict[str, Any]:
-        style = {
-            "mode": "lines+markers" if self._show_markers else "lines",
-            "line": {}
-        }
+        style = {"mode": "lines+markers" if self._show_markers else "lines", "line": {}}
 
         # Dynamically assign a color if needed
         if self._use_group_colors and group_index is not None:
@@ -44,6 +38,7 @@ class LineChartTraceStyle(ChartTraceStyle):
 
         return style
 
+
 class LineChart(Chart):
     def __init__(
         self,
@@ -52,7 +47,6 @@ class LineChart(Chart):
     ) -> None:
         self._data_frame = data_frame
         self._line_layout_style = line_layout_style
-
 
     def plot(
         self,
@@ -73,7 +67,7 @@ class LineChart(Chart):
                     y=group_data[y_col],
                     name=f"{group_name} - {y_col}" if group_name else y_col,
                     showlegend=True,
-                    **trace_style
+                    **trace_style,
                 )
             )
 

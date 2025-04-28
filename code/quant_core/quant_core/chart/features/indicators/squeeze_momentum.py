@@ -24,11 +24,21 @@ class DataFeatureSqueezeMomentum(DataFeature):
         self._linreg_window = linreg_window
 
     def get_columns(self) -> List[str]:
+        suffix = "_".join(
+            [
+                str(self._linreg_window),
+                str(self._bb_length),
+                str(self._bb_mult_factor),
+                str(self._kc_length),
+                str(self._kc_mult_factor),
+            ]
+        )
+
         return [
-            f"sqz_on_{self._linreg_window}_{self._bb_length}_{self._bb_mult_factor}_{self._kc_length}_{self._kc_mult_factor}",
-            f"sqz_off_{self._linreg_window}_{self._bb_length}_{self._bb_mult_factor}_{self._kc_length}_{self._kc_mult_factor}",
-            f"no_sqz_{self._linreg_window}_{self._bb_length}_{self._bb_mult_factor}_{self._kc_length}_{self._kc_mult_factor}",
-            f"sqz_val_{self._linreg_window}_{self._bb_length}_{self._bb_mult_factor}_{self._kc_length}_{self._kc_mult_factor}",
+            f"sqz_on_{suffix}",
+            f"sqz_off_{suffix}",
+            f"no_sqz_{suffix}",
+            f"sqz_val_{suffix}",
         ]
 
     def add_feature(self, data_frame) -> pd.DataFrame:

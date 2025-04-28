@@ -21,6 +21,7 @@ def upsert_config(uid: str, config: dict):
             session.add(new_config)
         session.commit()
 
+
 def delete_config(uid: str, signal_asset_id: str):
     with SessionLocal() as session:
         session.query(TradeConfig).filter_by(uid=uid, signal_asset_id=signal_asset_id).delete()

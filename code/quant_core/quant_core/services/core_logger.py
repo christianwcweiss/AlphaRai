@@ -19,7 +19,7 @@ class ColoredFormatter(logging.Formatter):
     """
 
     def format(self, record: logging.LogRecord) -> str:
-        log_fmt = f"%(asctime)s - %(levelname)s - %(message)s"
+        log_fmt = "%(asctime)s - %(levelname)s - %(message)s"
         formatter = logging.Formatter(log_fmt)
         original_message = formatter.format(record)
 

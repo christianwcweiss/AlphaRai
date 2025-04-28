@@ -32,6 +32,7 @@ class AlphaTableRow(Atom):
     def render(self) -> Component:
         return html.Tr([cell.render() for cell in self._cells])
 
+
 class AlphaTable(Atom):
     DEFAULT_STYLE = {
         "width": "100%",
@@ -59,22 +60,10 @@ class AlphaTable(Atom):
             raise ValueError("Each row must match the number of headers.")
 
     def render(self) -> html.Table:
-        header_row = AlphaTableRow(
-            cells=[AlphaTableCell(content=h, is_header=True) for h in self._headers]
-        ).render()
+        header_row = AlphaTableRow(cells=[AlphaTableCell(content=h, is_header=True) for h in self._headers]).render()
 
         body_rows = [
-            AlphaTableRow(
-                cells=[AlphaTableCell(content=cell) for cell in row]
-            ).render()
-            for row in self._raw_rows
+            AlphaTableRow(cells=[AlphaTableCell(content=cell) for cell in row]).render() for row in self._raw_rows
         ]
 
-        return html.Table(
-            id=self._id,
-            style=self._style,
-            children=[
-                html.Thead(header_row),
-                html.Tbody(body_rows)
-            ]
-        )
+        return html.Table(id=self._id, style=self._style, children=[html.Thead(header_row), html.Tbody(body_rows)])

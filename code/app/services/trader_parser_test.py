@@ -8,17 +8,17 @@ class TestTradeMessageParser:
         message = """
             JP225USD
             Sell Signal on 15 minute timeframe
-            
+
             Entry : 33155.8
-            
+
             Take Profit 1 : 32691.4532201026
-            
+
             Take Profit 2 : 32227.1064402051
-            
+
             Take Profit 3 : 31762.7596603077
-            
+
             Stop Loss : 34084.4935597949
-            
+
             AI Confidence : 61.5%
         """
         expected_trade_details = TradeDetails(

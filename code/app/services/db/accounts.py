@@ -20,7 +20,8 @@ def get_account_by_uid(uid: str) -> Account | None:
 def upsert_account(platform: str, friendly_name: str, secret_name: str, uid: str):
     with SessionLocal() as session:
         CoreLogger().info(
-            f"Upserting credential settings for platform: {platform}, uid: {uid}, friendly_name: {friendly_name}, secret_name: {secret_name}"
+            f"Upserting credential settings for platform: "
+            f"{platform}, uid: {uid}, friendly_name: {friendly_name}, secret_name: {secret_name}"
         )
         account = session.query(Account).filter_by(platform=platform, uid=uid).first()
 

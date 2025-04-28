@@ -59,12 +59,13 @@ class TradeRouter:
             CoreLogger().debug("Creating MT5 Trader...")
             trader = Mt5Trader(secret_id=secret_name)
             CoreLogger().debug("Successfully created MT5 Trader!")
-            CoreLogger().debug(f"Converting order type to MT5 format...")
-            CoreLogger().debug(f"Successfully converted order type to MT5 format...")
+            CoreLogger().debug("Converting order type to MT5 format...")
+            CoreLogger().debug("Successfully converted order type to MT5 format...")
             for i, (size, entry_price) in enumerate(zip(entry_sizes, entry_prices)):
                 CoreLogger().info(f"Placing entry {i+1} for {self.trade.symbol} at {entry_price} with size {size}")
                 CoreLogger().info(
-                    f"Risk-Reward Ratio: {abs(self.trade.take_profit_1 - entry_price) / abs(self.trade.stop_loss - entry_price)}"
+                    f"Risk-Reward Ratio: "
+                    f"{abs(self.trade.take_profit_1 - entry_price) / abs(self.trade.stop_loss - entry_price)}"
                 )
                 size = round(size, 2)
                 price = round(entry_price, config.decimal_points)
@@ -72,7 +73,8 @@ class TradeRouter:
                 take_profit = round(self.trade.take_profit_1, config.decimal_points)
 
                 CoreLogger().debug(
-                    f"Trade {i+1}: {OrderType.LIMIT} {config.platform_asset_id} at {price}, SL={stop_loss}, TP={take_profit}"
+                    f"Trade {i+1}: {OrderType.LIMIT} {config.platform_asset_id} at {price}, "
+                    f"SL={stop_loss}, TP={take_profit}"
                 )
 
                 trader.open_position(
@@ -92,7 +94,8 @@ class TradeRouter:
             for i, (size, entry_price) in enumerate(zip(entry_sizes, entry_prices)):
                 CoreLogger().info(f"Placing entry {i+1} for {self.trade.symbol} at {entry_price} with size {size}")
                 CoreLogger().info(
-                    f"Risk-Reward Ratio: {abs(self.trade.take_profit_1 - entry_price) / abs(self.trade.stop_loss - entry_price)}"
+                    f"Risk-Reward Ratio: "
+                    f"{abs(self.trade.take_profit_1 - entry_price) / abs(self.trade.stop_loss - entry_price)}"
                 )
                 size = round(size, 2)
                 price = round(entry_price, config.decimal_points)

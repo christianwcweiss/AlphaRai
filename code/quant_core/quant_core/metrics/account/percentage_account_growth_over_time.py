@@ -1,7 +1,5 @@
 import pandas as pd
-import plotly.graph_objects as go
 
-from components.atoms.charts.line.line_chart import LineChart
 from quant_core.metrics.trade_metric import TradeMetric
 
 

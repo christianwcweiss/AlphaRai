@@ -2,8 +2,6 @@ from typing import Dict, Any
 
 import yaml
 
-from quant_core.enums.order_type import OrderType
-from quant_core.enums.strategy import ExitCalculationMode
 from quant_core.enums.time_period import TimePeriod
 from quant_core.strategy.setting import StrategySettings
 

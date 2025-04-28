@@ -27,8 +27,10 @@ dash.register_page(__name__, path="/settings/accounts", name="Account Settings")
 
 # ===
 
+
 def generate_uid(length: int = 8) -> str:
     return "".join(random.choices(string.ascii_uppercase + string.digits, k=length))
+
 
 def render_account_card(
     platform: Platform, label: str = "", secret_name: str = "", idx: int = 0, uid: Optional[str] = None
@@ -48,7 +50,11 @@ def render_account_card(
                                 button_id=delete_id,
                                 style={"backgroundColor": colors.ERROR_COLOR},
                             ).render(),
-                            xs=12, sm=12, md=12, lg=6, xl=6,
+                            xs=12,
+                            sm=12,
+                            md=12,
+                            lg=6,
+                            xl=6,
                         ),
                         AlphaCol(
                             AlphaButton(
@@ -56,7 +62,11 @@ def render_account_card(
                                 href=f"/settings/accounts/{uid}",
                                 style={"backgroundColor": colors.SECONDARY_COLOR},
                             ).render(),
-                            xs=12, sm=12, md=12, lg=6, xl=6,
+                            xs=12,
+                            sm=12,
+                            md=12,
+                            lg=6,
+                            xl=6,
                         ),
                     ]
                 )
@@ -64,47 +74,59 @@ def render_account_card(
         ],
     ).render()
 
+
 # ===
+
 
 class SettingsPage(BasePage):
     def render(self):
         return PageBody(
             [
                 html.Div(id="page-init", style={"display": "none"}),
-
                 PageHeader("Settings"),
-
-                MainContent([
-                    SectionHeader(title="Accounts", subtitle="Manage your Accounts").render(),
-
-                    dcc.Loading(
-                        id="loading-accounts",
-                        type="circle",
-                        children=html.Div(id="mt5-rows", style={"marginTop": "20px"})
-                    ),
-
-                    AlphaButton(label="➕ Add MT5 Account", button_id="open-add-mt5-btn").render(),
-
-                    dbc.Modal(
-                        id="add-account-modal",
-                        is_open=False,
-                        children=[
-                            dbc.ModalHeader(dbc.ModalTitle("➕ Add New MT5 Account")),
-                            dbc.ModalBody([
-                                dbc.Input(id="input-account-name", placeholder="Friendly Name", type="text", className="mb-2"),
-                                dbc.Input(id="input-account-secret", placeholder="AWS Secret Name", type="text"),
-                            ]),
-                            dbc.ModalFooter([
-                                dbc.Button("Save", id="confirm-add-account", color="success"),
-                                dbc.Button("Cancel", id="close-add-account", color="secondary", className="ms-2"),
-                            ]),
-                        ],
-                    ),
-
-                    html.Hr(),
-                ]),
+                MainContent(
+                    [
+                        SectionHeader(title="Accounts", subtitle="Manage your Accounts").render(),
+                        dcc.Loading(
+                            id="loading-accounts",
+                            type="circle",
+                            children=html.Div(id="mt5-rows", style={"marginTop": "20px"}),
+                        ),
+                        AlphaButton(label="➕ Add MT5 Account", button_id="open-add-mt5-btn").render(),
+                        dbc.Modal(
+                            id="add-account-modal",
+                            is_open=False,
+                            children=[
+                                dbc.ModalHeader(dbc.ModalTitle("➕ Add New MT5 Account")),
+                                dbc.ModalBody(
+                                    [
+                                        dbc.Input(
+                                            id="input-account-name",
+                                            placeholder="Friendly Name",
+                                            type="text",
+                                            className="mb-2",
+                                        ),
+                                        dbc.Input(
+                                            id="input-account-secret", placeholder="AWS Secret Name", type="text"
+                                        ),
+                                    ]
+                                ),
+                                dbc.ModalFooter(
+                                    [
+                                        dbc.Button("Save", id="confirm-add-account", color="success"),
+                                        dbc.Button(
+                                            "Cancel", id="close-add-account", color="secondary", className="ms-2"
+                                        ),
+                                    ]
+                                ),
+                            ],
+                        ),
+                        html.Hr(),
+                    ]
+                ),
             ]
         )
+
 
 page = SettingsPage("Settings")
 layout = page.layout
@@ -113,11 +135,14 @@ layout = page.layout
 
 # --- Callbacks ---
 
+
 @callback(
     Output("add-account-modal", "is_open"),
-    [Input("open-add-mt5-btn", "n_clicks"),
-     Input("close-add-account", "n_clicks"),
-     Input("confirm-add-account", "n_clicks")],
+    [
+        Input("open-add-mt5-btn", "n_clicks"),
+        Input("close-add-account", "n_clicks"),
+        Input("confirm-add-account", "n_clicks"),
+    ],
     [State("add-account-modal", "is_open")],
     prevent_initial_call=True,
 )
@@ -128,6 +153,7 @@ def toggle_add_modal(open_click, close_click, save_click, is_open):
     elif triggered in ["close-add-account", "confirm-add-account"]:
         return False
     return is_open
+
 
 @callback(
     Output("mt5-rows", "children", allow_duplicate=True),
@@ -143,6 +169,7 @@ def save_new_account(_, label, secret):
     upsert_account(Platform.METATRADER.value, label, secret, generate_uid(8))
     return reload_mt5_accounts()
 
+
 @callback(
     Output("mt5-rows", "children", allow_duplicate=True),
     Input("page-init", "children"),
@@ -150,6 +177,7 @@ def save_new_account(_, label, secret):
 )
 def load_mt5_credentials_on_page_load(_):
     return reload_mt5_accounts()
+
 
 @callback(
     Output("mt5-rows", "children", allow_duplicate=True),
@@ -169,14 +197,22 @@ def handle_delete_account(delete_clicks, button_ids):
 
     return reload_mt5_accounts()
 
+
 # ===
+
 
 def reload_mt5_accounts():
     credentials = [c for c in get_all_accounts() if Platform(c.platform.upper()) is Platform.METATRADER]
-    return AlphaRow([
-        AlphaCol(
-            render_account_card(Platform.METATRADER, c.friendly_name, c.secret_name, idx=i, uid=c.uid),
-            xs=12, sm=6, md=4, lg=3, xl=3,
-        )
-        for i, c in enumerate(credentials)
-    ])
+    return AlphaRow(
+        [
+            AlphaCol(
+                render_account_card(Platform.METATRADER, c.friendly_name, c.secret_name, idx=i, uid=c.uid),
+                xs=12,
+                sm=6,
+                md=4,
+                lg=3,
+                xl=3,
+            )
+            for i, c in enumerate(credentials)
+        ]
+    )
