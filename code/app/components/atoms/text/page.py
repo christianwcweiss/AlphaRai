@@ -1,3 +1,4 @@
+import string
 from typing import Optional, Dict, Any
 
 from dash import html
@@ -42,7 +43,9 @@ class PageHeader(Atom):
             raise ComponentPropertyError("Title cannot be empty. Please provide a valid title for the PageHeader.")
 
     def render(self) -> html.Div:
-        children = [html.H1(self._title, style=self.TITLE_STYLE)]
+        children = [
+            html.H1(self._title, style=self.TITLE_STYLE)
+        ]
 
         if self._subtitle:
             children.append(html.P(self._subtitle, style=self.SUBTITLE_STYLE))

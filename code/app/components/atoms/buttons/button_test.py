@@ -1,7 +1,11 @@
+from typing import Optional, Dict, Any, Union
+
 import pytest
 from dash import html
 
+from components.atoms.atom import Atom
 from components.atoms.buttons.button import AlphaButton
+from constants import colors
 from exceptions.ui import ComponentPropertyError
 from quant_dev.builder import Builder
 
@@ -18,7 +22,9 @@ class TestAlphaButton:
 
     def test_override_style(self) -> None:
         default_style = AlphaButton.DEFAULT_STYLE
-        modified_style = {k: Builder.build_random_string(8) for k in default_style.keys()}
+        modified_style = {
+            k: Builder.build_random_string(8) for k in default_style.keys()
+        }
 
         button = AlphaButton(label="Test Button", style=modified_style)
 

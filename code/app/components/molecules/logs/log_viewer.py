@@ -8,12 +8,10 @@ _LOG_VIEWER_STYLE = {
     "top": 0,
     "width": "100%",
     "backgroundColor": colors.BACKGROUND_COLOR,
-    "zIndex": 999,
+    "zIndex": 999
 }
 _LOG_MODAL_STYLE = {
-    "maxHeight": "50rem",
-    "overflowY": "scroll",
-    "backgroundColor": colors.BACKGROUND_COLOR,
+    "maxHeight": "50rem", "overflowY": "scroll", "backgroundColor": colors.BACKGROUND_COLOR,
 }
 
 
@@ -31,7 +29,12 @@ def LogViewer():
             dbc.Modal(
                 [
                     dbc.ModalHeader(dbc.ModalTitle("Application Logs")),
-                    dbc.ModalBody(html.Pre(id="full-log-output", style=_LOG_MODAL_STYLE)),
+                    dbc.ModalBody(
+                        html.Pre(
+                            id="full-log-output",
+                            style=_LOG_MODAL_STYLE
+                        )
+                    ),
                 ],
                 id="log-modal",
                 is_open=False,

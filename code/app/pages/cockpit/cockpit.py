@@ -35,25 +35,25 @@ TRADE_STORE_ID = "parsed-trade-store"
 
 def render_account_card(account: Account) -> AlphaCol:
     return AlphaCol(
-        AlphaButton(
-            label=f"{account.platform} {account.friendly_name}",
-            button_id={"type": "account-toggle", "index": account.uid},
-            style={"backgroundColor": colors.PRIMARY_COLOR if account.enabled else colors.ERROR_COLOR},
-        ).render(),
-        xs=12,
-        sm=6,
-        md=6,
-        lg=4,
-        xl=4,
-    )
-
+            AlphaButton(
+                label=f"{account.platform} {account.friendly_name}",
+                button_id={"type": "account-toggle", "index": account.uid},
+                style={"backgroundColor": colors.PRIMARY_COLOR if account.enabled else colors.ERROR_COLOR},
+            ).render(),
+            xs=12,
+            sm=6,
+            md=6,
+            lg=4,
+            xl=4,
+        )
 
 def render_account_cards() -> AlphaRow:
     accounts = get_all_accounts()
-    account_cards = AlphaRow([render_account_card(account) for account in accounts])
+    account_cards = AlphaRow(
+        [render_account_card(account) for account in accounts]
+    )
 
     return account_cards
-
 
 def trade_detail_row(label, value, emoji=""):
     return AlphaRow(
@@ -107,6 +107,7 @@ class CockpitPage(BasePage):
                 MainContent(
                     [
                         self._render_trading_section(),
+
                         AlphaRow(
                             [
                                 AlphaCol(html.Div(id=TRADE_OUTPUT_ID), lg=6),
