@@ -16,7 +16,6 @@ def compute_folder_hash(folder_path: str) -> str:
         for file_name in sorted(files):
             file_path = os.path.join(root, file_name)
 
-            # Add file name and relative path to hash to catch renamed/moved files
             relative_path = os.path.relpath(file_path, folder_path)
             hash_obj.update(relative_path.encode("utf-8"))
 
