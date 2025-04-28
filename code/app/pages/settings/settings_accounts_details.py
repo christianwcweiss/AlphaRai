@@ -3,6 +3,8 @@ import dash_bootstrap_components as dbc
 from dash import html, Input, Output, State, ctx, dcc, callback, ALL
 from typing import List
 
+from dash.exceptions import PreventUpdate
+
 from components.atoms.buttons.button import AlphaButton
 from components.atoms.content import MainContent
 from components.atoms.layout.layout import AlphaRow, AlphaCol
@@ -20,16 +22,16 @@ dash.register_page(__name__, path_template="/settings/accounts/<uid>", name="Acc
 
 # --- Helper Functions ---
 
-def _config_modal_fields(signal_asset_id="", platform_asset_id="", entry_stagger="", size_stagger="",
+def _config_modal_fields(prefix: str, signal_asset_id="", platform_asset_id="", entry_stagger="", size_stagger="",
                           n_staggers=1, size=0.0, decimals=2):
     return html.Div([
-        dbc.Input(id="modal-signal-asset-id", value=signal_asset_id, placeholder="Signal Asset ID", className="mb-2"),
-        dbc.Input(id="modal-platform-asset-id", value=platform_asset_id, placeholder="Platform Asset ID", className="mb-2"),
-        dbc.Select(id="modal-entry-stagger", options=[{"label": m.value.capitalize(), "value": m.value} for m in StaggerMethod], value=entry_stagger or StaggerMethod.LINEAR.value, className="mb-2"),
-        dbc.Select(id="modal-size-stagger", options=[{"label": m.value.capitalize(), "value": m.value} for m in StaggerMethod], value=size_stagger or StaggerMethod.LINEAR.value, className="mb-2"),
-        dbc.Input(id="modal-n-staggers", type="number", min=1, value=n_staggers, placeholder="# Staggers", className="mb-2"),
-        dbc.Input(id="modal-size", type="number", step=0.01, value=size, placeholder="Size", className="mb-2"),
-        dbc.Input(id="modal-decimals", type="number", min=0, step=1, value=decimals, placeholder="Decimals", className="mb-2"),
+        dbc.Input(id=f"{prefix}-signal-asset-id", value=signal_asset_id, placeholder="Signal Asset ID", className="mb-2"),
+        dbc.Input(id=f"{prefix}-platform-asset-id", value=platform_asset_id, placeholder="Platform Asset ID", className="mb-2"),
+        dbc.Select(id=f"{prefix}-entry-stagger", options=[{"label": m.value.capitalize(), "value": m.value} for m in StaggerMethod], value=entry_stagger or StaggerMethod.LINEAR.value, className="mb-2"),
+        dbc.Select(id=f"{prefix}-size-stagger", options=[{"label": m.value.capitalize(), "value": m.value} for m in StaggerMethod], value=size_stagger or StaggerMethod.LINEAR.value, className="mb-2"),
+        dbc.Input(id=f"{prefix}-n-staggers", type="number", min=1, value=n_staggers, placeholder="# Staggers", className="mb-2"),
+        dbc.Input(id=f"{prefix}-size", type="number", step=0.01, value=size, placeholder="Size", className="mb-2"),
+        dbc.Input(id=f"{prefix}-decimals", type="number", min=0, step=1, value=decimals, placeholder="Decimals", className="mb-2"),
     ])
 
 def _action_buttons(signal_asset_id: str) -> html.Div:
@@ -83,14 +85,14 @@ class SettingsDetailsPage(BasePage):
                 AlphaModal(
                     modal_id="add-config-modal",
                     title="Add New Config",
-                    body_content=_config_modal_fields(),
+                    body_content=_config_modal_fields("modal-add"),
                     confirm_id="confirm-add-config",
                     cancel_id="cancel-add-config"
                 ).render(),
                 AlphaModal(
                     modal_id="edit-config-modal",
                     title="Edit Config",
-                    body_content=_config_modal_fields(),
+                    body_content=_config_modal_fields("modal-edit"),
                     confirm_id="confirm-edit-config",
                     cancel_id="cancel-edit-config"
                 ).render(),
@@ -146,13 +148,13 @@ def toggle_add_modal(open_click, confirm_click, cancel_click, is_open):
 
 @callback(
     Output("edit-config-modal", "is_open"),
-    Output("modal-signal-asset-id", "value"),
-    Output("modal-platform-asset-id", "value"),
-    Output("modal-entry-stagger", "value"),
-    Output("modal-size-stagger", "value"),
-    Output("modal-n-staggers", "value"),
-    Output("modal-size", "value"),
-    Output("modal-decimals", "value"),
+    Output("modal-edit-signal-asset-id", "value"),
+    Output("modal-edit-platform-asset-id", "value"),
+    Output("modal-edit-entry-stagger", "value"),
+    Output("modal-edit-size-stagger", "value"),
+    Output("modal-edit-n-staggers", "value"),
+    Output("modal-edit-size", "value"),
+    Output("modal-edit-decimals", "value"),
     Input({"type": "edit-config", "index": ALL}, "n_clicks"),
     State("settings-uid", "children"),
     prevent_initial_call=True
@@ -187,13 +189,13 @@ def open_edit_modal(edit_clicks, uid):
     Output("table-container", "children", allow_duplicate=True),
     Input("confirm-add-config", "n_clicks"),
     State("settings-uid", "children"),
-    State("modal-signal-asset-id", "value"),
-    State("modal-platform-asset-id", "value"),
-    State("modal-entry-stagger", "value"),
-    State("modal-size-stagger", "value"),
-    State("modal-n-staggers", "value"),
-    State("modal-size", "value"),
-    State("modal-decimals", "value"),
+    State("modal-add-signal-asset-id", "value"),
+    State("modal-add-platform-asset-id", "value"),
+    State("modal-add-entry-stagger", "value"),
+    State("modal-add-size-stagger", "value"),
+    State("modal-add-n-staggers", "value"),
+    State("modal-add-size", "value"),
+    State("modal-add-decimals", "value"),
     prevent_initial_call=True
 )
 def save_new_config(_, uid, signal_id, platform_id, entry_stagger, size_stagger, n_staggers, size, decimals):
@@ -216,16 +218,16 @@ def save_new_config(_, uid, signal_id, platform_id, entry_stagger, size_stagger,
     Output("table-container", "children", allow_duplicate=True),
     Input("confirm-edit-config", "n_clicks"),
     State("settings-uid", "children"),
-    State("modal-signal-asset-id", "value"),
-    State("modal-platform-asset-id", "value"),
-    State("modal-entry-stagger", "value"),
-    State("modal-size-stagger", "value"),
-    State("modal-n-staggers", "value"),
-    State("modal-size", "value"),
-    State("modal-decimals", "value"),
+    State("modal-edit-signal-asset-id", "value"),
+    State("modal-edit-platform-asset-id", "value"),
+    State("modal-edit-entry-stagger", "value"),
+    State("modal-edit-size-stagger", "value"),
+    State("modal-edit-n-staggers", "value"),
+    State("modal-edit-size", "value"),
+    State("modal-edit-decimals", "value"),
     prevent_initial_call=True
 )
-def save_edit_config(_, uid, signal_id, platform_id, entry_stagger, size_stagger, n_staggers, size, decimals):
+def save_edited_config(_, uid, signal_id, platform_id, entry_stagger, size_stagger, n_staggers, size, decimals):
     if not signal_id or not platform_id:
         raise dash.exceptions.PreventUpdate
 
