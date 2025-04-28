@@ -1,13 +1,15 @@
 import dash
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, dcc, callback, Input, Output
+from dash import html, dcc, callback, Input, Output, ctx
 
 from components.atoms.buttons.button import AlphaButton
+from components.atoms.charts.chart import ChartMargin, ChartLayoutStyle
+from components.atoms.charts.line.line_chart import LineChart
 from components.atoms.content import MainContent
+from components.atoms.layout.layout import AlphaCol, AlphaRow
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
-from constants import colors
 from db.database import SessionLocal
 from models.account import Account
 from pages.base_page import BasePage
@@ -16,6 +18,7 @@ from quant_core.enums.platform import Platform
 from quant_core.metrics.account.absolute_account_growth_over_time import AccountGrowthAbsoluteOverTime
 from quant_core.metrics.account.percentage_account_growth_over_time import AccountGrowthPercentageOverTime
 from quant_core.services.core_logger import CoreLogger
+from services.db.trades import truncate_trades_table, upsert_trade, get_all_trades
 
 dash.register_page(__name__, path="/analysis", name="Analysis")
 
@@ -24,14 +27,14 @@ class AnalysisPage(BasePage):
     def render(self):
         return PageBody(
             [
-                PageHeader("📈 Strategy Analysis"),
+                PageHeader("Strategy Analysis"),
                 MainContent(
                     [
+                        dcc.Loading(html.Div(id="analysis-output"), type="circle"),
                         AlphaButton(
-                            label="Load MT5 Trade History",
+                            label="Sync MT5 Trade History",
                             button_id="load-analysis-btn",
                         ).render(),
-                        dcc.Loading(html.Div(id="analysis-output"), type="circle"),
                     ]
                 ),
             ]
@@ -42,43 +45,153 @@ page = AnalysisPage("Strategy Analysis")
 layout = page.layout
 
 
-@callback(Output("analysis-output", "children"), Input("load-analysis-btn", "n_clicks"), prevent_initial_call=True)
-def load_mt5_history(_):
-    with SessionLocal() as session:
-        credentials = session.query(Account).filter_by(platform=Platform.METATRADER.value, enabled=True).all()
+@callback(
+    Output("analysis-output", "children"),
+    Input("load-analysis-btn", "n_clicks"),
+    Input("url", "pathname"),
+    prevent_initial_call=False,
+)
+def handle_analysis_page(load_clicks, pathname):
+    """Handles both page load and button press: load from DB, or sync and reload."""
+    triggered_id = ctx.triggered_id
 
-    all_dfs = []
-    for cred in credentials:
-        try:
-            CoreLogger().info(f"🔍 Loading MT5 trades for {cred.uid}...")
-            client = Mt5Client(secret_id=cred.secret_name)
-            df = client.get_history_df(days=9999)
-            df["Account"] = cred.friendly_name or cred.uid
-            all_dfs.append(df)
-            client.shutdown()
-        except Exception as e:
-            CoreLogger().error(f"❌ Failed to load MT5 data for {cred.uid}: {e}")
+    if triggered_id == "load-analysis-btn":
+        CoreLogger().info("🔄 Button clicked: Truncate + Reload from MT5.")
 
-    if not all_dfs:
-        return dbc.Alert("⚠️ No data found or unable to connect to MT5 accounts.", color="warning")
+        truncate_trades_table()
 
-    merged_df = pd.concat(all_dfs, ignore_index=True)
+        with SessionLocal() as session:
+            accounts = session.query(Account).filter_by(platform=Platform.METATRADER.value, enabled=True).all()
 
-    fig_balance = AccountGrowthAbsoluteOverTime().to_chart(merged_df)
-    fig_percentage = AccountGrowthPercentageOverTime().to_chart(merged_df)
+        for account in accounts:
+            try:
+                CoreLogger().info(f"🔍 Loading MT5 trades for {account.uid}...")
+                client = Mt5Client(secret_id=account.secret_name)
+                trades_df = client.get_history_df(days=9999)
+                client.shutdown()
+
+                for _, row in trades_df.iterrows():
+                    trade_data = {
+                        "ticket": row["ticket"],
+                        "order": row["order"],
+                        "time": row["time"],
+                        "type": row["type"],
+                        "entry": row["entry"],
+                        "size": row["size"],
+                        "symbol": row["symbol"],
+                        "price": row["price"],
+                        "commission": row["commission"],
+                        "swap": row["swap"],
+                        "profit": row["profit"],
+                        "magic": row["magic"],
+                        "comment": row["comment"],
+                    }
+                    upsert_trade(trade_data, account_id=account.uid)
+
+            except Exception as e:
+                CoreLogger().error(f"❌ Failed to load MT5 data for {account.uid}: {e}")
+    else:
+        CoreLogger().info("📥 Page load: Just loading trades from database.")
+
+    trades = get_all_trades()
+
+    if not trades:
+        return dbc.Alert("⚠️ No trade data found. Please sync first.", color="warning")
+
+    data_frame = pd.DataFrame(
+        [
+            {
+                "ticket": t.ticket,
+                "order": t.order,
+                "time": t.time,
+                "type": t.type,
+                "entry": t.entry,
+                "size": t.size,
+                "symbol": t.symbol,
+                "price": t.price,
+                "commission": t.commission,
+                "swap": t.swap,
+                "profit": t.profit,
+                "magic": t.magic,
+                "comment": t.comment,
+                "Account": t.account_id,
+            }
+            for t in trades
+        ]
+    )
+
+    if data_frame.empty:
+        return dbc.Alert("⚠️ No trade data available.", color="warning")
+
+    # Calculate metrics
+    absolute_growth_metric_data_frame = AccountGrowthAbsoluteOverTime().calculate(data_frame=data_frame)
+    percentage_growth_metric_data_frame = AccountGrowthPercentageOverTime().calculate(data_frame=data_frame)
 
     return dbc.Container(
         [
-            dbc.Row(
+            AlphaRow(
                 [
-                    dbc.Col(dcc.Graph(figure=fig_balance), width=12),
+                    AlphaCol(
+                        dcc.Graph(
+                            figure=LineChart(
+                                data_frame=absolute_growth_metric_data_frame,
+                                line_layout_style=ChartLayoutStyle(
+                                    title="Profit/Loss (Absolute)",
+                                    x_axis_title="Date",
+                                    y_axis_title="Absolute Balance",
+                                    show_legend=False,
+                                    margin=ChartMargin(
+                                        left=30,
+                                        right=30,
+                                        top=30,
+                                        bottom=30,
+                                    ),
+                                    y_range=[0, float(absolute_growth_metric_data_frame["absolute_balance"].max()) * 1.1],
+                                ),
+                            ).plot(
+                                x_col="time",
+                                y_col="absolute_balance",
+                                group_by="Account",
+                            )
+                        ),
+                        xs=12,
+                        sm=12,
+                        md=6,
+                        lg=4,
+                        xl=4,
+                    ),
+                    AlphaCol(
+                        dcc.Graph(
+                            figure=LineChart(
+                                data_frame=percentage_growth_metric_data_frame,
+                                line_layout_style=ChartLayoutStyle(
+                                    title="Profit/Loss (Percentage)",
+                                    x_axis_title="Date",
+                                    y_axis_title="Percentage Growth",
+                                    show_legend=False,
+                                    margin=ChartMargin(
+                                        left=30,
+                                        right=30,
+                                        top=30,
+                                        bottom=30,
+                                    ),
+                                    y_range=[-10, 10],
+                                ),
+                            ).plot(
+                                x_col="time",
+                                y_col="percentage_growth",
+                                group_by="Account",
+                            )
+                        ),
+                        xs=12,
+                        sm=12,
+                        md=6,
+                        lg=4,
+                        xl=4,
+                    )
                 ]
             ),
-            dbc.Row(
-                [
-                    dbc.Col(dcc.Graph(figure=fig_percentage), width=12),
-                ]
-            ),
+            # AlphaRow([AlphaCol(dcc.Graph(figure=None), width=12)]),
         ],
         fluid=True,
     )

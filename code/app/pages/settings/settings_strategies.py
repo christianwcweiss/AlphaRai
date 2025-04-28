@@ -13,7 +13,7 @@ from pages.base_page import BasePage
 from quant_core.services.core_logger import CoreLogger
 
 from services.strategy_discovery import discover_strategies
-from services.strategy import (
+from services.db.strategy import (
     get_all_registered_strategy_ids,
     register_strategy,
     unregister_strategy,

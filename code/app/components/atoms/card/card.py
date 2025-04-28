@@ -48,7 +48,6 @@ class AlphaCard(Atom):
                 "You cannot set both aspect_ratio and width/height properties at the same time."
             )
 
-
     def _render_header(self) -> html.Div:
         header_items = []
 
@@ -91,26 +90,30 @@ class AlphaCard(Atom):
 
         card_div = html.Div(
             children=[header_section] + main_section,
+            style=card_style,
         )
+
         link_component = (
-            html.Div(
-                children=html.A(
-                    href=self._href,
-                    children=card_div,
-                    style={
-                        "textDecoration": "none",
-                        "color": "inherit",
-                        "display": "block",
-                        "height": "100%",
-                        "width": "100%",
-                    },
-                ),
-                style=card_style
+            (
+                html.Div(
+                    children=html.A(
+                        href=self._href,
+                        children=card_div,
+                        style={
+                            "textDecoration": "none",
+                            "color": "inherit",
+                            "display": "block",
+                            "height": "100%",
+                            "width": "100%",
+                        },
+                    ),
+                )
             )
-        ) if self._href else None
+            if self._href
+            else None
+        )
 
         return link_component if link_component else card_div
-
 
     def render(self) -> html.Div:
         header_section = self._render_header()

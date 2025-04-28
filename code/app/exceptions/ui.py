@@ -1,6 +1,3 @@
-
-
-
 class ComponentPropertyError(Exception):
     """Exception raised when a component property is invalid."""
 
