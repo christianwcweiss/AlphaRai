@@ -83,7 +83,7 @@ class SettingsPage(BasePage):
         return PageBody(
             [
                 html.Div(id="page-init", style={"display": "none"}),
-                PageHeader("Settings"),
+                PageHeader("Settings").render(),
                 MainContent(
                     [
                         SectionHeader(title="Accounts", subtitle="Manage your Accounts").render(),

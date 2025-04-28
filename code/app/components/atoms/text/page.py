@@ -1,25 +1,56 @@
-from typing import Optional
+import string
+from typing import Optional, Dict, Any
 
 from dash import html
 
+from components.atoms.atom import Atom
 from constants import colors
+from exceptions.ui import ComponentPropertyError
 
 
-class PageHeader(html.Div):
-    def __init__(self, title: str, subtitle: Optional[str] = None, **kwargs):
-        super().__init__(
-            children=[
-                html.H1(title, style={"marginBottom": "0.25rem", "color": colors.PRIMARY_COLOR}),
-                (
-                    html.P(subtitle, style={"marginTop": "0", "color": colors.TEXT_COLOR, "fontSize": "1rem"})
-                    if subtitle
-                    else None
-                ),
-            ],
-            style={
-                "paddingBottom": "1.5rem",
-                "marginBottom": "1rem",
-                "borderBottom": f"2px solid {colors.PRIMARY_COLOR}",
-            },
-            **kwargs,
+class PageHeader(Atom):
+    DEFAULT_STYLE = {
+        "paddingBottom": "1.5rem",
+        "marginBottom": "1rem",
+        "borderBottom": f"1px solid {colors.PRIMARY_COLOR}",
+    }
+
+    TITLE_STYLE = {
+        "marginBottom": "0.25rem",
+        "color": colors.PRIMARY_COLOR,
+    }
+
+    SUBTITLE_STYLE = {
+        "marginTop": "0",
+        "color": colors.TEXT_COLOR,
+        "fontSize": "1rem",
+    }
+
+    def __init__(
+        self,
+        title: str,
+        subtitle: Optional[str] = None,
+        style: Optional[Dict[str, Any]] = None,
+    ):
+        self._title = title
+        self._subtitle = subtitle
+        self._style = {**self.DEFAULT_STYLE, **(style or {})}
+
+        self.validate()
+
+    def validate(self) -> None:
+        if not self._title:
+            raise ComponentPropertyError("Title cannot be empty. Please provide a valid title for the PageHeader.")
+
+    def render(self) -> html.Div:
+        children = [
+            html.H1(self._title, style=self.TITLE_STYLE)
+        ]
+
+        if self._subtitle:
+            children.append(html.P(self._subtitle, style=self.SUBTITLE_STYLE))
+
+        return html.Div(
+            children=children,
+            style=self._style,
         )

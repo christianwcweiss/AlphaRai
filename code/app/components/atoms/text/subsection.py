@@ -1,18 +1,42 @@
+from typing import Optional, Dict, Any
+
 from dash import html
 
+from components.atoms.atom import Atom
 from constants import colors
+from exceptions.ui import ComponentPropertyError
 
 
-class SubsectionHeader(html.Div):
-    def __init__(self, title: str, **kwargs):
-        # Extract and merge any existing style passed through kwargs
-        user_style = kwargs.pop("style", {})
-        merged_style = {"paddingTop": "1rem", "marginTop": "1rem", **user_style}
+class SubsectionHeader(Atom):
+    DEFAULT_STYLE = {
+        "paddingTop": "1rem",
+        "marginTop": "1rem",
+    }
 
-        super().__init__(
+    TITLE_STYLE = {
+        "marginTop": "0.5rem",
+        "color": colors.SECONDARY_COLOR,
+        "fontSize": "1.25rem",
+    }
+
+    def __init__(
+        self,
+        title: str,
+        style: Optional[Dict[str, Any]] = None,
+    ):
+        self._title = title
+        self._style = {**self.DEFAULT_STYLE, **(style or {})}
+
+        self.validate()
+
+    def validate(self) -> None:
+        if not self._title:
+            raise ComponentPropertyError("Subsection title cannot be empty. Please provide a valid title.")
+
+    def render(self) -> html.Div:
+        return html.Div(
             children=[
-                html.H3(title, style={"marginTop": "0.5rem", "color": colors.SECONDARY_COLOR, "fontSize": "1.25rem"})
+                html.H3(self._title, style=self.TITLE_STYLE)
             ],
-            style=merged_style,
-            **kwargs
+            style=self._style,
         )

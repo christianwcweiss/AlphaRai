@@ -4,8 +4,8 @@ import pandas as pd
 from dash import html, dcc, callback, Input, Output, ctx
 
 from components.atoms.buttons.button import AlphaButton
-from components.atoms.charts.chart import ChartMargin, ChartLayoutStyle
-from components.atoms.charts.line.line_chart import LineChart
+from components.charts.chart import ChartMargin, ChartLayoutStyle
+from components.charts.line.line_chart import LineChart
 from components.atoms.content import MainContent
 from components.atoms.layout.layout import AlphaCol, AlphaRow
 from components.atoms.text.page import PageHeader
@@ -27,7 +27,7 @@ class AnalysisPage(BasePage):
     def render(self):
         return PageBody(
             [
-                PageHeader("Strategy Analysis"),
+                PageHeader("Analysis").render(),
                 MainContent(
                     [
                         dcc.Loading(html.Div(id="analysis-output"), type="circle"),

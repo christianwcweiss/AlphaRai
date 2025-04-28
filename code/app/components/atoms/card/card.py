@@ -63,7 +63,7 @@ class AlphaCard(Atom):
             header_items.append(
                 Paragraph(
                     text=self._subtitle,
-                )
+                ).render()
             )
 
         return html.Div(header_items)

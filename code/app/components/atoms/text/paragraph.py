@@ -1,18 +1,37 @@
+from typing import Optional, Dict, Any
+
 from dash import html
 
+from components.atoms.atom import Atom
 from constants import colors
+from exceptions.ui import ComponentPropertyError
 
 
-class Paragraph(html.P):
-    def __init__(self, text: str, **kwargs):
-        super().__init__(
-            children=text,
-            style={
-                "marginTop": "0.25rem",
-                "marginBottom": "0.75rem",
-                "color": colors.TEXT_COLOR,
-                "fontSize": "0.95rem",
-                "lineHeight": "1.5",
-            },
-            **kwargs
+class Paragraph(Atom):
+    DEFAULT_STYLE = {
+        "marginTop": "0.25rem",
+        "marginBottom": "0.75rem",
+        "color": colors.TEXT_COLOR,
+        "fontSize": "0.95rem",
+        "lineHeight": "1.5",
+    }
+
+    def __init__(
+        self,
+        text: str,
+        style: Optional[Dict[str, Any]] = None,
+    ):
+        self._text = text
+        self._style = {**self.DEFAULT_STYLE, **(style or {})}
+
+        self.validate()
+
+    def validate(self) -> None:
+        if not self._text:
+            raise ComponentPropertyError("Paragraph text cannot be empty. Please provide valid content.")
+
+    def render(self) -> html.P:
+        return html.P(
+            children=self._text,
+            style=self._style,
         )
