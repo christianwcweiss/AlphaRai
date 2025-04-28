@@ -9,6 +9,8 @@ from exceptions.ui import ComponentPropertyError
 
 
 class SectionHeader(Atom):
+    DEFAULT_STYLE = {"marginBottom": "0.25rem", "marginTop": "20px", "color": colors.PRIMARY_COLOR}
+
     def __init__(self, title: str, subtitle: Optional[str] = None) -> None:
         self._title = title
         self._subtitle = subtitle
@@ -22,7 +24,7 @@ class SectionHeader(Atom):
     def render(self) -> Component:
         return html.Div(
             children=[
-                html.H2(self._title, style={"marginBottom": "0.25rem", "color": colors.PRIMARY_COLOR}),
+                html.H2(self._title, style=self.DEFAULT_STYLE),
                 (
                     html.P(self._subtitle, style={"marginTop": "0", "color": colors.TEXT_COLOR, "fontSize": "1rem"})
                     if self._subtitle

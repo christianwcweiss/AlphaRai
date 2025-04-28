@@ -1,3 +1,4 @@
+import string
 from typing import Optional, Dict, Any, Union
 
 from dash import html
@@ -33,7 +34,9 @@ class AlphaButton(Atom):
         style: Optional[Dict[str, Any]] = None,
     ):
         self._label = label
-        self._id = button_id if button_id else f"button-{label.replace(' ', '-').lower()}"
+        self._id = (
+            button_id if button_id else f"button-{''.join([c for c in label if c in string.ascii_letters])}".lower()
+        )
         self._href = href
         self._style = {**self.DEFAULT_STYLE, **(style or {})}
 

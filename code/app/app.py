@@ -1,7 +1,7 @@
 from dash import dcc, page_container, Dash, callback, Output, Input, State, dash
 import dash_bootstrap_components as dbc
 
-from components.atoms.logs.log_viewer import LogViewer
+from components.molecules.logs.log_viewer import LogViewer
 from components.frame.top_bar import TopBar
 from db.database import init_db
 from quant_core.services.core_logger import CoreLogger

@@ -33,22 +33,26 @@ TRADE_ENTRY_SIMULATION_ID = "parsed-trade-entry-simulation-output"
 TRADE_STORE_ID = "parsed-trade-store"
 
 
-def build_account_cards(accounts: List[Account]) -> List[AlphaCol]:
-    return [
-        AlphaCol(
-            AlphaButton(
-                label=f"{account.platform} {account.friendly_name}",
-                button_id={"type": "account-toggle", "index": account.uid},
-                style={"backgroundColor": colors.PRIMARY_COLOR if account.enabled else colors.ERROR_COLOR},
-            ).render(),
-            xs=12,
-            sm=6,
-            md=6,
-            lg=4,
-            xl=4,
-        )
-        for account in accounts
-    ]
+def render_account_card(account: Account) -> AlphaCol:
+    return AlphaCol(
+        AlphaButton(
+            label=f"{account.platform} {account.friendly_name}",
+            button_id={"type": "account-toggle", "index": account.uid},
+            style={"backgroundColor": colors.PRIMARY_COLOR if account.enabled else colors.ERROR_COLOR},
+        ).render(),
+        xs=12,
+        sm=6,
+        md=6,
+        lg=4,
+        xl=4,
+    )
+
+
+def render_account_cards() -> AlphaRow:
+    accounts = get_all_accounts()
+    account_cards = AlphaRow([render_account_card(account) for account in accounts])
+
+    return account_cards
 
 
 def trade_detail_row(label, value, emoji=""):
@@ -61,38 +65,48 @@ def trade_detail_row(label, value, emoji=""):
 
 
 class CockpitPage(BasePage):
-    def render(self):
-        accounts = get_all_accounts()
-        account_buttons = AlphaRow(build_account_cards(accounts))
+    def _render_trading_section(self) -> html.Div:
+        return html.Div(
+            [
+                SectionHeader("Paste Trade Signal").render(),
+                AlphaRow(
+                    [
+                        AlphaCol(
+                            dcc.Textarea(
+                                id=TRADE_INPUT_TEXT_AREA_ID,
+                                style={"width": "100%", "height": "400px"},
+                                placeholder="Paste signal here...",
+                            ),
+                            xs=12,
+                            sm=12,
+                            md=12,
+                            lg=6,
+                            xl=6,
+                        ),
+                        AlphaCol(
+                            [
+                                AlphaButton(label="Parse Signal", button_id="parse-trade-btn").render(),
+                                AlphaButton(label="Clear", button_id="clear-trade-btn").render(),
+                                AlphaButton(label="Execute Trade", button_id="submit-trade-btn", style=HIDDEN).render(),
+                            ],
+                            xs=12,
+                            sm=12,
+                            md=12,
+                            lg=6,
+                            xl=6,
+                        ),
+                    ]
+                ),
+            ]
+        )
 
+    def render(self):
         return PageBody(
             [
-                PageHeader(self._title),
+                PageHeader(self._title).render(),
                 MainContent(
                     [
-                        SectionHeader("Paste Trade Signal").render(),
-                        AlphaRow(
-                            [
-                                AlphaCol(
-                                    dcc.Textarea(
-                                        id=TRADE_INPUT_TEXT_AREA_ID,
-                                        style={"width": "100%", "height": "400px"},
-                                        placeholder="Paste signal here...",
-                                    ),
-                                    lg=6,
-                                ),
-                                AlphaCol(
-                                    [
-                                        AlphaButton(label="Parse Signal", button_id="parse-trade-btn").render(),
-                                        AlphaButton(label="Clear", button_id="clear-trade-btn").render(),
-                                        AlphaButton(
-                                            label="Execute Trade", button_id="submit-trade-btn", style=HIDDEN
-                                        ).render(),
-                                    ],
-                                    lg=6,
-                                ),
-                            ]
-                        ),
+                        self._render_trading_section(),
                         AlphaRow(
                             [
                                 AlphaCol(html.Div(id=TRADE_OUTPUT_ID), lg=6),
@@ -103,7 +117,7 @@ class CockpitPage(BasePage):
                         html.Div(id="trade-simulation-controls", style=HIDDEN),
                         dcc.Store(id=TRADE_STORE_ID),
                         SectionHeader("Account Management").render(),
-                        html.Div(account_buttons, id="account-toggle-container"),
+                        html.Div(render_account_cards(), id="account-toggle-container"),
                     ]
                 ),
             ]
@@ -118,16 +132,14 @@ layout = CockpitPage(title="Cockpit").layout
     Input({"type": "account-toggle", "index": dash.ALL}, "n_clicks"),
     State({"type": "account-toggle", "index": dash.ALL}, "id"),
 )
-def toggle_accounts(n_clicks_list, id_list):
+def toggle_accounts(_, __) -> AlphaRow:
     if not ctx.triggered_id:
         raise dash.exceptions.PreventUpdate
 
     triggered_uid = ctx.triggered_id["index"]
     toggle_account_enabled(triggered_uid)
 
-    accounts = get_all_accounts()
-
-    return AlphaRow(build_account_cards(accounts))
+    return render_account_cards()
 
 
 @callback(

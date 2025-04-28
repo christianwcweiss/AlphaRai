@@ -3,7 +3,7 @@ from typing import Optional, Dict, Any
 import pandas as pd
 import plotly.graph_objects as go
 
-from components.atoms.charts.chart import Chart, ChartTraceStyle, ChartLayoutStyle
+from components.charts.chart import Chart, ChartTraceStyle, ChartLayoutStyle
 from constants.colors import CHART_PALETTE
 
 
@@ -23,7 +23,6 @@ class LineChartTraceStyle(ChartTraceStyle):
     def to_style_dict(self, group_index: Optional[int] = None) -> Dict[str, Any]:
         style = {"mode": "lines+markers" if self._show_markers else "lines", "line": {}}
 
-        # Dynamically assign a color if needed
         if self._use_group_colors and group_index is not None:
             color = self._color_palette[group_index % len(self._color_palette)]
             style["line"]["color"] = color

@@ -15,37 +15,29 @@ if not os.path.exists(os.path.dirname(DATABASE_PATH)):
     os.makedirs(os.path.dirname(DATABASE_PATH))
 
 DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
-TABLES = ["accounts", "trade_config", "strategy_settings", "strategies", "trades"]
+TABLES = [
+    ("accounts", Account),
+    ("strategies", Strategy),
+    ("strategy_settings", StrategySetting),
+    ("trade_config", TradeConfig),
+    ("trades", Trade),
+]
 
 engine = create_engine(DATABASE_URL, echo=False)
 SessionLocal = sessionmaker(bind=engine)
 
 
-def init_db():
+def init_db() -> None:
     inspector = inspect(engine)
     tables = inspector.get_table_names()
 
-    CoreLogger().debug(f"🧠 Current DB Tables: {tables}")
+    CoreLogger().debug(f"Current DB Tables: {tables}")
 
-    # Create strategy-related tables if missing
-    if "strategies" not in tables:
-        CoreLogger().info("Creating table: strategies")
-        Strategy.__table__.create(engine)
+    for table_name, model in TABLES:
+        if table_name not in tables:
+            CoreLogger().debug(f"Creating table: {table_name}")
+            model.metadata.create_all(bind=engine)
+        else:
+            CoreLogger().debug(f"Table already exists: {table_name}")
 
-    if "strategy_settings" not in tables:
-        CoreLogger().info("Creating table: strategy_settings")
-        StrategySetting.__table__.create(engine)
-
-    if "accounts" not in tables:
-        CoreLogger().info("Creating table: accounts")
-        Account.__table__.create(engine)
-
-    if "trade_config" not in tables:
-        CoreLogger().info("Creating table: trade_config")
-        TradeConfig.__table__.create(engine)
-
-    if "trades" not in tables:
-        CoreLogger().info("Creating table: trades")
-        Trade.__table__.create(engine)
-
-    CoreLogger().info("✅ Database initialization complete (no tables dropped)")
+    CoreLogger().info("✅ Database initialization complete.")

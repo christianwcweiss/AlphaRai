@@ -15,8 +15,8 @@ class SettingsPage(BasePage):
     def render(self):
         return PageBody(
             [
-                html.Div(id="page-init", style={"display": "none"}),  # Triggers page load
-                PageHeader("Settings"),
+                html.Div(id="page-init", style={"display": "none"}),
+                PageHeader("Settings").render(),
                 MainContent(
                     [
                         AlphaRow(

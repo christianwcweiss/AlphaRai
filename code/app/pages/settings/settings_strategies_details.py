@@ -60,7 +60,7 @@ layout = page.layout
 def extract_uid(pathname):
     uid = pathname.split("/")[-1] if pathname else ""
     CoreLogger().info(f"🔍 Loaded Strategy Details for: {uid}")
-    return uid, PageHeader(f"Strategy Details: {uid}")
+    return uid, PageHeader(f"Strategy Details: {uid}").render()
 
 
 @callback(
