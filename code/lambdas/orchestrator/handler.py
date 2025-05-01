@@ -59,8 +59,8 @@ def _build_message(parsed_body: TradingViewAlertBody) -> Tuple[str, str]:
     """Builds a message from the parsed body."""
     headline = f"{parsed_body.direction.normalize().value.upper()} {parsed_body.symbol.upper()}\n\n"
     symbol = f"Symbol = {parsed_body.symbol}\n"
-    direction = f"Direction = {parsed_body.direction}\n"
-    timeframe = f"Timeframe = {parsed_body.time}\n"
+    direction = f"Direction = {parsed_body.direction.value}\n"
+    timeframe = f"Timeframe = {parsed_body.period}\n"
 
     entry_price, stop_loss_price, take_profit_1_price, take_profit_2_price, take_profit_3_price = _get_entry_and_exit_prices(parsed_body)
 
