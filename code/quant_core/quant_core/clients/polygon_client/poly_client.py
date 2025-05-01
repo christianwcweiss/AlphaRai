@@ -5,6 +5,7 @@ from polygon import CryptoClient
 from polygon import ForexClient
 
 from quant_core.enums.time_period import TimePeriod
+from quant_core.services.core_logger import CoreLogger
 
 
 class PolygonClient:
@@ -56,6 +57,7 @@ class PolygonClient:
 
         polygon_data_frame = pd.DataFrame(polygon_data)
 
+        CoreLogger().info(f"Polygon DataFrame: {polygon_data_frame.head()}")
         polygon_data_frame.rename(
             columns={"t": "date", "o": "open", "h": "high", "l": "low", "c": "close", "v": "volume"}, inplace=True
         )

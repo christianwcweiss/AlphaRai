@@ -17,8 +17,6 @@ from services.db.trade_config import get_configs_by_uid, upsert_config, delete_c
 
 dash.register_page(__name__, path_template="/settings/accounts/<uid>", name="Account Settings Details")
 
-# --- Helper Functions ---
-
 
 def _config_modal_fields(
     prefix: str,
@@ -75,7 +73,7 @@ def _config_modal_fields(
     )
 
 
-def _action_buttons(signal_asset_id: str) -> html.Div:
+def _action_buttons(signal_asset_id: str) -> AlphaRow:
     return AlphaRow(
         [
             AlphaCol(
@@ -114,16 +112,16 @@ def build_table(uid: str) -> html.Table:
 
     rows = [
         [
-            c.signal_asset_id,
-            c.platform_asset_id,
-            c.entry_stagger_method,
-            c.size_stagger_method,
-            str(c.n_staggers),
-            str(c.size),
-            str(c.decimal_points),
-            _action_buttons(c.signal_asset_id),
+            config.signal_asset_id,
+            config.platform_asset_id,
+            config.entry_stagger_method,
+            config.size_stagger_method,
+            str(config.n_staggers),
+            str(config.size),
+            str(config.decimal_points),
+            _action_buttons(config.signal_asset_id),
         ]
-        for c in configs
+        for config in sorted(configs, key=lambda x: x.signal_asset_id)
     ]
 
     table = AlphaTable(table_id="details-table", headers=headers, rows=rows)

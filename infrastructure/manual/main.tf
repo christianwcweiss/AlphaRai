@@ -65,13 +65,13 @@ module "orchestrator_lambda" {
   ]
   environment_vars = {
     ENVIRONMENT = upper(var.environment)
-    IG_API_KEY = jsondecode(data.aws_secretsmanager_secret_version.ig_api_secrets_version.secret_string)["IG_API_KEY"]
-    IG_USERNAME = jsondecode(data.aws_secretsmanager_secret_version.ig_api_secrets_version.secret_string)["IG_USERNAME"]
-    IG_PASSWORD = jsondecode(data.aws_secretsmanager_secret_version.ig_api_secrets_version.secret_string)["IG_PASSWORD"]
-    IG_ACCOUNT_ID = jsondecode(data.aws_secretsmanager_secret_version.ig_api_secrets_version.secret_string)["IG_ACCOUNT_ID"]
     DISCORD_USERNAME = "Alpha Rai 🤖"
-    DISCORD_WEBHOOK_URL_ALERT = jsondecode(data.aws_secretsmanager_secret_version.discord_webhook_secrets_version.secret_string)["DISCORD_WEBHOOK_URL_ALERT"]
+    DISCORD_WEBHOOK_URL_FOREX_SIGNALS = jsondecode(data.aws_secretsmanager_secret_version.discord_webhook_secrets_version.secret_string)["DISCORD_WEBHOOK_URL_FOREX_SIGNALS"]
+    DISCORD_WEBHOOK_URL_CRYPTO_SIGNALS = jsondecode(data.aws_secretsmanager_secret_version.discord_webhook_secrets_version.secret_string)["DISCORD_WEBHOOK_URL_CRYPTO_SIGNALS"]
+    DISCORD_WEBHOOK_URL_STOCK_SIGNALS = jsondecode(data.aws_secretsmanager_secret_version.discord_webhook_secrets_version.secret_string)["DISCORD_WEBHOOK_URL_STOCK_SIGNALS"]
+    DISCORD_WEBHOOK_URL_INDICES_SIGNALS = jsondecode(data.aws_secretsmanager_secret_version.discord_webhook_secrets_version.secret_string)["DISCORD_WEBHOOK_URL_INDICES_SIGNALS"]
     SNS_TOPIC_ARN = "arn:aws:sns:eu-west-1:${data.aws_caller_identity.current.account_id}:${aws_sns_topic.orchestrator_lambda_signals_topic.name}"
+    POLYGON_API_KEY = jsondecode(data.aws_secretsmanager_secret_version.polygon_secrets_version.secret_string)["POLYGON_API_KEY"]
   }
 }
 
@@ -118,54 +118,3 @@ resource "aws_lambda_permission" "allow_public" {
     function_name = module.orchestrator_lambda.function_name
     principal     = "*"
 }
-
-# ---------------------- TRADER LAMBDA --------------------------------
-resource "aws_iam_role" "trader_lambda_role" {
-  name = "trader-iam-lambda-role-${var.environment}"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Principal = {
-          Service = "lambda.amazonaws.com"
-        },
-        Action = "sts:AssumeRole"
-      },
-    ]
-  })
-}
-
-resource "aws_iam_policy" "trader_lambda_policy" {
-  name = "trader-iam-lambda-policy-${var.environment}"
-  description = "Policy for trader lambda"
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ],
-        Resource = "arn:aws:logs:*:*:*"
-      },
-      {
-        Effect = "Allow",
-        Action = [
-          "sns:Receive"
-        ],
-        Resource = aws_sns_topic.orchestrator_lambda_signals_topic.arn
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "trader_lambda_policy_attachment" {
-  policy_arn = aws_iam_policy.trader_lambda_policy.arn
-  role       = aws_iam_role.trader_lambda_role.name
-}
-
-# ---------------------- IG CLEANER LAMBDA --------------------------------
-# TBD
