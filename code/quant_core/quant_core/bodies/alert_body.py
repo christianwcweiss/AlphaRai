@@ -1,6 +1,6 @@
 import abc
 import json
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from quant_core.enums.asset_type import AssetType
 from quant_core.enums.platform import Platform
@@ -9,25 +9,27 @@ from quant_core.enums.trade_direction import TradeDirection
 
 
 class AlertBody(abc.ABC):
+    ALERT_SOURCE: str
+
     def __init__(
         self,
-        platform: Platform,
+        symbol: str,
         period: TimePeriod,
         direction: TradeDirection,
         asset_type: AssetType,
         time: str,
-        strategy_id: str,
+        powered_by: Optional[str] = None
     ) -> None:
-        self._platform = platform
+        self._symbol = symbol
         self._period = period
         self._direction = direction
         self._asset_type = asset_type
         self._time = time
-        self._strategy_id = strategy_id
+        self._powered_by = powered_by
 
     @property
-    def platform(self) -> Platform:
-        return self._platform
+    def symbol(self) -> str:
+        return self._symbol
 
     @property
     def period(self) -> TimePeriod:
@@ -46,8 +48,8 @@ class AlertBody(abc.ABC):
         return self._time
 
     @property
-    def strategy_id(self) -> str:
-        return self._strategy_id
+    def powered_by(self) -> Optional[str]:
+        return self._powered_by
 
     @abc.abstractmethod
     def to_dict(self) -> Dict[str, Any]:

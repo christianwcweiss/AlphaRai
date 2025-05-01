@@ -6,25 +6,28 @@ class TradeMessageParser:
     @staticmethod
     def parse(message: str) -> TradeDetails:
         lines = message.strip().splitlines()
+
+        # Extract symbol and direction (no change here)
         symbol = lines[0].strip()
+        direction = lines[1].split('=')[1].strip()  # Extract direction from 'Direction = TradeDirection.SELL'
 
-        match = re.search(r"(Buy|Sell)\s+Signal\s+on\s+(\d+)\s+(\w+)\s+timeframe", lines[1], re.IGNORECASE)
-        if not match:
-            raise ValueError("Invalid signal format in line 2")
+        # Extract timeframe (no change here)
+        timeframe = lines[2].split('=')[1].strip()  # Extract time from 'Timeframe = 2025-05-01T20:10:19Z'
 
-        direction = match.group(1).upper()
-        timeframe = match.group(2)
-
+        # Extract entry, stop loss, and take profit values
         data = {}
-        for line in lines[2:]:
-            if ":" not in line:
+        for line in lines[3:]:
+            if "=" not in line:
                 continue
-            key, value = map(str.strip, line.split(":", 1))
+            key, value = map(str.strip, line.split("=", 1))
             try:
-                value = float(value.replace("%", ""))
+                value = float(value)
             except ValueError:
                 continue
             data[key] = value
+
+        if "Entry" not in data:
+            raise ValueError("Missing required field: Entry")
 
         if "Take Profit 1" not in data:
             raise ValueError("Missing required field: Take Profit 1")
@@ -38,5 +41,4 @@ class TradeMessageParser:
             take_profit_1=data.get("Take Profit 1"),
             take_profit_2=data.get("Take Profit 2"),
             take_profit_3=data.get("Take Profit 3"),
-            ai_confidence=data.get("AI Confidence"),
         )
