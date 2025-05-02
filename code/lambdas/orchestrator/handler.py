@@ -62,6 +62,9 @@ def _build_message(parsed_body: TradingViewAlertBody) -> Tuple[str, str]:
     direction = f"Direction = {parsed_body.direction.value}\n"
     timeframe = f"Timeframe = {parsed_body.period}\n"
 
+    if parsed_body.asset_type is AssetType.STOCK:
+        return headline, symbol + direction + timeframe
+
     entry_price, stop_loss_price, take_profit_1_price, take_profit_2_price, take_profit_3_price = _get_entry_and_exit_prices(parsed_body)
 
     entry = f"Entry = {round(entry_price, 5)}\n"
