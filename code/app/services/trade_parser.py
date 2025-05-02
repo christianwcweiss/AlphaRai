@@ -38,7 +38,7 @@ class TradeMessageParser:
             take_profit_1=data.get("Take Profit 1"),
             take_profit_2=data.get("Take Profit 2"),
             take_profit_3=data.get("Take Profit 3"),
-            ai_confidence=data.get("AI Confidence"),
+            ai_confidence=data.get("AI Confidence")
         )
 
     @staticmethod
@@ -47,10 +47,10 @@ class TradeMessageParser:
 
         # Extract symbol and direction (no change here)
         symbol = lines[0].strip()
-        direction = lines[1].split("=")[1].strip()  # Extract direction from 'Direction = TradeDirection.SELL'
+        direction = lines[1].split('=')[1].strip()  # Extract direction from 'Direction = TradeDirection.SELL'
 
         # Extract timeframe (no change here)
-        timeframe = lines[2].split("=")[1].strip()  # Extract time from 'Timeframe = 2025-05-01T20:10:19Z'
+        timeframe = lines[2].split('=')[1].strip()  # Extract time from 'Timeframe = 2025-05-01T20:10:19Z'
 
         # Extract entry, stop loss, and take profit values
         data = {}
