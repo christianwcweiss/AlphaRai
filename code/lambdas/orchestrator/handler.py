@@ -58,7 +58,7 @@ def _build_message(parsed_body: TradingViewAlertBody) -> Tuple[str, str]:
     headline = f"{parsed_body.direction.normalize().value.upper()} {parsed_body.symbol.upper()}\n\n"
     symbol = f"Symbol = {parsed_body.symbol}\n"
     direction = f"Direction = {parsed_body.direction.value}\n"
-    timeframe = f"Timeframe = {parsed_body.period}\n"
+    timeframe = f"Timeframe = {parsed_body.period.value}\n"
 
     if parsed_body.asset_type is AssetType.STOCK:
         return headline, symbol + direction + timeframe

@@ -1,5 +1,6 @@
 import re
 from entities.trade_details import TradeDetails
+from quant_core.services.core_logger import CoreLogger
 
 
 class TradeMessageParser:
@@ -46,7 +47,7 @@ class TradeMessageParser:
         lines = message.strip().splitlines()
 
         # Extract symbol and direction (no change here)
-        symbol = lines[0].strip()
+        symbol = lines[0].split("=")[1].strip()  # Extract symbol from 'Symbol = EURUSD'
         direction = lines[1].split("=")[1].strip()  # Extract direction from 'Direction = TradeDirection.SELL'
 
         # Extract timeframe (no change here)
@@ -85,8 +86,10 @@ class TradeMessageParser:
     def parse(message: str) -> TradeDetails:
         try:
             return TradeMessageParser.parse_algopro_chat(message)
-        except ValueError:
+        except ValueError as algopro_value_error:
+            CoreLogger().error(f"Error parsing Algopro chat: {algopro_value_error}")
             try:
                 return TradeMessageParser.parse_alpharai_chat(message)
-            except ValueError:
+            except ValueError as alpharai_value_error:
+                CoreLogger().error(f"Error parsing Alpharai chat: {alpharai_value_error}")
                 raise ValueError("Invalid message format for both Algopro and Alpharai chat.")
