@@ -9,8 +9,6 @@ from quant_core.clients.polygon_client.poly_client import PolygonClient
 from quant_core.entities.response import Response
 from quant_core.enums.asset_type import AssetType
 from quant_core.enums.discord_channels import DiscordChannel
-from quant_core.enums.platform import Platform
-from quant_core.enums.time_period import TimePeriod
 from quant_core.enums.trade_direction import TradeDirection
 from quant_core.services.core_logger import CoreLogger
 from quant_core.services.discord_bot import DiscordBot
@@ -65,7 +63,9 @@ def _build_message(parsed_body: TradingViewAlertBody) -> Tuple[str, str]:
     if parsed_body.asset_type is AssetType.STOCK:
         return headline, symbol + direction + timeframe
 
-    entry_price, stop_loss_price, take_profit_1_price, take_profit_2_price, take_profit_3_price = _get_entry_and_exit_prices(parsed_body)
+    entry_price, stop_loss_price, take_profit_1_price, take_profit_2_price, take_profit_3_price = (
+        _get_entry_and_exit_prices(parsed_body)
+    )
 
     entry = f"Entry = {round(entry_price, 5)}\n"
     stop_loss = f"Stop Loss = {round(stop_loss_price, 5)}\n"
@@ -81,9 +81,7 @@ def handle(event: Dict[str, Any], _: Dict[str, Any]) -> Dict[str, Any]:
     event_body = json.loads(event.get("body", "{}"))
     CoreLogger().info(f"Received event body: {json.dumps(event_body, indent=2)}")
 
-    parsed_body = TradingViewAlertBody(
-        body=event_body
-    )
+    parsed_body = TradingViewAlertBody(body=event_body)
 
     CoreLogger().info(f"Building message from parsed body: {parsed_body.to_dict()}")
     headline, trade_message = _build_message(parsed_body)
@@ -104,11 +102,7 @@ def handle(event: Dict[str, Any], _: Dict[str, Any]) -> Dict[str, Any]:
     CoreLogger().info(f"Publishing to SNS: {Configuration().sns_topic_arn}")
     SNSClient().publish(topic_arn=Configuration().sns_topic_arn, message=parsed_body.to_sns_body())
 
-    CoreLogger().info(f"Publishing event to Discord")
-    DiscordBot().send(
-        title=headline,
-        message=trade_message,
-        discord_channel=discord_channel
-    )
+    CoreLogger().info(f"Publishing event to Discord: {discord_channel.value}")
+    DiscordBot().send(title=headline, message=trade_message, discord_channel=discord_channel)
 
     return Response(HTTPStatus.OK, "Signal has been successfully published to SNS!").to_response()
