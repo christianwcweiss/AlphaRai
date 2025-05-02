@@ -3,7 +3,6 @@ import json
 from typing import Any, Dict, Optional
 
 from quant_core.enums.asset_type import AssetType
-from quant_core.enums.platform import Platform
 from quant_core.enums.time_period import TimePeriod
 from quant_core.enums.trade_direction import TradeDirection
 
@@ -18,7 +17,7 @@ class AlertBody(abc.ABC):
         direction: TradeDirection,
         asset_type: AssetType,
         time: str,
-        powered_by: Optional[str] = None
+        powered_by: Optional[str] = None,
     ) -> None:
         self._symbol = symbol
         self._period = period
