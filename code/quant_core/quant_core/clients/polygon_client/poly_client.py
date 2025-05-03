@@ -1,7 +1,7 @@
 import os
 
 import pandas as pd
-from polygon import CryptoClient
+from polygon import CryptoClient, StocksClient
 from polygon import ForexClient
 
 from quant_core.enums.time_period import TimePeriod
@@ -14,8 +14,9 @@ class PolygonClient:
         self._api_key = os.environ.get("POLYGON_API_KEY")
         self._crypto_client = CryptoClient(self._api_key)
         self._forex_client = ForexClient(self._api_key)
+        self._stock_client = StocksClient(self._api_key)
 
-    def get_crypto_data(self, symbol: str, time_period: TimePeriod, n_candles: int = 1300) -> pd.DataFrame:
+    def get_crypto_data(self, symbol: str, time_period: TimePeriod, n_candles: int = 2000) -> pd.DataFrame:
         start_date = pd.Timestamp.now() - pd.Timedelta(minutes=time_period.value * n_candles)
         end_date = pd.Timestamp.now()
 
@@ -40,7 +41,7 @@ class PolygonClient:
 
         return polygon_data_frame
 
-    def get_forex_data(self, symbol: str, time_period: TimePeriod, n_candles: int = 1300) -> pd.DataFrame:
+    def get_forex_data(self, symbol: str, time_period: TimePeriod, n_candles: int = 2000) -> pd.DataFrame:
         start_date = pd.Timestamp.now() - pd.Timedelta(minutes=time_period.value * n_candles)
         end_date = pd.Timestamp.now()
 
@@ -64,5 +65,33 @@ class PolygonClient:
 
         polygon_data_frame = polygon_data_frame[["date", "open", "high", "low", "close", "volume"]]
         polygon_data_frame["date"] = pd.to_datetime(polygon_data_frame["date"], unit="ms")
+
+        return polygon_data_frame
+
+
+    def get_stock_data(self, symbol: str, time_period: TimePeriod, n_candles: int = 2000) -> pd.DataFrame:
+        start_date = pd.Timestamp.now() - pd.Timedelta(minutes=time_period.value * n_candles)
+        end_date = pd.Timestamp.now()
+
+        polygon_data = self._stock_client.get_aggregate_bars(
+            symbol=symbol,
+            from_date=start_date,
+            to_date=end_date,
+            multiplier=time_period.value,
+            timespan="minute",
+            full_range=True,
+            warnings=False,
+        )
+
+        polygon_data_frame = pd.DataFrame(polygon_data)
+
+        polygon_data_frame.rename(
+            columns={"t": "date", "o": "open", "h": "high", "l": "low", "c": "close", "v": "volume"}, inplace=True
+        )
+        polygon_data_frame = polygon_data_frame[["date", "open", "high", "low", "close", "volume"]]
+        polygon_data_frame["date"] = pd.to_datetime(polygon_data_frame["date"], unit="ms")
+        polygon_data_frame.set_index("date", inplace=True)
+        polygon_data_frame.sort_index(inplace=True)
+        polygon_data_frame = polygon_data_frame.astype({"open": "float64", "high": "float64", "low": "float64", "close": "float64", "volume": "int64"})
 
         return polygon_data_frame
