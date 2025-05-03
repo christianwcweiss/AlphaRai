@@ -5,7 +5,6 @@ from quant_core.enums.platform import Platform
 from quant_core.enums.stagger_method import StaggerMethod
 from quant_core.enums.trade_direction import TradeDirection
 from quant_core.services.core_logger import CoreLogger
-from quant_core.trader.platforms.ig import IgTrader
 from quant_core.trader.platforms.metatrader import Mt5Trader
 from quant_core.utils.trade_utils import get_stagger_levels, get_stagger_sizes
 from services.db.accounts import get_all_accounts
@@ -86,34 +85,6 @@ class TradeRouter:
                     take_profit=take_profit,
                     limit_level=price,
                     comment=f"Algopro{self.trade.timeframe.value}",
-                )
-        elif platform is Platform.IG:
-            CoreLogger().debug("Creating IG Trader...")
-            trader = IgTrader(secret_id=secret_name)
-            CoreLogger().debug("Successfully created IG Trader!")
-            for i, (size, entry_price) in enumerate(zip(entry_sizes, entry_prices)):
-                CoreLogger().info(f"Placing entry {i+1} for {self.trade.symbol} at {entry_price} with size {size}")
-                CoreLogger().info(
-                    f"Risk-Reward Ratio: "
-                    f"{abs(self.trade.take_profit_1 - entry_price) / abs(self.trade.stop_loss - entry_price)}"
-                )
-                size = round(size, 2)
-                price = round(entry_price, config.decimal_points)
-                stop_loss = round(self.trade.stop_loss, config.decimal_points)
-                take_profit = round(self.trade.take_profit_1, config.decimal_points)
-
-                CoreLogger().debug(
-                    f"Trade {i+1}: {config.platform_asset_id} at {price}, SL={stop_loss}, TP={take_profit}"
-                )
-
-                trader.open_position(
-                    symbol=config.platform_asset_id,
-                    trade_direction=TradeDirection(TradeDirection(self.trade.direction).to_ig()),
-                    order_type=OrderType.LIMIT,
-                    size=size,
-                    stop_loss=stop_loss,
-                    take_profit=take_profit,
-                    limit_level=price,
                 )
         else:
             CoreLogger().error(f"Unsupported platform: {platform}")

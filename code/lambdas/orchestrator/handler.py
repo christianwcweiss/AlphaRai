@@ -23,13 +23,11 @@ def _get_entry_and_exit_prices(alert: TradingViewAlertBody) -> Tuple[float, floa
     if alert.asset_type is AssetType.CRYPTO:
         data_frame = polygon_client.get_crypto_data(symbol=symbol, time_period=alert.period, n_candles=2000)
     elif alert.asset_type is AssetType.STOCK:
-        raise NotImplementedError("Stock data retrieval is not implemented yet.")
-        # data_frame = polygon_client.get_stock_data(symbol=symbol, time_period=alert.period, n_candles=50)
+        data_frame = polygon_client.get_stock_data(symbol=symbol, time_period=alert.period, n_candles=2000)
     elif alert.asset_type is AssetType.FOREX:
         data_frame = polygon_client.get_forex_data(symbol=symbol, time_period=alert.period, n_candles=2000)
     elif alert.asset_type is AssetType.INDICES:
         raise NotImplementedError("Indices data retrieval is not implemented yet.")
-        # data_frame = polygon_client.get_indices_data(symbol=symbol, time_period=alert.period, n_candles=50)
     else:
         raise ValueError(f"Unsupported asset type: {alert.asset_type}")
 
@@ -59,9 +57,6 @@ def _build_message(parsed_body: TradingViewAlertBody) -> Tuple[str, str]:
     symbol = f"Symbol = {parsed_body.symbol}\n"
     direction = f"Direction = {parsed_body.direction.value}\n"
     timeframe = f"Timeframe = {parsed_body.period.value}\n"
-
-    if parsed_body.asset_type is AssetType.STOCK:
-        return headline, symbol + direction + timeframe
 
     entry_price, stop_loss_price, take_profit_1_price, take_profit_2_price, take_profit_3_price = (
         _get_entry_and_exit_prices(parsed_body)

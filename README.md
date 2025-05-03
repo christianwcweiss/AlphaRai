@@ -26,7 +26,8 @@ The project is still in its early stages, but the following features are planned
 - **Signal Parsing**: The bot can subscribe to an SNS topic and parse signals directly from AWS.
 - **Automatic Local Strategy**: The bot can execute trades based on local strategies. Let your PC run and earn! :)
 - **Analytics**: The bot can analyze the performance of trades and provide insights into the trading strategy. For now it's only preliminary, but the analysis tab will be improved in the future.
-- **Backtesting**: The bot will supports backtesting of strategies and signals.
+- **Backtesting**: The bot will support backtesting of strategies and signals.
+- **Strategy Marketplace and Strategy Builder**: The bot will support a marketplace for strategies and a strategy builder to create custom strategies.
 
 ## Community
 
