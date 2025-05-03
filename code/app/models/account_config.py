@@ -4,8 +4,8 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-class TradeConfig(Base):
-    __tablename__ = "trade_config"
+class AccountConfig(Base):
+    __tablename__ = "account_config"
 
     id = Column(Integer, primary_key=True, index=True)
     uid = Column(String, index=True)  # The account UID
@@ -19,7 +19,7 @@ class TradeConfig(Base):
 
     def __repr__(self):
         return (
-            f"<TradeConfig("
+            f"<AccountConfig("
             f"id={self.id}, "
             f"uid={self.uid}, "
             f"signal_asset_id={self.signal_asset_id}, "

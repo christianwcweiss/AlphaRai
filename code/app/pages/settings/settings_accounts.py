@@ -75,9 +75,6 @@ def render_account_card(
     ).render()
 
 
-# ===
-
-
 class SettingsPage(BasePage):
     def render(self):
         return PageBody(
@@ -130,10 +127,6 @@ class SettingsPage(BasePage):
 
 page = SettingsPage("Settings")
 layout = page.layout
-
-# ===
-
-# --- Callbacks ---
 
 
 @callback(
@@ -196,9 +189,6 @@ def handle_delete_account(delete_clicks, button_ids):
             break  # Delete only one per click
 
     return reload_mt5_accounts()
-
-
-# ===
 
 
 def reload_mt5_accounts():

@@ -18,7 +18,7 @@ from quant_core.enums.platform import Platform
 from quant_core.metrics.account.absolute_account_growth_over_time import AccountGrowthAbsoluteOverTime
 from quant_core.metrics.account.percentage_account_growth_over_time import AccountGrowthPercentageOverTime
 from quant_core.services.core_logger import CoreLogger
-from services.db.trades import truncate_trades_table, upsert_trade, get_all_trades
+from services.db.trade_history import truncate_trades_table, upsert_trade, get_all_trades
 
 dash.register_page(__name__, path="/analysis", name="Analysis")
 
