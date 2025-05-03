@@ -1,5 +1,5 @@
 from entities.trade_details import TradeDetails
-from models.trade_config import TradeConfig
+from models.account_config import AccountConfig
 from quant_core.enums.order_type import OrderType
 from quant_core.enums.platform import Platform
 from quant_core.enums.stagger_method import StaggerMethod
@@ -8,7 +8,7 @@ from quant_core.services.core_logger import CoreLogger
 from quant_core.trader.platforms.metatrader import Mt5Trader
 from quant_core.utils.trade_utils import get_stagger_levels, get_stagger_sizes
 from services.db.accounts import get_all_accounts
-from services.db.trade_config import get_configs_by_uid
+from services.db.account_config import get_configs_by_uid
 
 
 class TradeRouter:
@@ -42,7 +42,7 @@ class TradeRouter:
             CoreLogger().info(f"Route Trade to {account.uid}")
             self._place_trades(Platform(account.platform), account.secret_name, config)
 
-    def _place_trades(self, platform: Platform, secret_name: str, config: TradeConfig) -> None:
+    def _place_trades(self, platform: Platform, secret_name: str, config: AccountConfig) -> None:
         CoreLogger().info(f"Placing trade on platform={platform.value}, with config={config}")
         entry_prices = get_stagger_levels(
             self.trade.entry,

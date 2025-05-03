@@ -19,3 +19,4 @@ infrastructure/modules/technical/lambda/.terraform/
 strategies/*
 /code/app/logs/app.log
 **__pycache__**
+logs/**

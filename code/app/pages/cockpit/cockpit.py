@@ -114,7 +114,6 @@ class CockpitPage(BasePage):
                             ]
                         ),
                         AlphaRow([AlphaCol(html.Div(id="trade-status"))]),
-                        html.Div(id="trade-simulation-controls", style=HIDDEN),
                         dcc.Store(id=TRADE_STORE_ID),
                         SectionHeader("Account Management").render(),
                         html.Div(render_account_cards(), id="account-toggle-container"),
@@ -134,7 +133,7 @@ layout = CockpitPage(title="Cockpit").layout
 )
 def toggle_accounts(_, __) -> AlphaRow:
     if not ctx.triggered_id:
-        raise dash.exceptions.PreventUpdate
+        return render_account_cards()
 
     triggered_uid = ctx.triggered_id["index"]
     toggle_account_enabled(triggered_uid)
@@ -211,82 +210,3 @@ def execute_trade(_, trade_data: Dict[str, Any]) -> dbc.Alert:
     except Exception as e:
         CoreLogger().error(f"Execution failed: {e}")
         return dbc.Alert(f"Trade execution failed: {e}", color=colors.ERROR_COLOR, dismissable=True)
-
-
-@callback(
-    Output("trade-simulation-controls", "children"),
-    Output("trade-simulation-controls", "style"),
-    Input(TRADE_STORE_ID, "data"),
-)
-def show_simulation_controls(trade_data):
-    if not trade_data:
-        return None, HIDDEN
-
-    return html.Div(
-        [
-            dbc.Label("Stagger Method"),
-            dcc.Dropdown(
-                id="stagger-method",
-                options=[{"label": m.name.title(), "value": m.name} for m in StaggerMethod],
-                value="FIBONACCI",
-            ),
-            dbc.Label("Number of Stagger Levels"),
-            dcc.Input(id="num-staggers", type="number", min=1, value=5),
-            dbc.Label("Target Take Profit"),
-            dcc.Dropdown(
-                id="selected-tp",
-                options=[
-                    {"label": "TP 1", "value": "tp1"},
-                    {"label": "TP 2", "value": "tp2"},
-                    {"label": "TP 3", "value": "tp3"},
-                ],
-                value="tp1",
-            ),
-        ]
-    ), {"marginBottom": "1rem", "padding": "1rem", "backgroundColor": "#f2f4f8", "borderRadius": "12px"}
-
-
-@callback(
-    Output(TRADE_ENTRY_SIMULATION_ID, "children"),
-    Input("stagger-method", "value"),
-    Input("num-staggers", "value"),
-    Input("selected-tp", "value"),
-    State(TRADE_STORE_ID, "data"),
-    prevent_initial_call=True,
-)
-def simulate_trade(method, num_levels, selected_tp, trade_data):
-    if not trade_data:
-        return None
-
-    trade = TradeDetails(**trade_data)
-    from_price = trade.entry
-    to_price = trade.stop_loss
-    method_enum = StaggerMethod(method.lower())
-
-    entries = get_stagger_levels(from_price, to_price, method_enum, num_levels)
-    sizes = get_stagger_sizes(1.0, 2.0, num_levels, method_enum)
-
-    tp = {
-        "tp1": trade.take_profit_1,
-        "tp2": trade.take_profit_2,
-        "tp3": trade.take_profit_3,
-    }.get(selected_tp)
-
-    if tp is None:
-        return dbc.Alert("Selected Take Profit level is missing in signal", color="danger")
-
-    total_size = sum(sizes)
-    weighted_entry = sum([e * s for e, s in zip(entries, sizes)]) / total_size
-    risk = abs(weighted_entry - trade.stop_loss) * total_size
-    reward = abs(tp - weighted_entry) * total_size
-
-    rrr = round(reward / risk, 2) if risk > 0 else float("inf")
-
-    return html.Div(
-        [
-            html.H5("🔀 Staggered Entry Levels"),
-            html.Ul([html.Li(f"{round(e, 5)} → size: {round(s, 4)}") for e, s in zip(entries, sizes)]),
-            html.H5("📏 Weighted Risk-Reward Ratio"),
-            html.Div(f"{rrr} {'🔥' if rrr >= 2 else '😏' if rrr >= 1 else '😬'}", style={"fontSize": "1.2rem"}),
-        ]
-    )

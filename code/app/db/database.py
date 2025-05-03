@@ -4,10 +4,8 @@ from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
 
 from models.account import Account
-from models.strategy import Strategy
-from models.strategy_setting import StrategySetting
-from models.trade_config import TradeConfig
-from models.trades import Trade
+from models.account_config import AccountConfig
+from models.trade_history import Trade
 from quant_core.services.core_logger import CoreLogger
 
 DATABASE_PATH = os.path.join(os.path.dirname(__file__), "data", "database.db")
@@ -17,9 +15,7 @@ if not os.path.exists(os.path.dirname(DATABASE_PATH)):
 DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
 TABLES = [
     ("accounts", Account),
-    ("strategies", Strategy),
-    ("strategy_settings", StrategySetting),
-    ("trade_config", TradeConfig),
+    ("trade_config", AccountConfig),
     ("trades", Trade),
 ]
 

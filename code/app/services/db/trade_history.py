@@ -1,7 +1,7 @@
 from sqlalchemy import text
 
 from db.database import SessionLocal
-from models.trades import Trade
+from models.trade_history import Trade
 from quant_core.services.core_logger import CoreLogger
 
 
