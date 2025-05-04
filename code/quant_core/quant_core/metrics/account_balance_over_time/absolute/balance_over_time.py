@@ -3,7 +3,7 @@ import pandas as pd
 from quant_core.metrics.trade_metric import TradeMetric
 
 
-class AccountGrowthAbsoluteOverTime(TradeMetric):
+class AccountBalanceOverTimeAbsolute(TradeMetric):
     def calculate(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         data_frame = data_frame.copy()
         data_frame["time"] = pd.to_datetime(data_frame["time"])
