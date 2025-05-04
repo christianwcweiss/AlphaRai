@@ -3,7 +3,7 @@ import pandas as pd
 from quant_core.metrics.trade_metric import TradeMetric
 
 
-class GroupByTradeProfitLossPercentage(TradeMetric):
+class GroupByAssetAbsolutePerformance(TradeMetric):
     def __init__(self, days: int = 90):
         self.days = days
 

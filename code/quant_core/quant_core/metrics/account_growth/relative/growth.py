@@ -10,14 +10,14 @@ class AccountGrowthPercentageOverTime(TradeMetric):
         data_frame = data_frame.sort_values(by="time")
         data_frame["net"] = data_frame["profit"] + data_frame["commission"] + data_frame["swap"]
         data_frame["initial_balance"] = 0.0
-        initial_balances = data_frame[data_frame["type"] == 2].groupby("Account")["profit"].first().to_dict()
+        initial_balances = data_frame[data_frame["type"] == 2].groupby("account_id")["profit"].first().to_dict()
 
         for account, balance in initial_balances.items():
-            data_frame.loc[data_frame["Account"] == account, "initial_balance"] = balance
+            data_frame.loc[data_frame["account_id"] == account, "initial_balance"] = balance
 
-        data_frame["initial_balance"] = data_frame.groupby("Account")["initial_balance"].transform("max")
+        data_frame["initial_balance"] = data_frame.groupby("account_id")["initial_balance"].transform("max")
         data_frame["cumulative_net"] = (
-            data_frame.where(data_frame["type"] != 2).groupby("Account")["net"].cumsum().fillna(0.0)
+            data_frame.where(data_frame["type"] != 2).groupby("account_id")["net"].cumsum().fillna(0.0)
         )
         data_frame["absolute_balance"] = data_frame["initial_balance"] + data_frame["cumulative_net"]
         data_frame["percentage_growth"] = (
