@@ -17,7 +17,7 @@ from components.frame.body import PageBody
 from constants import colors
 from pages.base_page import BasePage
 from quant_core.enums.platform import Platform
-from services.db.accounts import (
+from services.db.account import (
     get_all_accounts,
     upsert_account,
     delete_account,

@@ -47,7 +47,7 @@ class AlphaTable(Atom):
         style: Optional[Dict[str, Any]] = None,
     ):
         self._headers = headers
-        self._raw_rows = rows  # Keep raw input (strings or Components)
+        self._raw_rows = rows
         self._id = table_id
         self._style = {**self.DEFAULT_STYLE, **(style or {})}
 

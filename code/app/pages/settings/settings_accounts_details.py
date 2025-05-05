@@ -10,9 +10,10 @@ from components.atoms.table.table import AlphaTable
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
 from pages.base_page import BasePage
+from quant_core.enums.asset_type import AssetType
 from quant_core.enums.stagger_method import StaggerMethod
 from quant_core.services.core_logger import CoreLogger
-from services.db.accounts import get_account_by_uid
+from services.db.account import get_account_by_uid
 from services.db.account_config import get_configs_by_uid, upsert_config, delete_config
 
 dash.register_page(__name__, path_template="/settings/accounts/<uid>", name="Account Settings Details")
@@ -27,6 +28,7 @@ def _config_modal_fields(
     n_staggers=1,
     size=0.0,
     decimals=2,
+    asset_type: str = ""
 ):
     return html.Div(
         [
@@ -69,9 +71,15 @@ def _config_modal_fields(
                 placeholder="Decimals",
                 className="mb-2",
             ),
+            dbc.Select(
+                id=f"{prefix}-asset-type",
+                options=[{"label": at.value.capitalize(), "value": at.value} for at in AssetType],
+                value=asset_type or None,
+                placeholder="Select Asset Type",
+                className="mb-2",
+            ),
         ]
     )
-
 
 def _action_buttons(signal_asset_id: str) -> AlphaRow:
     return AlphaRow(

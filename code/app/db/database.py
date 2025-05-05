@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 
 from models.account import Account
 from models.account_config import AccountConfig
+from models.general_setting import GeneralSetting
 from models.trade_history import Trade
 from quant_core.services.core_logger import CoreLogger
 
@@ -15,6 +16,7 @@ if not os.path.exists(os.path.dirname(DATABASE_PATH)):
 DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
 TABLES = [
     ("accounts", Account),
+    ("general_settings", GeneralSetting),
     ("trade_config", AccountConfig),
     ("trades", Trade),
 ]

@@ -17,7 +17,7 @@ from entities.trade_details import TradeDetails
 from models.account import Account
 from pages.base_page import BasePage
 from quant_core.services.core_logger import CoreLogger
-from services.db.accounts import get_all_accounts, toggle_account_enabled
+from services.db.account import get_all_accounts, toggle_account_enabled
 from services.trade_parser import TradeMessageParser
 from services.trade_router import TradeRouter
 

@@ -1,5 +1,7 @@
-from sqlalchemy import Column, String, Float, Integer
+from sqlalchemy import Column, String, Float, Integer, Enum
 from sqlalchemy.ext.declarative import declarative_base
+
+from quant_core.enums.asset_type import AssetType
 
 Base = declarative_base()
 
@@ -16,6 +18,7 @@ class AccountConfig(Base):
     n_staggers = Column(Integer, nullable=False)
     size = Column(Float, nullable=False)
     decimal_points = Column(Integer, nullable=False)
+    asset_type = Column(Enum(AssetType), nullable=True)
 
     def __repr__(self):
         return (
@@ -29,5 +32,6 @@ class AccountConfig(Base):
             f"n_staggers={self.n_staggers}, "
             f"size={self.size}, "
             f"decimal_points={self.decimal_points}"
+            f"asset_type={self.asset_type}"
             f")>"
         )

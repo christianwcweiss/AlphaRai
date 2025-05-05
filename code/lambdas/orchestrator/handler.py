@@ -80,7 +80,7 @@ def handle(event: Dict[str, Any], _: Dict[str, Any]) -> Dict[str, Any]:
     parsed_body = TradingViewAlertBody(
         symbol=event_body["symbol"],
         direction=TradeDirection(event_body["direction"]),
-        period=TimePeriod(event_body["period"]),
+        period=TimePeriod(int(event_body["period"])),
         asset_type=AssetType(event_body["asset_type"]),
         time=event_body["time"],
         powered_by=event_body.get("powered_by"),

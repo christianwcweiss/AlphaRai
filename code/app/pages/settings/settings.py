@@ -35,20 +35,20 @@ class SettingsPage(BasePage):
                                     lg=4,
                                     xl=4,
                                 ),
-                                # AlphaCol(
-                                #     AlphaCard(
-                                #         title="Strategies",
-                                #         href="/settings/strategies",
-                                #         children=[],
-                                #         aspect_ratio="1:1",
-                                #         height="200px",
-                                #     ).render(),
-                                #     xs=12,
-                                #     sm=12,
-                                #     md=6,
-                                #     lg=4,
-                                #     xl=4,
-                                # ),
+                                AlphaCol(
+                                    AlphaCard(
+                                        title="General",
+                                        href="/settings/general",
+                                        children=[],
+                                        aspect_ratio="1:1",
+                                        height="200px",
+                                    ).render(),
+                                    xs=12,
+                                    sm=12,
+                                    md=6,
+                                    lg=4,
+                                    xl=4,
+                                ),
                             ]
                         )
                     ]
