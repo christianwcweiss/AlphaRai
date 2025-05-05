@@ -1,10 +1,10 @@
 import pandas as pd
 
-from quant_core.metrics.trade_metric import TradeMetric
+from quant_core.metrics.trade_metric import TradeMetricOverTime
 
 
-class MaxDrawdownOverTimeRelative(TradeMetric):
-    def calculate(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+class MaxDrawdownOverTimeRelative(TradeMetricOverTime):
+    def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         if data_frame.empty or "profit" not in data_frame.columns:
             return pd.DataFrame(columns=["time", "drawdown_pct"])
 

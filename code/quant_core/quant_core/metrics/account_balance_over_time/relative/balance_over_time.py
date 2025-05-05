@@ -1,27 +1,44 @@
 import pandas as pd
+from quant_core.metrics.trade_metric import TradeMetricOverTime
 
-from quant_core.metrics.trade_metric import TradeMetric
 
+class AccountBalanceOverTimeRelative(TradeMetricOverTime):
+    def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+        df = data_frame.copy()
+        df["time"] = pd.to_datetime(df["time"])
+        df = df.sort_values(by="time")
 
-class AccountBalanceOverTimeRelative(TradeMetric):
-    def calculate(self, data_frame: pd.DataFrame) -> pd.DataFrame:
-        data_frame = data_frame.copy()
-        data_frame["time"] = pd.to_datetime(data_frame["time"])
-        data_frame = data_frame.sort_values(by="time")
-        data_frame["net"] = data_frame["profit"] + data_frame["commission"] + data_frame["swap"]
-        data_frame["initial_balance"] = 0.0
-        initial_balances = data_frame[data_frame["type"] == 2].groupby("account_id")["profit"].first().to_dict()
+        df["net"] = df["profit"] + df["commission"] + df["swap"]
+
+        # Set initial balance (type == 2)
+        df["initial_balance"] = 0.0
+        initial_balances = self._get_initial_balances(df)
 
         for account, balance in initial_balances.items():
-            data_frame.loc[data_frame["account_id"] == account, "initial_balance"] = balance
+            df.loc[df["account_id"] == account, "initial_balance"] = balance
 
-        data_frame["initial_balance"] = data_frame.groupby("account_id")["initial_balance"].transform("max")
-        data_frame["cumulative_net"] = (
-            data_frame.where(data_frame["type"] != 2).groupby("account_id")["net"].cumsum().fillna(0.0)
+        df["initial_balance"] = df.groupby("account_id")["initial_balance"].transform("max")
+
+        # Cumulative PnL
+        df["cumulative_net"] = (
+            df.where(df["type"] != 2)
+            .groupby("account_id")["net"]
+            .cumsum()
+            .fillna(0.0)
         )
-        data_frame["absolute_balance"] = data_frame["initial_balance"] + data_frame["cumulative_net"]
-        data_frame["percentage_growth"] = (
-            (data_frame["absolute_balance"] - data_frame["initial_balance"]) / data_frame["initial_balance"]
+
+        df["absolute_balance"] = df["initial_balance"] + df["cumulative_net"]
+
+        df["percentage_growth"] = (
+            (df["absolute_balance"] - df["initial_balance"]) / df["initial_balance"]
         ) * 100
 
-        return data_frame
+        return df[["time", "account_id", "percentage_growth"]]
+
+    def calculate_ungrouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+        grouped = self.calculate_grouped(data_frame)
+        return (
+            grouped.groupby("time")["percentage_growth"]
+            .mean()
+            .reset_index()
+        )

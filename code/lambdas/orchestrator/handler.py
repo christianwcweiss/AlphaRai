@@ -2,13 +2,14 @@ import json
 from http import HTTPStatus
 from typing import Any, Dict, Tuple
 
-from quant_core.bodies.ig_alert_body import TradingViewAlertBody
+from quant_core.bodies.trading_view import TradingViewAlertBody
 from quant_core.chart.features.indicators.average_true_range import DataFeatureAverageTrueRange
 from quant_core.clients.aws.sns import SNSClient
 from quant_core.clients.polygon_client.poly_client import PolygonClient
 from quant_core.entities.response import Response
 from quant_core.enums.asset_type import AssetType
 from quant_core.enums.discord_channels import DiscordChannel
+from quant_core.enums.time_period import TimePeriod
 from quant_core.enums.trade_direction import TradeDirection
 from quant_core.services.core_logger import CoreLogger
 from quant_core.services.discord_bot import DiscordBot
@@ -35,7 +36,7 @@ def _get_entry_and_exit_prices(alert: TradingViewAlertBody) -> Tuple[float, floa
 
     data_frame = atr_14_feature.add_feature(data_frame)
 
-    if alert.direction.normalize() is TradeDirection.BUY:
+    if alert.direction.normalize() is TradeDirection.LONG:
         entry_price = data_frame.iloc[-1]["close"]
         stop_loss_price = entry_price - data_frame.iloc[-1]["atr_14"] * 2
         take_profit_1_price = entry_price + (data_frame.iloc[-1]["atr_14"])
@@ -76,7 +77,14 @@ def handle(event: Dict[str, Any], _: Dict[str, Any]) -> Dict[str, Any]:
     event_body = json.loads(event.get("body", "{}"))
     CoreLogger().info(f"Received event body: {json.dumps(event_body, indent=2)}")
 
-    parsed_body = TradingViewAlertBody(body=event_body)
+    parsed_body = TradingViewAlertBody(
+        symbol=event_body["symbol"],
+        direction=TradeDirection(event_body["direction"]),
+        period=TimePeriod(event_body["period"]),
+        asset_type=AssetType(event_body["asset_type"]),
+        time=event_body["time"],
+        powered_by=event_body.get("powered_by"),
+    )
 
     CoreLogger().info(f"Building message from parsed body: {parsed_body.to_dict()}")
     headline, trade_message = _build_message(parsed_body)

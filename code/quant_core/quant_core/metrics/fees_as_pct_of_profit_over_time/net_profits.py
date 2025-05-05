@@ -1,8 +1,8 @@
 import pandas as pd
-from quant_core.metrics.trade_metric import TradeMetric
+from quant_core.metrics.trade_metric import TradeMetricOverTime
 
-class FeesAsPctOfProfitOverTime(TradeMetric):
-    def calculate(self, df: pd.DataFrame) -> pd.DataFrame:
+class FeesAsPctOfProfitOverTime(TradeMetricOverTime):
+    def calculate_grouped(self, df: pd.DataFrame) -> pd.DataFrame:
         if df.empty or "profit" not in df.columns or "commission" not in df.columns or "swap" not in df.columns:
             return pd.DataFrame(columns=["time", "fees_pct"])
 

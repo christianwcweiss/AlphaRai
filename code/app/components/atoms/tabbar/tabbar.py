@@ -10,6 +10,7 @@ class AlphaTabToolbar(Atom):
         tab_labels: List[str],
         base_href: str,
         current_tab: Optional[str] = None,
+        link_with_hash: bool = True,
     ):
         """
         :param tab_labels: List of tab names like ["overview", "performance"]
@@ -19,6 +20,7 @@ class AlphaTabToolbar(Atom):
         self.tab_labels = tab_labels
         self.base_href = base_href
         self.current_tab = current_tab or tab_labels[0]
+        self.link_with_hash = link_with_hash
 
     def validate(self) -> None:
         if not self.tab_labels:
@@ -50,7 +52,7 @@ class AlphaTabToolbar(Atom):
             buttons.append(
                 dcc.Link(
                     html.Button(tab, style=style),
-                    href=f"{self.base_href}#{tab}",
+                    href=f"{self.base_href}#{tab}" if self.link_with_hash else f"{self.base_href}/{tab}",
                     style={"textDecoration": "none"},
                 )
             )

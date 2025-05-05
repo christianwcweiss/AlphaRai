@@ -8,11 +8,11 @@ from quant_core.services.core_logger import CoreLogger
 
 
 init_db()
-app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.COSMO])
+app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.COSMO], suppress_callback_exceptions=True)
 server = app.server
 
 
-app.layout = dbc.Container([dcc.Location(id="url", refresh=False), TopBar(), LogViewer(), page_container], fluid=True)
+app.layout = dbc.Container([dcc.Location(id="url", refresh=False), TopBar(), LogViewer().render(), page_container], fluid=True)
 
 
 @callback(Output("log-preview", "children"), Input("log-refresh", "n_intervals"))

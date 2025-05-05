@@ -1,8 +1,8 @@
 import pandas as pd
-from quant_core.metrics.trade_metric import TradeMetric
+from quant_core.metrics.trade_metric import TradeMetricOverTime
 
-class CommissionOverTime(TradeMetric):
-    def calculate(self, df: pd.DataFrame) -> pd.DataFrame:
+class CommissionOverTime(TradeMetricOverTime):
+    def calculate_grouped(self, df: pd.DataFrame) -> pd.DataFrame:
         if df.empty or "commission" not in df.columns or "time" not in df.columns:
             return pd.DataFrame(columns=["time", "commission"])
 
