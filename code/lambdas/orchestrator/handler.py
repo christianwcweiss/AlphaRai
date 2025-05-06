@@ -81,9 +81,9 @@ def handle(event: Dict[str, Any], _: Dict[str, Any]) -> Dict[str, Any]:
         symbol=event_body["symbol"],
         direction=TradeDirection(event_body["direction"]),
         period=TimePeriod(int(event_body["period"])),
-        asset_type=AssetType(event_body["asset_type"]),
+        asset_type=AssetType(event_body["assetType"]),
         time=event_body["time"],
-        powered_by=event_body.get("powered_by"),
+        powered_by=event_body.get("poweredBy"),
     )
 
     CoreLogger().info(f"Building message from parsed body: {parsed_body.to_dict()}")
