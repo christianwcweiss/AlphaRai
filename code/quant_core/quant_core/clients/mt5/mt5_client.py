@@ -172,3 +172,17 @@ class Mt5Client:
                 for t in self.get_history(days=days)
             ]
         )
+
+    def get_all_symbols(self) -> list[dict]:
+        raw_symbols = mt5.symbols_get()
+        if raw_symbols is None:
+            raise RuntimeError(f"Failed to fetch symbols: {mt5.last_error()}")
+
+        return [
+            {
+                "name": s.name,
+                "digits": s.digits,
+                "lot_size": getattr(s, "trade_contract_size", 1.0),  # ← this
+            }
+            for s in raw_symbols
+        ]
