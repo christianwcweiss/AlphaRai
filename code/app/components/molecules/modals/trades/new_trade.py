@@ -1,4 +1,4 @@
-from dash import html, dcc, Input, Output, State, ctx, callback, dash
+from dash import html, dcc, Input, Output, State, callback, dash
 import dash_bootstrap_components as dbc
 
 from components.molecules.molecule import Molecule
@@ -11,52 +11,68 @@ from services.trade_router import TradeRouter
 from quant_core.services.core_logger import CoreLogger
 
 
-
-
 class NewTradeModal(Molecule):
     def render(self) -> dbc.Modal:
         return dbc.Modal(
             [
                 dbc.ModalHeader(dbc.ModalTitle("New Trade")),
-                dbc.ModalBody([
-                    html.Div([
-                        dcc.Textarea(
-                            id="trade-input-text-area",
-                            style={"width": "100%", "height": "500px", "display": "block"},
-                            placeholder="Paste signal here...",
+                dbc.ModalBody(
+                    [
+                        html.Div(
+                            [
+                                dcc.Textarea(
+                                    id="trade-input-text-area",
+                                    style={"width": "100%", "height": "500px", "display": "block"},
+                                    placeholder="Paste signal here...",
+                                ),
+                                html.Br(),
+                                AlphaButton("Parse Signal", "parse-trade-btn").render(),
+                                html.Br(),
+                            ],
+                            id="trade-input-container",
+                            style={"marginBottom": "1rem"},
                         ),
-                        html.Br(),
-                        AlphaButton("Parse Signal", "parse-trade-btn").render(),
-                        html.Br(),
-                    ], id="trade-input-container", style={"marginBottom": "1rem"}),
-
-                    html.Div([
-                        html.H6("📋 Trade Details", className="fw-bold mb-2"),
-                        html.Div(id="parsed-trade-output", style={
-                            "backgroundColor": "#f8f9fa",
-                            "padding": "1rem",
-                            "borderRadius": "0.5rem",
-                            "boxShadow": "0 2px 6px rgba(0,0,0,0.05)"
-                        }),
-                    ], id="trade-details-section", style={"marginBottom": "1.5rem", "display": "none"}),
-
-                    html.Div([
-                        html.H6("🧠 Confluences", className="fw-bold mb-2"),
-                        html.Div("(To be implemented...)", className="text-muted"),
-                    ], id="confluence-section", style={"marginBottom": "1.5rem", "display": "none"}),
-
-                    html.Div([
-                        html.H6("⚖️ Risk Overview", className="fw-bold mb-2"),
-                        html.Div("(To be implemented...)", className="text-muted"),
-                    ], id="risk-section", style={"marginBottom": "1.5rem", "display": "none"}),
-
-                    html.Div([
-                        AlphaButton("Execute Trade", "submit-trade-btn", style={"display": "none"}).render(),
-                    ]),
-                ], style={"maxHeight": "60vh", "overflowY": "auto"}),
-                dbc.ModalFooter([
-                    AlphaButton("Close", "close-trade-modal-btn").render()
-                ])
+                        html.Div(
+                            [
+                                html.H6("📋 Trade Details", className="fw-bold mb-2"),
+                                html.Div(
+                                    id="parsed-trade-output",
+                                    style={
+                                        "backgroundColor": "#f8f9fa",
+                                        "padding": "1rem",
+                                        "borderRadius": "0.5rem",
+                                        "boxShadow": "0 2px 6px rgba(0,0,0,0.05)",
+                                    },
+                                ),
+                            ],
+                            id="trade-details-section",
+                            style={"marginBottom": "1.5rem", "display": "none"},
+                        ),
+                        html.Div(
+                            [
+                                html.H6("🧠 Confluences", className="fw-bold mb-2"),
+                                html.Div("(To be implemented...)", className="text-muted"),
+                            ],
+                            id="confluence-section",
+                            style={"marginBottom": "1.5rem", "display": "none"},
+                        ),
+                        html.Div(
+                            [
+                                html.H6("⚖️ Risk Overview", className="fw-bold mb-2"),
+                                html.Div("(To be implemented...)", className="text-muted"),
+                            ],
+                            id="risk-section",
+                            style={"marginBottom": "1.5rem", "display": "none"},
+                        ),
+                        html.Div(
+                            [
+                                AlphaButton("Execute Trade", "submit-trade-btn", style={"display": "none"}).render(),
+                            ]
+                        ),
+                    ],
+                    style={"maxHeight": "60vh", "overflowY": "auto"},
+                ),
+                dbc.ModalFooter([AlphaButton("Close", "close-trade-modal-btn").render()]),
             ],
             id="new-trade-modal",
             is_open=False,
@@ -111,24 +127,43 @@ def toggle_trade_modal(open_click, close_click, is_open):
 )
 def parse_trade_signal(_, signal_input):
     if not signal_input:
-        return dbc.Alert("Please paste a signal...", color=colors.WARNING_COLOR), dash.no_update, HIDDEN, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+        return (
+            dbc.Alert("Please paste a signal...", color=colors.WARNING_COLOR),
+            dash.no_update,
+            HIDDEN,
+            dash.no_update,
+            dash.no_update,
+            dash.no_update,
+            dash.no_update,
+        )
     try:
         trade_details = TradeMessageParser.parse(signal_input)
     except Exception as e:
         CoreLogger().error(f"Failed to parse signal: {e}")
-        return dbc.Alert(f"Error parsing signal: {e}", color=colors.ERROR_COLOR), dash.no_update, HIDDEN, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+        return (
+            dbc.Alert(f"Error parsing signal: {e}", color=colors.ERROR_COLOR),
+            dash.no_update,
+            HIDDEN,
+            dash.no_update,
+            dash.no_update,
+            dash.no_update,
+            dash.no_update,
+        )
 
-    preview = html.Ul([
-        html.Li(f"🎯 Symbol: {trade_details.symbol}"),
-        html.Li(f"↕️ Direction: {trade_details.direction.normalize().value.capitalize()}"),
-        html.Li(f"⏱️ Timeframe: {trade_details.timeframe}"),
-        html.Li(f"💰 Entry: {trade_details.entry}"),
-        html.Li(f"🚩 SL: {trade_details.stop_loss}"),
-        html.Li(f"🎯 TP1: {trade_details.take_profit_1}"),
-        html.Li(f"🎯 TP2: {trade_details.take_profit_2 or '–'}"),
-        html.Li(f"🎯 TP3: {trade_details.take_profit_3 or '–'}"),
-        html.Li(f"🤖 Confidence: {trade_details.ai_confidence or '–'}%"),
-    ], style={"paddingLeft": "1.2rem"})
+    preview = html.Ul(
+        [
+            html.Li(f"🎯 Symbol: {trade_details.symbol}"),
+            html.Li(f"↕️ Direction: {trade_details.direction.normalize().value.capitalize()}"),
+            html.Li(f"⏱️ Timeframe: {trade_details.timeframe}"),
+            html.Li(f"💰 Entry: {trade_details.entry}"),
+            html.Li(f"🚩 SL: {trade_details.stop_loss}"),
+            html.Li(f"🎯 TP1: {trade_details.take_profit_1}"),
+            html.Li(f"🎯 TP2: {trade_details.take_profit_2 or '–'}"),
+            html.Li(f"🎯 TP3: {trade_details.take_profit_3 or '–'}"),
+            html.Li(f"🤖 Confidence: {trade_details.ai_confidence or '–'}%"),
+        ],
+        style={"paddingLeft": "1.2rem"},
+    )
 
     return (
         preview,

@@ -1,6 +1,7 @@
 import pandas as pd
 from quant_core.metrics.trade_metric import TradeMetricOverTime
 
+
 class AvgTradeDurationOverTime(TradeMetricOverTime):
     def calculate_grouped(self, df: pd.DataFrame) -> pd.DataFrame:
         if df.empty or "time" not in df.columns or "duration" not in df.columns:
@@ -20,11 +21,13 @@ class AvgTradeDurationOverTime(TradeMetricOverTime):
                         continue
 
                     avg_duration = result_group["duration"].mean()
-                    result.append({
-                        "time": current_day,
-                        "account_id": account,
-                        "result": result_type,
-                        "avg_duration_min": round(avg_duration, 2),
-                    })
+                    result.append(
+                        {
+                            "time": current_day,
+                            "account_id": account,
+                            "result": result_type,
+                            "avg_duration_min": round(avg_duration, 2),
+                        }
+                    )
 
         return pd.DataFrame(result)

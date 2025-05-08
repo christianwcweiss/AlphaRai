@@ -27,18 +27,12 @@ class ExpectancyOverTimeRelative(TradeMetricOverTime):
                 initial_balance = initial_balances.get(account, 1000.0)
                 relative_expectancy = expectancy / initial_balance * 100
 
-                result.append({
-                    "time": current_day,
-                    "account_id": account,
-                    "expectancy_pct": round(relative_expectancy, 2)
-                })
+                result.append(
+                    {"time": current_day, "account_id": account, "expectancy_pct": round(relative_expectancy, 2)}
+                )
 
         return pd.DataFrame(result)
 
     def calculate_ungrouped(self, df: pd.DataFrame) -> pd.DataFrame:
         grouped = self.calculate_grouped(df)
-        return (
-            grouped.groupby("time")["expectancy_pct"]
-            .mean()
-            .reset_index()
-        )
+        return grouped.groupby("time")["expectancy_pct"].mean().reset_index()

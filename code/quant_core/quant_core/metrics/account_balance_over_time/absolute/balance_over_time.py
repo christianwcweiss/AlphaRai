@@ -17,12 +17,7 @@ class AccountBalanceOverTimeAbsolute(TradeMetricOverTime):
 
         df["initial_balance"] = df.groupby("account_id")["initial_balance"].transform("max")
 
-        df["cumulative_net"] = (
-            df.where(df["type"] != 2)
-            .groupby("account_id")["net"]
-            .cumsum()
-            .fillna(0.0)
-        )
+        df["cumulative_net"] = df.where(df["type"] != 2).groupby("account_id")["net"].cumsum().fillna(0.0)
 
         df["absolute_balance"] = df["initial_balance"] + df["cumulative_net"]
 
@@ -31,8 +26,4 @@ class AccountBalanceOverTimeAbsolute(TradeMetricOverTime):
     def calculate_ungrouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         grouped = self.calculate_grouped(data_frame)
 
-        return (
-            grouped.groupby("time")["absolute_balance"].agg("mean")
-            .mean()
-            .reset_index()
-        )
+        return grouped.groupby("time")["absolute_balance"].agg("mean").mean().reset_index()

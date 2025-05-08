@@ -43,10 +43,7 @@ class BarChart(Chart):
         for idx, (group_name, group_data) in enumerate(grouped_data):
             trace_style = BarChartTraceStyle().to_style_dict(group_index=idx)
 
-            bar_kwargs = dict(
-                name=str(group_name) if group_name else y_col,
-                **trace_style
-            )
+            bar_kwargs = dict(name=str(group_name) if group_name else y_col, **trace_style)
 
             if orientation == "v":
                 bar_kwargs.update({"x": group_data[x_col], "y": group_data[y_col]})

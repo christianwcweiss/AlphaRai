@@ -21,8 +21,7 @@ class ProfitPerSymbolOverTimeRelative(TradeMetricOverTime):
         # Merge total into grouped
         result = pd.merge(grouped, total_by_day, on="time")
         result["profit_pct"] = result.apply(
-            lambda row: (row["profit"] / row["total_profit"] * 100) if row["total_profit"] != 0 else 0.0,
-            axis=1
+            lambda row: (row["profit"] / row["total_profit"] * 100) if row["total_profit"] != 0 else 0.0, axis=1
         )
 
         return result[["time", "symbol", "profit_pct"]].sort_values("time")

@@ -80,7 +80,6 @@ class AlphaToolbar(Atom):
         if not self._children:
             raise ComponentPropertyError("Toolbar must contain at least one ToolbarButton.")
 
-
     def render(self) -> html.Div:
         return html.Div(
             [child for child in self._children],

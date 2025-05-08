@@ -17,33 +17,36 @@ server = app.server
 TRADE_STORE_ID = "parsed-trade-store"
 
 
-app.layout = dbc.Container([
-    dcc.Location(id="url", refresh=False),
-    TopBar(),
-    LogViewer().render(),
-    page_container,
-    NewTradeModal().render(),
-    dcc.Store(id=TRADE_STORE_ID),
-    html.Div(id="trade-status"),
-    AlphaButton(
-        "+",
-        "open-trade-modal-btn",
-        style={
-            "position": "fixed",
-            "bottom": "30px",
-            "right": "30px",
-            "zIndex": 1050,
-            "borderRadius": "50%",
-            "width": "60px",
-            "height": "60px",
-            "padding": "0",
-            "fontSize": "28px",
-            "boxShadow": "0 4px 12px rgba(0,0,0,0.2)",
-            "backgroundColor": colors.PRIMARY_COLOR,
-            "color": "#fff",
-        }
-    ).render()
-], fluid=True)
+app.layout = dbc.Container(
+    [
+        dcc.Location(id="url", refresh=False),
+        TopBar(),
+        LogViewer().render(),
+        page_container,
+        NewTradeModal().render(),
+        dcc.Store(id=TRADE_STORE_ID),
+        html.Div(id="trade-status"),
+        AlphaButton(
+            "+",
+            "open-trade-modal-btn",
+            style={
+                "position": "fixed",
+                "bottom": "30px",
+                "right": "30px",
+                "zIndex": 1050,
+                "borderRadius": "50%",
+                "width": "60px",
+                "height": "60px",
+                "padding": "0",
+                "fontSize": "28px",
+                "boxShadow": "0 4px 12px rgba(0,0,0,0.2)",
+                "backgroundColor": colors.PRIMARY_COLOR,
+                "color": "#fff",
+            },
+        ).render(),
+    ],
+    fluid=True,
+)
 
 
 @callback(Output("log-preview", "children"), Input("log-refresh", "n_intervals"))

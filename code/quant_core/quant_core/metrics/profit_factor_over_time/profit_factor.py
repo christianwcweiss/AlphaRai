@@ -15,18 +15,10 @@ class ProfitFactorOverTime(TradeMetricOverTime):
                 total_loss = abs(group[group["profit"] < 0]["profit"].sum())
 
                 pf = total_profit / total_loss if total_loss > 0 else 0.0
-                result.append({
-                    "time": current_day,
-                    "account_id": account,
-                    "profit_factor": round(pf, 2)
-                })
+                result.append({"time": current_day, "account_id": account, "profit_factor": round(pf, 2)})
 
         return pd.DataFrame(result)
 
     def calculate_ungrouped(self, df: pd.DataFrame) -> pd.DataFrame:
         grouped = self.calculate_grouped(df)
-        return (
-            grouped.groupby("time")["profit_factor"]
-            .mean()
-            .reset_index()
-        )
+        return grouped.groupby("time")["profit_factor"].mean().reset_index()

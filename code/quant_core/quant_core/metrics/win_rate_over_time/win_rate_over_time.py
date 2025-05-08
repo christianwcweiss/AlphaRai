@@ -15,18 +15,16 @@ class WinRateOverTime(TradeMetricOverTime):
                     continue
 
                 win_rate = (group["profit"] > 0).mean() * 100
-                result.append({
-                    "time": current_day,
-                    "account_id": account,
-                    "win_rate": round(win_rate, 2),
-                })
+                result.append(
+                    {
+                        "time": current_day,
+                        "account_id": account,
+                        "win_rate": round(win_rate, 2),
+                    }
+                )
 
         return pd.DataFrame(result)
 
     def calculate_ungrouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         grouped = self.calculate_grouped(data_frame)
-        return (
-            grouped.groupby("time")["win_rate"]
-            .mean()
-            .reset_index()
-        )
+        return grouped.groupby("time")["win_rate"].mean().reset_index()

@@ -20,18 +20,10 @@ class SharpeRatioOverTime(TradeMetricOverTime):
                     std_return = daily_returns.std()
                     sharpe = mean_return / std_return if std_return > 0 else 0.0
 
-                result.append({
-                    "time": current_day,
-                    "account_id": account,
-                    "sharpe": round(sharpe, 2)
-                })
+                result.append({"time": current_day, "account_id": account, "sharpe": round(sharpe, 2)})
 
         return pd.DataFrame(result)
 
     def calculate_ungrouped(self, df: pd.DataFrame) -> pd.DataFrame:
         grouped = self.calculate_grouped(df)
-        return (
-            grouped.groupby("time")["sharpe"]
-            .mean()
-            .reset_index()
-        )
+        return grouped.groupby("time")["sharpe"].mean().reset_index()

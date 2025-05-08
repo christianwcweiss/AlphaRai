@@ -29,12 +29,7 @@ def upsert_confluence(confluence_id: str, period: TimePeriod, weight: int = 100,
             con.weight = weight
             con.enabled = enabled
         else:
-            con = ConfluenceConfig(
-                confluence_id=confluence_id,
-                period=period,
-                weight=weight,
-                enabled=enabled
-            )
+            con = ConfluenceConfig(confluence_id=confluence_id, period=period, weight=weight, enabled=enabled)
             session.add(con)
 
         session.commit()

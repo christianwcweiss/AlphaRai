@@ -4,22 +4,23 @@ from quant_core.enums.asset_type import AssetType
 
 Base = declarative_base()
 
+
 class AccountConfig(Base):
     __tablename__ = "account_config"
 
     id = Column(Integer, primary_key=True, index=True)
-    account_id = Column(String, index=True)                    # Renamed from uid
+    account_id = Column(String, index=True)  # Renamed from uid
     signal_asset_id = Column(String, nullable=False)
     platform_asset_id = Column(String, nullable=False)
 
     # Trading logic
-    entry_stagger_method = Column(String, default="linear")    # e.g., linear / fibonacci
+    entry_stagger_method = Column(String, default="linear")  # e.g., linear / fibonacci
     n_staggers = Column(Integer, default=1)
 
     # Risk configuration
     risk_percent = Column(Float, nullable=False, default=0.5)
-    decimal_points = Column(Integer, nullable=False)           # from MT5
-    lot_size = Column(Float, nullable=False, default=1.0)      # Needed for position size calc
+    decimal_points = Column(Integer, nullable=False)  # from MT5
+    lot_size = Column(Float, nullable=False, default=1.0)  # Needed for position size calc
 
     # Metadata
     asset_type = Column(Enum(AssetType), nullable=True)

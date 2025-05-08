@@ -17,18 +17,16 @@ class AvgHoldTimeOverTime(TradeMetricOverTime):
                     continue
 
                 avg_duration = group["duration"].mean()
-                result.append({
-                    "time": current_day,
-                    "account_id": account,
-                    "hold_time": round(avg_duration, 2),
-                })
+                result.append(
+                    {
+                        "time": current_day,
+                        "account_id": account,
+                        "hold_time": round(avg_duration, 2),
+                    }
+                )
 
         return pd.DataFrame(result)
 
     def calculate_ungrouped(self, df: pd.DataFrame) -> pd.DataFrame:
         grouped = self.calculate_grouped(df)
-        return (
-            grouped.groupby("time")["hold_time"]
-            .mean()
-            .reset_index()
-        )
+        return grouped.groupby("time")["hold_time"].mean().reset_index()

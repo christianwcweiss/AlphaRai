@@ -5,6 +5,7 @@ from quant_core.enums.time_period import TimePeriod
 
 Base = declarative_base()
 
+
 class ConfluenceConfig(Base):
     __tablename__ = "confluences"
 

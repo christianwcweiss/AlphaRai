@@ -11,11 +11,7 @@ class ProfitByHourOverTime(TradeMetricOverTime):
         df["time"] = pd.to_datetime(df["time"])
         df["hour"] = df["time"].dt.hour
 
-        result = (
-            df.groupby(["account_id", "hour"])["profit"]
-            .sum()
-            .reset_index()
-        )
+        result = df.groupby(["account_id", "hour"])["profit"].sum().reset_index()
         return result
 
     def calculate_ungrouped(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -23,8 +19,4 @@ class ProfitByHourOverTime(TradeMetricOverTime):
         df["time"] = pd.to_datetime(df["time"])
         df["hour"] = df["time"].dt.hour
 
-        return (
-            df.groupby("hour")["profit"]
-            .sum()
-            .reset_index()
-        )
+        return df.groupby("hour")["profit"].sum().reset_index()

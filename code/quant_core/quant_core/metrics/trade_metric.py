@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List, Set
+from typing import Dict, List
 
 import pandas as pd
 
@@ -34,17 +34,9 @@ class TradeMetricOverTime(ABC):
         grouped = self.calculate_grouped(data_frame)
         metric_cols = [col for col in grouped.columns if col not in ["time", "account_id"]]
 
-        return (
-            grouped.groupby("time")[metric_cols]
-            .mean()
-            .reset_index()
-        )
+        return grouped.groupby("time")[metric_cols].mean().reset_index()
 
-    def get_rolling_windows(
-            self,
-            df: pd.DataFrame,
-            skip_head: bool = False
-    ) -> Dict[pd.Timestamp, pd.DataFrame]:
+    def get_rolling_windows(self, df: pd.DataFrame, skip_head: bool = False) -> Dict[pd.Timestamp, pd.DataFrame]:
         """
         Returns a dict of {date: trades within the past `rolling_window_days` including that date}.
         - Includes all calendar dates (via pd.date_range)
@@ -64,7 +56,7 @@ class TradeMetricOverTime(ABC):
         all_days = pd.date_range(start=start_date, end=end_date, freq="D")
 
         if skip_head:
-            all_days = all_days[self.rolling_window_days:]
+            all_days = all_days[self.rolling_window_days :]
 
         result = {}
 

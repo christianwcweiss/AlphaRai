@@ -1,6 +1,7 @@
 import pandas as pd
 from quant_core.metrics.trade_metric import TradeMetricOverTime
 
+
 class SwapOverTime(TradeMetricOverTime):
     def calculate_grouped(self, df: pd.DataFrame) -> pd.DataFrame:
         if df.empty or "swap" not in df.columns or "time" not in df.columns:
@@ -9,8 +10,4 @@ class SwapOverTime(TradeMetricOverTime):
         df = df.copy()
         df["time"] = pd.to_datetime(df["time"]).dt.date
 
-        return (
-            df.groupby("time")["swap"]
-            .sum()
-            .reset_index()
-        )
+        return df.groupby("time")["swap"].sum().reset_index()

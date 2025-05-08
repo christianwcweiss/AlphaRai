@@ -18,18 +18,10 @@ class RiskRewardRatioOverTime(TradeMetricOverTime):
                 avg_loss = abs(losses["profit"].mean()) if not losses.empty else 1e-6  # prevent division by zero
 
                 rr = avg_win / avg_loss
-                result.append({
-                    "time": current_day,
-                    "account_id": account,
-                    "risk_reward": round(rr, 2)
-                })
+                result.append({"time": current_day, "account_id": account, "risk_reward": round(rr, 2)})
 
         return pd.DataFrame(result)
 
     def calculate_ungrouped(self, df: pd.DataFrame) -> pd.DataFrame:
         grouped = self.calculate_grouped(df)
-        return (
-            grouped.groupby("time")["risk_reward"]
-            .mean()
-            .reset_index()
-        )
+        return grouped.groupby("time")["risk_reward"].mean().reset_index()

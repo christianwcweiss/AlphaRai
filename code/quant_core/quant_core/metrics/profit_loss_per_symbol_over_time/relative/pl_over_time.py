@@ -11,11 +11,6 @@ class ProfitPerSymbolOverTimeAbsolute(TradeMetricOverTime):
         df = data_frame.copy()
         df["time"] = pd.to_datetime(df["time"]).dt.date  # Group by date (not timestamp)
 
-        grouped = (
-            df.groupby(["time", "symbol"])["profit"]
-            .sum()
-            .reset_index()
-            .sort_values("time")
-        )
+        grouped = df.groupby(["time", "symbol"])["profit"].sum().reset_index().sort_values("time")
 
         return grouped

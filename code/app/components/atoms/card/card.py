@@ -102,6 +102,7 @@ class AlphaCard(Atom):
             )
         if self._subtitle:
             from components.atoms.text.paragraph import Paragraph
+
             header_items.append(Paragraph(text=self._subtitle).render())
         return html.Div(header_items)
 

@@ -1,7 +1,7 @@
+from functools import cache
+
 import pandas as pd
 from dash import html, dcc, callback, Input, Output, ctx
-from functools import cache
-import dash_bootstrap_components as dbc
 
 from components.atoms.buttons.button_group import AlphaButtonGroup
 from components.atoms.card.card import AlphaCard, AlphaCardHeader, AlphaCardBody
@@ -9,8 +9,6 @@ from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.charts.chart import ChartLayoutStyle, ChartMargin
 from components.charts.line.line_chart import LineChart
 from components.molecules.molecule import Molecule
-from quant_core.metrics.expectancy_over_time.absolute.expectancy import ExpectancyOverTimeAbsolute
-from quant_core.metrics.expectancy_over_time.relative.expectancy import ExpectancyOverTimeRelative
 
 # IDs
 EXPECTANCY_MODE_STORE_ID = "expectancy-mode-store"
@@ -50,26 +48,31 @@ class ExpectancyOverTime(Molecule):
         )
 
     def _render_card_header(self):
-        return AlphaCardHeader([
-            html.Div([
-                html.H5("EXPECTANCY OVER TIME"),
-                AlphaButtonGroup(
-                    group_id="expectancy-toggle",
-                    buttons=[
-                        {"label": "Absolute", "id": EXPECTANCY_ABS_BTN_ID, "active": True},
-                        {"label": "Relative", "id": EXPECTANCY_REL_BTN_ID}
+        return AlphaCardHeader(
+            [
+                html.Div(
+                    [
+                        html.H5("EXPECTANCY OVER TIME"),
+                        AlphaButtonGroup(
+                            group_id="expectancy-toggle",
+                            buttons=[
+                                {"label": "Absolute", "id": EXPECTANCY_ABS_BTN_ID, "active": True},
+                                {"label": "Relative", "id": EXPECTANCY_REL_BTN_ID},
+                            ],
+                            size="sm",
+                        ).render(),
                     ],
-                    size="sm"
-                ).render()
-            ], style={
-                "display": "flex",
-                "justifyContent": "space-between",
-                "alignItems": "center",
-                "width": "100%",
-                "paddingLeft": "10px",
-                "paddingRight": "10px",
-            })
-        ]).render()
+                    style={
+                        "display": "flex",
+                        "justifyContent": "space-between",
+                        "alignItems": "center",
+                        "width": "100%",
+                        "paddingLeft": "10px",
+                        "paddingRight": "10px",
+                    },
+                )
+            ]
+        ).render()
 
     def _render_absolute_chart(self):
         return html.Div(
@@ -80,7 +83,7 @@ class ExpectancyOverTime(Molecule):
                         data_frame=self._absolute_df,
                         line_layout_style=self._chart_layout_style,
                     ).plot(x_col="time", y_col="expectancy", group_by="account_id"),
-                    config={"displayModeBar": False}
+                    config={"displayModeBar": False},
                 )
             ],
             style=VISIBLE_STYLE,
@@ -95,22 +98,19 @@ class ExpectancyOverTime(Molecule):
                         data_frame=self._relative_df,
                         line_layout_style=self._chart_layout_style,
                     ).plot(x_col="time", y_col="expectancy_pct", group_by="account_id"),
-                    config={"displayModeBar": False}
+                    config={"displayModeBar": False},
                 )
             ],
             style=HIDDEN_STYLE,
         )
 
     def _render_chart_body(self):
-        return AlphaCardBody([
-            dcc.Store(id=EXPECTANCY_MODE_STORE_ID, data="absolute"),
-            AlphaRow([
-                AlphaCol([
-                    self._render_absolute_chart(),
-                    self._render_relative_chart()
-                ])
-            ])
-        ]).render()
+        return AlphaCardBody(
+            [
+                dcc.Store(id=EXPECTANCY_MODE_STORE_ID, data="absolute"),
+                AlphaRow([AlphaCol([self._render_absolute_chart(), self._render_relative_chart()])]),
+            ]
+        ).render()
 
     @cache
     def render(self) -> html.Div:

@@ -1,7 +1,5 @@
 import dash
-import dash_bootstrap_components as dbc
-from dash import html, dcc, Input, Output, State, ctx, callback
-from dash.development.base_component import Component
+from dash import html, Input, Output, State, ctx, callback
 
 from components.atoms.buttons.button import AlphaButton
 from components.atoms.content import MainContent
@@ -10,19 +8,12 @@ from components.atoms.text.page import PageHeader
 from components.atoms.text.section import SectionHeader
 from components.frame.body import PageBody
 from constants import colors
-from constants.style import HIDDEN
-from entities.trade_details import TradeDetails
 from models.account import Account
 from pages.base_page import BasePage
-from quant_core.services.core_logger import CoreLogger
 from services.db.account import get_all_accounts, toggle_account_enabled
-from services.trade_parser import TradeMessageParser
-from services.trade_router import TradeRouter
-from components.molecules.modals.trades.new_trade import NewTradeModal
 
 COCKPIT_PATH = "/"
 dash.register_page(__name__, path=COCKPIT_PATH, name="Cockpit")
-
 
 
 def render_account_card(account: Account) -> AlphaCol:
@@ -47,13 +38,17 @@ def render_account_cards() -> AlphaRow:
 
 class CockpitPage(BasePage):
     def render(self):
-        return PageBody([
-            PageHeader(self._title).render(),
-            MainContent([
-                SectionHeader("Account Management").render(),
-                html.Div(render_account_cards(), id="account-toggle-container"),
-            ])
-        ])
+        return PageBody(
+            [
+                PageHeader(self._title).render(),
+                MainContent(
+                    [
+                        SectionHeader("Account Management").render(),
+                        html.Div(render_account_cards(), id="account-toggle-container"),
+                    ]
+                ),
+            ]
+        )
 
 
 layout = CockpitPage("Cockpit").layout

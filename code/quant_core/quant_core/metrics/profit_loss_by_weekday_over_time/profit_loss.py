@@ -24,8 +24,4 @@ class ProfitByWeekdayOverTime(TradeMetricOverTime):
         df = df.copy()
         df["time"] = pd.to_datetime(df["time"])
         df["weekday"] = df["time"].dt.day_name()
-        return (
-            df.groupby("weekday")["profit"]
-            .mean()
-            .reset_index(name="avg_profit")
-        )
+        return df.groupby("weekday")["profit"].mean().reset_index(name="avg_profit")

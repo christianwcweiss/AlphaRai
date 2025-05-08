@@ -71,7 +71,7 @@ class AlphaButtonGroup(Atom):
         return buttons
 
     def _generate_id(self, label: str) -> str:
-        safe = ''.join([c for c in label if c in string.ascii_letters])
+        safe = "".join([c for c in label if c in string.ascii_letters])
         return f"{self._group_id}-{safe.lower()}"
 
     def render(self) -> html.Div:

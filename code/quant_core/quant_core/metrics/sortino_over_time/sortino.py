@@ -22,18 +22,10 @@ class SortinoRatioOverTime(TradeMetricOverTime):
                     downside_std = downside_returns.std()
                     sortino = mean_return / downside_std if downside_std > 0 else 0.0
 
-                result.append({
-                    "time": current_day,
-                    "account_id": account,
-                    "sortino": round(sortino, 2)
-                })
+                result.append({"time": current_day, "account_id": account, "sortino": round(sortino, 2)})
 
         return pd.DataFrame(result)
 
     def calculate_ungrouped(self, df: pd.DataFrame) -> pd.DataFrame:
         grouped = self.calculate_grouped(df)
-        return (
-            grouped.groupby("time")["sortino"]
-            .mean()
-            .reset_index()
-        )
+        return grouped.groupby("time")["sortino"].mean().reset_index()

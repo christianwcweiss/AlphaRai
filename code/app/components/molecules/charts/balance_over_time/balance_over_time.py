@@ -1,7 +1,7 @@
+from functools import cache
+
 import pandas as pd
 from dash import html, dcc, callback, Input, Output, ctx
-import dash_bootstrap_components as dbc
-from functools import cache
 
 from components.atoms.buttons.button_group import AlphaButtonGroup
 from components.atoms.card.card import AlphaCard, AlphaCardHeader, AlphaCardBody
@@ -61,8 +61,8 @@ class BalanceOverTime(Molecule):
                                 {"label": "Absolute", "id": BALANCE_OVER_TIME_ABS_BTN_ID, "active": True},
                                 {"label": "Relative", "id": BALANCE_OVER_TIME_REL_BTN_ID},
                             ],
-                            size="sm"
-                        ).render()
+                            size="sm",
+                        ).render(),
                     ],
                     style={
                         "display": "flex",
@@ -119,7 +119,7 @@ class BalanceOverTime(Molecule):
                             ]
                         )
                     ]
-                )
+                ),
             ]
         ).render()
 
@@ -136,7 +136,6 @@ class BalanceOverTime(Molecule):
 # 🔁 Smooth toggle callback
 # ============================
 
-from components.atoms.buttons.button_group import AlphaButtonGroup  # for style reuse
 
 @callback(
     Output(BALANCE_OVER_TIME_ABS_DIV_ID, "style"),

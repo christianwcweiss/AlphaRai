@@ -18,9 +18,6 @@ class KellyCriterionPerAccount:
             rr = avg_win / avg_loss if avg_loss > 0 else 0.0
             kelly = (win_rate - (1 - win_rate) / rr) * 100 if rr > 0 else 0.0
 
-            result.append({
-                "account_id": account,
-                "kelly_pct": round(kelly, 2)
-            })
+            result.append({"account_id": account, "kelly_pct": round(kelly, 2)})
 
         return pd.DataFrame(result)

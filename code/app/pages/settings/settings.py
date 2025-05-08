@@ -38,7 +38,8 @@ class SettingsPage(BasePage):
                                     md=6,
                                     lg=4,
                                     xl=4,
-                                ) for title, href in SETTING_CARDS
+                                )
+                                for title, href in SETTING_CARDS
                             ]
                         )
                     ]

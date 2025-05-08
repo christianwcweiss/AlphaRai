@@ -107,7 +107,10 @@ def calculate_weighted_risk_reward(risk_rewards: List[float], sizes: List[float]
 
     return round(weighted_risk_reward, 2)
 
-def calculate_position_size(entry_price: float, stop_loss_price: float, lot_size: float, percentage_risk: float, balance: float) -> float:
+
+def calculate_position_size(
+    entry_price: float, stop_loss_price: float, lot_size: float, percentage_risk: float, balance: float
+) -> float:
     if entry_price <= 0 or stop_loss_price <= 0 or lot_size <= 0 or percentage_risk <= 0 or balance <= 0:
         raise ValueError("All input values must be greater than zero.")
 

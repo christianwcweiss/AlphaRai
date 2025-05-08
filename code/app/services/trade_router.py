@@ -6,7 +6,7 @@ from quant_core.enums.stagger_method import StaggerMethod
 from quant_core.enums.trade_direction import TradeDirection
 from quant_core.services.core_logger import CoreLogger
 from quant_core.trader.platforms.metatrader import Mt5Trader
-from quant_core.utils.trade_utils import get_stagger_levels, get_stagger_sizes, calculate_position_size
+from quant_core.utils.trade_utils import get_stagger_levels, calculate_position_size
 from services.db.account import get_all_accounts
 from services.db.account_config import get_configs_by_account_id
 
@@ -71,7 +71,7 @@ class TradeRouter:
                     stop_loss_price=self.trade.stop_loss,
                     lot_size=config.lot_size,
                     percentage_risk=individual_risk_percent,
-                    balance=balance
+                    balance=balance,
                 )
 
                 price = round(entry_price, config.decimal_points)

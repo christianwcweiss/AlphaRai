@@ -12,33 +12,39 @@ from components.frame.body import PageBody
 from pages.base_page import BasePage
 from quant_core.confluences.confluences import CONFLUENCE_LIST
 from quant_core.enums.time_period import TimePeriod
-from services.db.confluence import (
-    get_all_confluences,
-    get_confluence_by_id,
-    upsert_confluence,
-    delete_confluence
-)
+from services.db.confluence import get_all_confluences, get_confluence_by_id, upsert_confluence, delete_confluence
 
 dash.register_page(__name__, path="/settings/confluences", name="Confluences")
 
 
 def _confluence_modal_fields(prefix: str, confluence_id="", period="", weight=100):
-    return html.Div([
-        dbc.Select(
-            id=f"{prefix}-id",
-            value=confluence_id,
-            placeholder="Select Confluence",
-            options=sorted([
-                {"label": cls.__NAME__, "value": getattr(cls, '__SLUG__', cls.__name__)}
-                for cls in CONFLUENCE_LIST
-            ], key=lambda x: x["label"]),
-            className="mb-2",
-            disabled=(prefix == "modal-edit")
-        ),
-        dbc.Select(id=f"{prefix}-period", value=period, className="mb-2",
-                   options=[{"label": p.name, "value": p.value} for p in TimePeriod]),
-        dbc.Input(id=f"{prefix}-weight", value=weight, type="number", placeholder="Weight (0-100)", className="mb-2"),
-    ])
+    return html.Div(
+        [
+            dbc.Select(
+                id=f"{prefix}-id",
+                value=confluence_id,
+                placeholder="Select Confluence",
+                options=sorted(
+                    [
+                        {"label": cls.__NAME__, "value": getattr(cls, "__SLUG__", cls.__name__)}
+                        for cls in CONFLUENCE_LIST
+                    ],
+                    key=lambda x: x["label"],
+                ),
+                className="mb-2",
+                disabled=(prefix == "modal-edit"),
+            ),
+            dbc.Select(
+                id=f"{prefix}-period",
+                value=period,
+                className="mb-2",
+                options=[{"label": p.name, "value": p.value} for p in TimePeriod],
+            ),
+            dbc.Input(
+                id=f"{prefix}-weight", value=weight, type="number", placeholder="Weight (0-100)", className="mb-2"
+            ),
+        ]
+    )
 
 
 def build_confluence_table():
@@ -47,51 +53,63 @@ def build_confluence_table():
     rows = []
 
     for conf in confluences:
-        actions = AlphaRow([
-            AlphaCol(AlphaButton("✏️", {"type": "edit-confluence", "index": conf.confluence_id},
-                                  style={"backgroundColor": "#FFC107", "width": "40px"}).render(), width="auto")
-        ])
-
-        actions.children.append(
-            AlphaCol(AlphaButton("🗑️", {"type": "delete-confluence", "index": conf.confluence_id},
-                                 style={"backgroundColor": "#DC3545", "width": "40px"}).render(), width="auto")
+        actions = AlphaRow(
+            [
+                AlphaCol(
+                    AlphaButton(
+                        "✏️",
+                        {"type": "edit-confluence", "index": conf.confluence_id},
+                        style={"backgroundColor": "#FFC107", "width": "40px"},
+                    ).render(),
+                    width="auto",
+                )
+            ]
         )
 
-        rows.append([
-            conf.confluence_id,
-            conf.period.name,
-            conf.weight,
-            "✅" if conf.enabled else "❌",
-            actions
-        ])
+        actions.children.append(
+            AlphaCol(
+                AlphaButton(
+                    "🗑️",
+                    {"type": "delete-confluence", "index": conf.confluence_id},
+                    style={"backgroundColor": "#DC3545", "width": "40px"},
+                ).render(),
+                width="auto",
+            )
+        )
+
+        rows.append([conf.confluence_id, conf.period.name, conf.weight, "✅" if conf.enabled else "❌", actions])
 
     return AlphaTable(table_id="confluence-settings-table", headers=headers, rows=rows).render()
 
 
 class ConfluencesSettingsPage(BasePage):
     def render(self):
-        return PageBody([
-            PageHeader("Confluences").render(),
-            MainContent([
-                build_confluence_table(),
-                html.Br(),
-                AlphaButton("➕ Add Confluence", "open-add-confluence-btn").render(),
-                AlphaModal(
-                    modal_id="add-confluence-modal",
-                    title="Add Confluence",
-                    body_content=_confluence_modal_fields("modal-add"),
-                    confirm_id="confirm-add-confluence",
-                    cancel_id="cancel-add-confluence"
-                ).render(),
-                AlphaModal(
-                    modal_id="edit-confluence-modal",
-                    title="Edit Confluence",
-                    body_content=_confluence_modal_fields("modal-edit"),
-                    confirm_id="confirm-edit-confluence",
-                    cancel_id="cancel-edit-confluence"
-                ).render()
-            ])
-        ])
+        return PageBody(
+            [
+                PageHeader("Confluences").render(),
+                MainContent(
+                    [
+                        build_confluence_table(),
+                        html.Br(),
+                        AlphaButton("➕ Add Confluence", "open-add-confluence-btn").render(),
+                        AlphaModal(
+                            modal_id="add-confluence-modal",
+                            title="Add Confluence",
+                            body_content=_confluence_modal_fields("modal-add"),
+                            confirm_id="confirm-add-confluence",
+                            cancel_id="cancel-add-confluence",
+                        ).render(),
+                        AlphaModal(
+                            modal_id="edit-confluence-modal",
+                            title="Edit Confluence",
+                            body_content=_confluence_modal_fields("modal-edit"),
+                            confirm_id="confirm-edit-confluence",
+                            cancel_id="cancel-edit-confluence",
+                        ).render(),
+                    ]
+                ),
+            ]
+        )
 
 
 page = ConfluencesSettingsPage("Confluences")
@@ -100,11 +118,13 @@ layout = page.layout
 
 @callback(
     Output("add-confluence-modal", "is_open"),
-    [Input("open-add-confluence-btn", "n_clicks"),
-     Input("confirm-add-confluence", "n_clicks"),
-     Input("cancel-add-confluence", "n_clicks")],
+    [
+        Input("open-add-confluence-btn", "n_clicks"),
+        Input("confirm-add-confluence", "n_clicks"),
+        Input("cancel-add-confluence", "n_clicks"),
+    ],
     State("add-confluence-modal", "is_open"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def toggle_add_modal(open_click, confirm_click, cancel_click, is_open):
     return ctx.triggered_id == "open-add-confluence-btn"
@@ -116,7 +136,7 @@ def toggle_add_modal(open_click, confirm_click, cancel_click, is_open):
     Output("modal-edit-period", "value"),
     Output("modal-edit-weight", "value"),
     Input({"type": "edit-confluence", "index": dash.ALL}, "n_clicks"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def open_edit_modal(edit_clicks):
     if not any(edit_clicks):
@@ -138,7 +158,7 @@ def open_edit_modal(edit_clicks):
     State("modal-add-id", "value"),
     State("modal-add-period", "value"),
     State("modal-add-weight", "value"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def save_new_confluence(_, confluence_id, period, weight):
     if not confluence_id or not period:
@@ -154,7 +174,7 @@ def save_new_confluence(_, confluence_id, period, weight):
     State("modal-edit-id", "value"),
     State("modal-edit-period", "value"),
     State("modal-edit-weight", "value"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def save_edited_confluence(_, confluence_id, period, weight):
     if not confluence_id or not period:
@@ -167,7 +187,7 @@ def save_edited_confluence(_, confluence_id, period, weight):
 @callback(
     Output("confluence-settings-table", "children", allow_duplicate=True),
     Input({"type": "delete-confluence", "index": dash.ALL}, "n_clicks"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def delete_selected_confluence(_):
     triggered = ctx.triggered_id

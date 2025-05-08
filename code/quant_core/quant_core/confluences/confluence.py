@@ -1,11 +1,10 @@
-import importlib
-import pkgutil
 from abc import ABC, abstractmethod
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any
+
 import pandas as pd
 
-from quant_core import confluences
 from quant_core.enums.trade_direction import TradeDirection
+
 
 class Confluence(ABC):
     """

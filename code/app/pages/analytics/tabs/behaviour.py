@@ -32,7 +32,11 @@ def _render_win_rate_chart(df: pd.DataFrame, split_by_account: bool) -> AlphaCol
                 ),
             ).plot(x_col="time", y_col="win_rate", group_by="account_id" if split_by_account else None)
         ),
-        xs=12, sm=12, md=12, lg=6, xl=6,
+        xs=12,
+        sm=12,
+        md=12,
+        lg=6,
+        xl=6,
     )
 
 
@@ -50,10 +54,14 @@ def _render_avg_trade_duration_chart(df: pd.DataFrame) -> AlphaCol:
                     y_axis_title="Duration (minutes)",
                     margin=ChartMargin(30, 30, 30, 30),
                     show_legend=True,
-                )
+                ),
             ).plot(x_col="time", y_col="avg_duration_min")
         ),
-        xs=12, sm=12, md=12, lg=12, xl=12,
+        xs=12,
+        sm=12,
+        md=12,
+        lg=12,
+        xl=12,
     )
 
 
@@ -74,7 +82,11 @@ def _render_avg_hold_time_chart(df: pd.DataFrame, split_by_account: bool) -> Alp
                 ),
             ).plot(x_col="time", y_col="hold_time", group_by="account_id" if split_by_account else None)
         ),
-        xs=12, sm=12, md=12, lg=6, xl=6,
+        xs=12,
+        sm=12,
+        md=12,
+        lg=6,
+        xl=6,
     )
 
 
@@ -95,7 +107,11 @@ def _render_trades_per_day_chart(df: pd.DataFrame, split_by_account: bool) -> Al
                 ),
             ).plot(x_col="time", y_col="trade_count", group_by="account_id" if split_by_account else None)
         ),
-        xs=12, sm=12, md=12, lg=6, xl=6,
+        xs=12,
+        sm=12,
+        md=12,
+        lg=6,
+        xl=6,
     )
 
 
@@ -113,10 +129,14 @@ def _render_profit_by_hour_chart(df: pd.DataFrame) -> AlphaCol:
                     y_axis_title="Account",
                     margin=ChartMargin(30, 30, 30, 30),
                     show_legend=False,
-                )
+                ),
             ).plot(x_col="hour", y_col="account_id", value_col="profit")
         ),
-        xs=12, sm=12, md=12, lg=12, xl=12,
+        xs=12,
+        sm=12,
+        md=12,
+        lg=12,
+        xl=12,
     )
 
 
@@ -133,11 +153,15 @@ def _render_profit_by_weekday_chart(df: pd.DataFrame) -> AlphaCol:
                     x_axis_title="Weekday",
                     y_axis_title="Average Profit",
                     margin=ChartMargin(30, 30, 30, 30),
-                    show_legend=False
-                )
+                    show_legend=False,
+                ),
             ).plot(x_col="weekday", y_col="avg_profit")
         ),
-        xs=12, sm=12, md=12, lg=12, xl=12,
+        xs=12,
+        sm=12,
+        md=12,
+        lg=12,
+        xl=12,
     )
 
 

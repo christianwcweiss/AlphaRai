@@ -85,7 +85,6 @@ class PolygonClient:
 
         return polygon_data_frame
 
-
     def get_stock_data(self, symbol: str, time_period: TimePeriod, n_candles: int = 2000) -> pd.DataFrame:
         start_date = pd.Timestamp.now() - pd.Timedelta(minutes=time_period.value * n_candles)
         end_date = pd.Timestamp.now()
@@ -109,6 +108,8 @@ class PolygonClient:
         polygon_data_frame["date"] = pd.to_datetime(polygon_data_frame["date"], unit="ms")
         polygon_data_frame.set_index("date", inplace=True)
         polygon_data_frame.sort_index(inplace=True)
-        polygon_data_frame = polygon_data_frame.astype({"open": "float64", "high": "float64", "low": "float64", "close": "float64", "volume": "int64"})
+        polygon_data_frame = polygon_data_frame.astype(
+            {"open": "float64", "high": "float64", "low": "float64", "close": "float64", "volume": "int64"}
+        )
 
         return polygon_data_frame

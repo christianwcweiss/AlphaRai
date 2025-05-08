@@ -4,6 +4,7 @@ from typing import Optional, List, Dict, Any
 import pandas as pd
 import plotly.graph_objects as go
 
+
 class ChartMargin(abc.ABC):
     def __init__(
         self,
@@ -20,7 +21,6 @@ class ChartMargin(abc.ABC):
     @property
     def margins(self) -> Dict[str, float]:
         return {"l": self._left, "r": self._right, "t": self._top, "b": self._bottom}
-
 
 
 class ChartLayoutStyle:
@@ -84,6 +84,7 @@ class ChartLayoutStyle:
             },
             "showlegend": self.show_legend,
         }
+
 
 class ChartTraceStyle(abc.ABC):
     @abc.abstractmethod
