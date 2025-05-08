@@ -4,7 +4,7 @@ from constants.colors import PRIMARY_COLOR
 
 APP_BAR_ITEMS = [
     {"name": "Cockpit", "path": "/"},
-    {"name": "Analysis", "path": "/analysis"},
+    {"name": "Analysis", "path": "/analysis/overview"},
     {"name": "Settings", "path": "/settings"},
 ]
 

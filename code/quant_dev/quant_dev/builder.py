@@ -88,3 +88,11 @@ class Builder:
             assert len(data["volume"]) == length
 
         return pd.DataFrame(data)
+
+    @staticmethod
+    def get_trade_history() -> pd.DataFrame:
+        data_frame = pd.read_csv(
+            os.path.join(os.path.dirname(__file__), "data", "mocked_trade_history.csv"),
+        )
+
+        return data_frame

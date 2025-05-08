@@ -1,0 +1,3 @@
+from quant_core.confluences.adaptive_super_trend.ast_confluence import ConfluenceAdaptiveSuperTrendDirection
+
+CONFLUENCE_LIST = [ConfluenceAdaptiveSuperTrendDirection]

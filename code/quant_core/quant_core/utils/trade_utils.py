@@ -106,3 +106,24 @@ def calculate_weighted_risk_reward(risk_rewards: List[float], sizes: List[float]
     weighted_risk_reward = sum(risk_reward * size for risk_reward, size in zip(risk_rewards, sizes)) / total_size
 
     return round(weighted_risk_reward, 2)
+
+
+def calculate_position_size(
+    entry_price: float, stop_loss_price: float, lot_size: float, percentage_risk: float, balance: float
+) -> float:
+    if entry_price <= 0 or stop_loss_price <= 0 or lot_size <= 0 or percentage_risk <= 0 or balance <= 0:
+        raise ValueError("All input values must be greater than zero.")
+
+    # Calculate monetary risk
+    risk_amount = (percentage_risk / 100.0) * balance
+
+    # Pip or point difference
+    stop_distance = abs(entry_price - stop_loss_price)
+    if stop_distance == 0:
+        raise ValueError("Stop loss and entry cannot be the same.")
+
+    # Size (volume)
+    size = risk_amount / (stop_distance * lot_size)
+    size = round(max(size, 0.01), 2)  # MT5 requires minimum 0.01 lots
+
+    return size

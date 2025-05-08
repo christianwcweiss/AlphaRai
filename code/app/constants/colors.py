@@ -10,6 +10,10 @@ ERROR_COLOR = "#FF5252"
 DARK_TEXT_COLOR = "#333333"
 LIGHT_TEXT_COLOR = "#FFFFFF"
 
+GREY_BORDER = "#CCCCCC"  # Optional: for ToolbarButton border
+LIGHT_GREY = "#F5F5F5"  # Optional: for ToolbarButton background
+SHADOW_COLOR = "rgba(0, 0, 0, 0.1)"  # Optional: for Toolbar shadow
+
 CHART_PALETTE = [
     "#009688",
     "#FF7043",
