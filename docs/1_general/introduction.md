@@ -1,6 +1,10 @@
 
 # Introduction
 
+## Disclaimer
+
+Trading involves substantial risk and is not suitable for everyone. The information provided by this software is for educational and research purposes only. Past performance does not guarantee future results. You are solely responsible for any trades placed using this bot. Use it at your own risk. The developer assumes no liability for financial losses or damages resulting from the use of this tool.
+
 ## What is this?
 
 This is a local trading bot that allows trading multiple accounts at the same time.
