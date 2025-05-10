@@ -1,5 +1,9 @@
 # Alpha-Rai
 
+## Disclaimer
+
+Trading involves substantial risk and is not suitable for everyone. The information provided by this software is for educational and research purposes only. Past performance does not guarantee future results. You are solely responsible for any trades placed using this bot. Use it at your own risk. The developer assumes no liability for financial losses or damages resulting from the use of this tool.
+
 ## Project Overview
 
 Alpha-Rai is a dash based trading bot (manually as of version 0.0.5) that parses signals from

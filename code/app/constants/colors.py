@@ -10,9 +10,9 @@ ERROR_COLOR = "#FF5252"
 DARK_TEXT_COLOR = "#333333"
 LIGHT_TEXT_COLOR = "#FFFFFF"
 
-GREY_BORDER = "#CCCCCC"  # Optional: for ToolbarButton border
-LIGHT_GREY = "#F5F5F5"  # Optional: for ToolbarButton background
-SHADOW_COLOR = "rgba(0, 0, 0, 0.1)"  # Optional: for Toolbar shadow
+GREY_BORDER = "#CCCCCC"
+LIGHT_GREY = "#F5F5F5"
+SHADOW_COLOR = "rgba(0, 0, 0, 0.1)"
 
 CHART_PALETTE = [
     "#009688",
