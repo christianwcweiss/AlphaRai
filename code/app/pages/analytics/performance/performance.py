@@ -12,6 +12,10 @@ from components.charts.chart import ChartLayoutStyle, ChartMargin
 from components.charts.line.line_chart import LineChart
 from components.frame.body import PageBody
 from components.molecules.charts.expectancy_over_time.expectancy_over_time import ExpectancyOverTime
+from components.molecules.charts.profit_factor_over_time.profit_factor_over_time import ProfitFactorOverTimeMolecule
+from components.molecules.charts.risk_reward_over_time.risk_reward_over_time import RiskRewardOverTimeMolecule
+from components.molecules.charts.sharpe_over_time.sharpe_over_time import SharpeRatioOverTimeMolecule
+from components.molecules.charts.sortino_over_time.sortino_over_time import SortinoRatioOverTimeMolecule
 from db.database import SessionLocal
 from models.account import Account
 from pages.analytics.analysis import TAB_LABELS
@@ -20,6 +24,10 @@ from quant_core.enums.platform import Platform
 from quant_core.metrics.expectancy_over_time.absolute.expectancy import ExpectancyOverTimeAbsolute
 from quant_core.metrics.expectancy_over_time.relative.expectancy import ExpectancyOverTimeRelative
 from quant_core.metrics.kelly_criterion_over_time.kelly import KellyCriterionPerAccount
+from quant_core.metrics.profit_factor_over_time.profit_factor import ProfitFactorOverTime
+from quant_core.metrics.risk_reward_over_time.rr_ratio import RiskRewardRatioOverTime
+from quant_core.metrics.sharpe_over_time.sharpe import SharpeRatioOverTime
+from quant_core.metrics.sortino_over_time.sortino import SortinoRatioOverTime
 from services.db.trade_history import get_all_trades
 
 dash.register_page(__name__, path="/analysis/performance", name="Performance")
@@ -133,6 +141,10 @@ def render_performance_tab(selected_account):
 
     abs_df = ExpectancyOverTimeAbsolute().calculate_grouped(df)
     rel_df = ExpectancyOverTimeRelative().calculate_grouped(df)
+    pf_df = ProfitFactorOverTime().calculate_grouped(df)
+    rr_df = RiskRewardRatioOverTime().calculate_grouped(df)
+    sharpe_df = SharpeRatioOverTime().calculate_grouped(df)
+    sortino_df = SortinoRatioOverTime().calculate_grouped(df)
 
     return AlphaRow(
         [
@@ -142,7 +154,39 @@ def render_performance_tab(selected_account):
                 sm=12,
                 md=12,
                 lg=6,
-                xl=6,
+                xl=4,
+            ),
+            AlphaCol(
+                ProfitFactorOverTimeMolecule(pf_df).render(),
+                xs=12,
+                sm=12,
+                md=12,
+                lg=6,
+                xl=4,
+            ),
+            AlphaCol(
+                RiskRewardOverTimeMolecule(rr_df).render(),
+                xs=12,
+                sm=12,
+                md=12,
+                lg=6,
+                xl=4,
+            ),
+            AlphaCol(
+                SharpeRatioOverTimeMolecule(sharpe_df).render(),
+                xs=12,
+                sm=12,
+                md=12,
+                lg=6,
+                xl=4,
+            ),
+            AlphaCol(
+                SortinoRatioOverTimeMolecule(sortino_df).render(),
+                xs=12,
+                sm=12,
+                md=12,
+                lg=6,
+                xl=4,
             ),
         ]
     )

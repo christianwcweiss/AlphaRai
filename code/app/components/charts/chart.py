@@ -26,20 +26,25 @@ class ChartMargin(abc.ABC):
 class ChartLayoutStyle:
     def __init__(
         self,
-        title: str,
-        x_axis_title: str,
-        y_axis_title: str,
-        show_legend: bool,
-        margin: ChartMargin,
+        title: Optional[str] = None,
+        x_axis_title: Optional[str] = None,
+        y_axis_title: Optional[str] = None,
+        show_legend: bool = False,
+        margin: ChartMargin = ChartMargin(),
         x_range: Optional[List[float]] = None,
         y_range: Optional[List[float]] = None,
         show_title: bool = True,
         show_x_title: bool = True,
         show_y_title: bool = True,
+        show_x_grid: bool = True,
+        show_y_grid: bool = True,
+        show_x_axis: bool = True,
+        show_y_axis: bool = True,
     ) -> None:
-        self.title = title
-        self.x_axis_title = x_axis_title
-        self.y_axis_title = y_axis_title
+        self.title = title or ""
+        self.x_axis_title = x_axis_title or ""
+        self.y_axis_title = y_axis_title or ""
+
         self.show_legend = show_legend
         self.margin = margin
         self.x_range = x_range
@@ -48,27 +53,33 @@ class ChartLayoutStyle:
         self.show_title = show_title
         self.show_x_title = show_x_title
         self.show_y_title = show_y_title
+        self.show_x_grid = show_x_grid
+        self.show_y_grid = show_y_grid
+        self.show_x_axis = show_x_axis
+        self.show_y_axis = show_y_axis
 
     def to_layout_dict(self) -> Dict[str, Any]:
-        return {
+        layout = {
             "title": {
-                "text": self.title if self.show_title else "",
+                "text": self.title if self.show_title and self.title else "",
                 "x": 0.5,
                 "xanchor": "center",
                 "font": {"size": 20, "family": "Arial, sans-serif"},
             },
             "xaxis": {
-                "title": self.x_axis_title if self.show_x_title else "",
+                "visible": self.show_x_axis,  # 👈 key line to hide the axis
+                "title": self.x_axis_title if self.show_x_title and self.x_axis_title else "",
                 "range": self.x_range,
                 "automargin": True,
-                "showgrid": True,
+                "showgrid": self.show_x_grid,
                 "gridcolor": "rgba(200, 200, 200, 0.3)",
             },
             "yaxis": {
-                "title": self.y_axis_title if self.show_y_title else "",
+                "visible": self.show_y_axis,  # 👈 same for y-axis
+                "title": self.y_axis_title if self.show_y_title and self.y_axis_title else "",
                 "range": self.y_range,
                 "automargin": True,
-                "showgrid": True,
+                "showgrid": self.show_y_grid,
                 "gridcolor": "rgba(200, 200, 200, 0.3)",
             },
             "plot_bgcolor": "white",
@@ -84,6 +95,8 @@ class ChartLayoutStyle:
             },
             "showlegend": self.show_legend,
         }
+
+        return layout
 
 
 class ChartTraceStyle(abc.ABC):

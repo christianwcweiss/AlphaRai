@@ -2,7 +2,7 @@ import dash
 import dash_bootstrap_components as dbc
 from dash import html, callback, Input, Output, State, ctx
 
-from components.atoms.buttons.button import AlphaButton
+from components.atoms.buttons.general.button import AlphaButton
 from components.atoms.content import MainContent
 from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.atoms.modal.modal import AlphaModal

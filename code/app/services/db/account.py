@@ -37,11 +37,19 @@ def upsert_account(platform: str, friendly_name: str, secret_name: str, uid: str
         return account
 
 
-def delete_account(platform: str, uid: str) -> None:
-    with SessionLocal() as session:
-        session.query(Account).filter_by(platform=platform, uid=uid).delete()
-        session.commit()
+def delete_account(platform: str, uid: str):
+    if not uid:
+        CoreLogger().warning("Tried to delete account without UID")
+        return
 
+    with SessionLocal() as session:
+        account = session.query(Account).filter_by(platform=platform, uid=uid).first()
+        if account:
+            session.delete(account)
+            session.commit()
+            CoreLogger().info(f"Deleted account {uid}")
+        else:
+            CoreLogger().warning(f"No account found for UID: {uid}")
 
 def toggle_account_enabled(uid: str) -> Account:
     with SessionLocal() as session:

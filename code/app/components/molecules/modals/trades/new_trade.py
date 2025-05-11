@@ -3,7 +3,7 @@ import dash_bootstrap_components as dbc
 
 from components.molecules.molecule import Molecule
 from constants import colors
-from components.atoms.buttons.button import AlphaButton
+from components.atoms.buttons.general.button import AlphaButton
 from constants.style import HIDDEN
 from services.trade_parser import TradeMessageParser
 from entities.trade_details import TradeDetails

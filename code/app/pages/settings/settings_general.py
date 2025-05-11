@@ -2,7 +2,7 @@ import dash
 import dash_bootstrap_components as dbc
 from dash import html, callback, Input, Output, State, ctx
 
-from components.atoms.buttons.button import AlphaButton
+from components.atoms.buttons.general.button import AlphaButton
 from components.atoms.content import MainContent
 from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.atoms.modal.modal import AlphaModal
@@ -11,6 +11,7 @@ from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
 from pages.base_page import BasePage
 from services.db.general_setting import get_all_settings, upsert_setting, delete_setting
+from services.db.trade_history import sync_trades_from_all_accounts
 
 dash.register_page(__name__, path="/settings/general", name="General Settings")
 
@@ -87,6 +88,10 @@ class GeneralSettingsPage(BasePage):
                         build_table(),
                         html.Br(),
                         AlphaButton("➕ Add Setting", "open-add-setting-btn").render(),
+                        html.Br(),
+                        html.Br(),
+                        AlphaButton("🔄 Sync Trades from TradingView", "sync-trades-btn").render(),
+                        html.Div(id="sync-trades-status", className="mt-3"),
                         AlphaModal(
                             modal_id="add-setting-modal",
                             title="Add Setting",
@@ -184,3 +189,16 @@ def delete_selected_setting(_):
     if key and key not in REQUIRED_KEYS:
         delete_setting(key)
     return build_table()
+
+
+@callback(
+    Output("sync-trades-status", "children"),
+    Input("sync-trades-btn", "n_clicks"),
+    prevent_initial_call=True,
+)
+def sync_trades_from_tradingview(n_clicks):
+    try:
+        result = sync_trades_from_all_accounts()
+        return dbc.Alert(f"✅ Synced trades: {result}", color="success", dismissable=True)
+    except Exception as e:
+        return dbc.Alert(f"❌ Sync failed: {str(e)}", color="danger", dismissable=True)

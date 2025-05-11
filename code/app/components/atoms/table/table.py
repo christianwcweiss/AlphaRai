@@ -1,5 +1,4 @@
 from typing import Union, List, Optional, Dict, Any
-
 from dash import html
 from dash.development.base_component import Component
 
@@ -7,6 +6,12 @@ from components.atoms.atom import Atom
 
 
 class AlphaTableCell(Atom):
+    DEFAULT_CELL_STYLE = {
+        "border": "1px solid #ccc",
+        "textAlign": "center",
+        "padding": "8px",
+    }
+
     def __init__(self, content: Union[str, Component], is_header: bool = False):
         self._content = content
         self._is_header = is_header
@@ -17,7 +22,10 @@ class AlphaTableCell(Atom):
             raise ValueError("Cell content cannot be None.")
 
     def render(self) -> Component:
-        return html.Th(self._content) if self._is_header else html.Td(self._content)
+        if self._is_header:
+            return html.Th(self._content, style=self.DEFAULT_CELL_STYLE)
+        else:
+            return html.Td(self._content, style=self.DEFAULT_CELL_STYLE)
 
 
 class AlphaTableRow(Atom):
@@ -37,6 +45,8 @@ class AlphaTable(Atom):
     DEFAULT_STYLE = {
         "width": "100%",
         "borderCollapse": "collapse",
+        "textAlign": "center",
+        "border": "1px solid #ccc",
     }
 
     def __init__(
