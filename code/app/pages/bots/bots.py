@@ -1,5 +1,5 @@
 import dash
-from dash import html
+from dash import html, dcc
 
 from components.atoms.card.card import AlphaCard
 from components.atoms.content import MainContent
@@ -11,7 +11,6 @@ from pages.base_page import BasePage
 dash.register_page(__name__, path="/bots", name="Bots")
 
 
-
 class BotsPage(BasePage):
     def render(self):
         return PageBody(
@@ -20,12 +19,22 @@ class BotsPage(BasePage):
                 PageHeader("Bots").render(),
                 MainContent(
                     [
-                        html.Div("Coming soon..."),
+                        AlphaRow(
+                            [
+                                AlphaCol(
+                                    AlphaCard(
+                                        title="Grid Bots",
+                                        subtitle="View and manage your grid trading bots.",
+                                        href="/bots/grid-bots",
+                                    ).render()
+                                ),
+                            ]
+                        ),
                     ]
                 ),
             ]
         )
 
 
-page = BotsPage("Settings")
+page = BotsPage("Bots")
 layout = page.layout
