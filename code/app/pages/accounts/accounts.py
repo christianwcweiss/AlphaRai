@@ -4,13 +4,8 @@ import string
 import dash
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, dcc, Input, Output, State, ctx, callback, MATCH, ALL
+from dash import html, dcc, Input, Output, State, ctx, callback, ALL
 from dash.exceptions import PreventUpdate
-import plotly.graph_objects as go
-
-from quant_core.metrics.account_balance_over_time.relative.balance_over_time import AccountBalanceOverTimeRelative
-from services.db.account_config import get_configs_by_account_id
-from services.db.trade_history import get_all_trades
 
 from components.atoms.buttons.general.button import AlphaButton
 from components.atoms.content import MainContent
@@ -21,15 +16,17 @@ from components.frame.body import PageBody
 from components.molecules.cards.settings.account_card import AccountSettingsCard
 from pages.base_page import BasePage
 from quant_core.enums.platform import Platform
+from quant_core.metrics.account_balance_over_time.relative.balance_over_time import AccountBalanceOverTimeRelative
 from services.db.account import (
     get_all_accounts,
     upsert_account,
     delete_account,
 )
-
+from services.db.account_config import get_configs_by_account_id
+from services.db.trade_history import get_all_trades
 
 # Register page
-dash.register_page(__name__, path="/settings/accounts", name="Account Settings")
+dash.register_page(__name__, path="/accounts", name="Accounts")
 
 
 def generate_uid(length: int = 8) -> str:
@@ -63,12 +60,12 @@ def reload_mt5_accounts():
     ])
 
 
-class SettingsPage(BasePage):
+class AccountsPage(BasePage):
     def render(self):
         return PageBody(
             [
                 html.Div(id="page-init", children="trigger", style={"display": "none"}),
-                PageHeader("Settings").render(),
+                PageHeader("Accounts").render(),
                 MainContent(
                     [
                         SectionHeader(title="Accounts", subtitle="Manage your Accounts").render(),
@@ -124,7 +121,7 @@ class SettingsPage(BasePage):
         )
 
 
-page = SettingsPage("Settings")
+page = AccountsPage("Settings")
 layout = page.layout
 
 

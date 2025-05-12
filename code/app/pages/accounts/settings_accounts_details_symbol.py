@@ -33,7 +33,7 @@ class SymbolSettingsPage(BasePage):
                         dbc.Form(
                             [
                                 dbc.Label("Signal Asset ID"),
-                                dbc.Input(id="input-signal-id", disabled=True),
+                                dbc.Input(id="input-signal-id"),
                                 dbc.Label("Platform Asset ID"),
                                 dbc.Input(id="input-platform-id"),
                                 dbc.Label("Entry Stagger Method"),
@@ -120,7 +120,7 @@ def load_config(pathname):
     Output("input-platform-id", "value", allow_duplicate=True),
     Input("save-symbol-settings", "n_clicks"),
     State("symbol-uid", "children"),
-    State("symbol-asset-id", "children"),
+    State("input-signal-id", "value"),  # <-- NEW
     State("input-platform-id", "value"),
     State("input-entry-stagger", "value"),
     State("input-n-staggers", "value"),
@@ -131,14 +131,14 @@ def load_config(pathname):
     State("input-enabled", "value"),
     prevent_initial_call=True,
 )
-def save_symbol_settings(_, uid, asset_id, platform_id, entry_stagger, n_staggers, risk, lot_size, decimals, asset_type, enabled):
-    if not uid or not asset_id:
+def save_symbol_settings(_, uid, signal_id, platform_id, entry_stagger, n_staggers, risk, lot_size, decimals, asset_type, enabled):
+    if not uid or not signal_id:
         raise dash.exceptions.PreventUpdate
 
     upsert_config(
         uid,
         {
-            "signal_asset_id": asset_id,
+            "signal_asset_id": signal_id,
             "platform_asset_id": platform_id,
             "entry_stagger_method": entry_stagger,
             "n_staggers": n_staggers,

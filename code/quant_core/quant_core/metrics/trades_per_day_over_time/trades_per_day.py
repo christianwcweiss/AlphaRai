@@ -2,7 +2,7 @@ import pandas as pd
 from quant_core.metrics.trade_metric import TradeMetricOverTime
 
 
-class TradesPerDay(TradeMetricOverTime):
+class TradesPerDayOverTime(TradeMetricOverTime):
     def calculate_grouped(self, df: pd.DataFrame) -> pd.DataFrame:
         if df.empty or "time" not in df.columns:
             return pd.DataFrame(columns=["time", "account_id", "trade_count"])

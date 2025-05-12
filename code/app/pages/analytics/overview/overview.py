@@ -18,7 +18,7 @@ from quant_core.metrics.account_balance_over_time.absolute.balance_over_time imp
 from quant_core.metrics.account_balance_over_time.relative.balance_over_time import AccountBalanceOverTimeRelative
 from services.db.trade_history import get_all_trades
 
-dash.register_page(__name__, path="/analysis/overview", name="Overview")
+dash.register_page(__name__, path="/analytics/overview", name="Overview")
 
 
 def _render_account_dropdown() -> dcc.Dropdown:
@@ -42,7 +42,7 @@ class AnalysisOverviewPage(BasePage):
                 MainContent(
                     [
                         AlphaTabToolbar(
-                            tab_labels=TAB_LABELS, base_href="/analysis", current_tab="overview", link_with_hash=False
+                            tab_labels=TAB_LABELS, base_href="/analytics", current_tab="overview", link_with_hash=False
                         ).render(),
                         _render_account_dropdown(),
                         dcc.Loading(html.Div(id="overview-content")),

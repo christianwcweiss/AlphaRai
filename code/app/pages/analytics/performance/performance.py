@@ -30,7 +30,7 @@ from quant_core.metrics.sharpe_over_time.sharpe import SharpeRatioOverTime
 from quant_core.metrics.sortino_over_time.sortino import SortinoRatioOverTime
 from services.db.trade_history import get_all_trades
 
-dash.register_page(__name__, path="/analysis/performance", name="Performance")
+dash.register_page(__name__, path="/analytics/performance", name="Performance")
 
 
 def _render_account_dropdown() -> dcc.Dropdown:
@@ -106,7 +106,7 @@ class PerformancePage(BasePage):
                     [
                         AlphaTabToolbar(
                             tab_labels=TAB_LABELS,
-                            base_href="/analysis",
+                            base_href="/analytics",
                             current_tab="performance",
                             link_with_hash=False,
                         ).render(),

@@ -5,20 +5,21 @@ from dash import html, dcc, Input, Output, callback
 
 from components.atoms.content import MainContent
 from components.atoms.layout.layout import AlphaRow, AlphaCol
+from components.atoms.tabbar.tabbar import AlphaTabToolbar
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
-from components.atoms.tabbar.tabbar import AlphaTabToolbar
+from components.molecules.charts.trades_per_day_over_time.trades_per_day_over_time import TradesPerDayOverTimeMolecule
 from components.molecules.charts.win_rate_over_time.win_rate_over_time import WinRateOverTimeMolecule
 from db.database import SessionLocal
 from models.account import Account
 from pages.analytics.analysis import TAB_LABELS
 from pages.base_page import BasePage
 from quant_core.enums.platform import Platform
+from quant_core.metrics.trades_per_day_over_time.trades_per_day import TradesPerDayOverTime
 from quant_core.metrics.win_rate_over_time.win_rate_over_time import WinRateOverTime
 from services.db.trade_history import get_all_trades
 
-
-dash.register_page(__name__, path="/analysis/behavior", name="Behavior")
+dash.register_page(__name__, path="/analytics/behavior", name="Behavior")
 
 
 def _render_account_dropdown() -> dcc.Dropdown:
@@ -43,7 +44,7 @@ class BehaviorPage(BasePage):
                     [
                         AlphaTabToolbar(
                             tab_labels=TAB_LABELS,
-                            base_href="/analysis",
+                            base_href="/analytics",
                             current_tab="behavior",
                             link_with_hash=False,
                         ).render(),
@@ -77,6 +78,7 @@ def render_behaviour_tab(selected_account):
         return dbc.Alert("⚠️ No trade data available for the selected account.", color="warning")
 
     win_rate_metric_df = WinRateOverTime().calculate_grouped(df)
+    trades_per_day_metric_df = TradesPerDayOverTime().calculate_grouped(df)
 
     return AlphaRow(
         [
@@ -88,5 +90,13 @@ def render_behaviour_tab(selected_account):
                 lg=6,
                 xl=4,
             ),
+            AlphaCol(
+                TradesPerDayOverTimeMolecule(trades_per_day_metric_df).render(),
+                xs=12,
+                sm=12,
+                md=12,
+                lg=6,
+                xl=4,
+            )
         ]
     )

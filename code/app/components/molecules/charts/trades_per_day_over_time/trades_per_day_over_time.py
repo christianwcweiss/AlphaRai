@@ -1,0 +1,42 @@
+from functools import cache
+
+import pandas as pd
+from dash import html, dcc
+
+from components.atoms.card.card import AlphaCard, AlphaCardHeader, AlphaCardBody
+from components.atoms.layout.layout import AlphaRow, AlphaCol
+from components.charts.chart import ChartLayoutStyle, ChartMargin
+from components.charts.line.line_chart import LineChart
+from components.molecules.molecule import Molecule
+
+
+class TradesPerDayOverTimeMolecule(Molecule):
+    def __init__(self, trades_per_day_df: pd.DataFrame):
+        self._df = trades_per_day_df
+        self._chart_layout_style = ChartLayoutStyle(
+            title="",
+            x_axis_title="",
+            y_axis_title="",
+            show_legend=False,
+            show_title=False,
+            show_x_title=False,
+            show_y_title=False,
+            margin=ChartMargin(top=10, right=10, bottom=10, left=10),
+        )
+
+    def _render_chart(self) -> dcc.Graph:
+        return dcc.Graph(
+            figure=LineChart(
+                data_frame=self._df,
+                line_layout_style=self._chart_layout_style,
+            ).plot(x_col="time", y_col="trade_count", group_by="account_id"),
+            config={"displayModeBar": False},
+        )
+
+    @cache
+    def render(self) -> html.Div:
+        return AlphaCard(
+            header=AlphaCardHeader([html.H5("TRADES PER DAY")]).render(),
+            body=AlphaCardBody([AlphaRow([AlphaCol([self._render_chart()])])]).render(),
+            style={"backgroundColor": "#FFFFFF"},
+        ).render()
