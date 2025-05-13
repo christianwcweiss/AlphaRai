@@ -10,6 +10,8 @@ from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows, get
 
 
 class DataFeatureSortinoRatio(DataFeature):
+    """Data Feature for Sortino Ratio."""
+
     def __init__(
         self,
         direction: TradeDirection,
@@ -31,7 +33,8 @@ class DataFeatureSortinoRatio(DataFeature):
 
         return [f"sortino_ratio_{suffix}"]
 
-    def add_feature(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+    def add_feature(self, data_frame: pd.DataFrame) -> pd.DataFrame:  # pylint: disable=too-many-locals
+        """Add the Sortino Ratio feature to the DataFrame."""
         sortino_column = self.get_columns()[0]
         if sortino_column in data_frame:
             return data_frame

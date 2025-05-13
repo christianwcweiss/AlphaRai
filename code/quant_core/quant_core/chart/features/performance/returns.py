@@ -8,6 +8,7 @@ from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows
 
 
 class DataFeatureReturns(DataFeature):
+    """Data Feature for calculating returns over a specified horizon."""
 
     def __init__(
         self,

@@ -6,6 +6,7 @@ from datetime import datetime
 
 
 def get_tomorrow_formatted() -> str:
+    """Get tomorrow's date formatted as 'DD-MMM-YY' in uppercase."""
     tomorrow = datetime.now(UTC) + timedelta(days=1)
 
     return tomorrow.strftime("%d-%b-%y").upper()
@@ -23,6 +24,7 @@ def is_valid_cron(cron_expr: str) -> bool:
 
 
 def describe_cron(cron: str, tz="UTC") -> str:
+    """Describe the next run time of a cron expression."""
     try:
         now = datetime.now(pytz.timezone(tz))
         itr = croniter(cron, now)
@@ -31,13 +33,13 @@ def describe_cron(cron: str, tz="UTC") -> str:
 
         seconds = int(delta.total_seconds())
         if seconds < 0:
-            return f"⚠️ Cron is valid but next run was in the past ({next_time})"
-        elif seconds < 60:
-            return f"⏱️ Next run in {seconds} sec (at {next_time.strftime('%Y-%m-%d %H:%M')})"
-        elif seconds < 3600:
-            return f"⏱️ Next run in {seconds//60} min (at {next_time.strftime('%Y-%m-%d %H:%M')})"
-        else:
-            return f"📅 Next run at {next_time.strftime('%Y-%m-%d %H:%M')}"
+            return f"Cron is valid but next run was in the past ({next_time})"
+        if seconds < 60:
+            return f"Next run in {seconds} sec (at {next_time.strftime('%Y-%m-%d %H:%M')})"
+        if seconds < 3600:
+            return f"Next run in {seconds//60} min (at {next_time.strftime('%Y-%m-%d %H:%M')})"
 
-    except Exception as e:
-        return f"❌ Invalid cron: {e}"
+        return f"Next run at {next_time.strftime('%Y-%m-%d %H:%M')}"
+
+    except Exception as error:  # pylint: disable=broad-exception-caught
+        return f"Invalid cron: {error}"

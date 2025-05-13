@@ -1,4 +1,4 @@
-from functools import cache
+from functools import lru_cache
 
 import pandas as pd
 from dash import html, dcc, callback, Input, Output, ctx
@@ -32,7 +32,9 @@ HIDDEN_STYLE = {
 }
 
 
-class ExpectancyOverTime(Molecule):
+class ExpectancyOverTimeMolecule(Molecule):  # pylint: disable=too-few-public-methods
+    """Expectancy Over Time component."""
+
     def __init__(self, absolute_df: pd.DataFrame, relative_df: pd.DataFrame):
         self._absolute_df = absolute_df
         self._relative_df = relative_df
@@ -112,8 +114,9 @@ class ExpectancyOverTime(Molecule):
             ]
         ).render()
 
-    @cache
+    @lru_cache(maxsize=2)
     def render(self) -> html.Div:
+        """Render the ExpectancyOverTime component."""
         return AlphaCard(
             header=self._render_card_header(),
             body=self._render_chart_body(),
@@ -133,8 +136,8 @@ class ExpectancyOverTime(Molecule):
     prevent_initial_call=True,
 )
 def toggle_expectancy_mode(_, __):
+    """Toggle between absolute and relative expectancy charts."""
     triggered = ctx.triggered_id
-    from components.atoms.buttons.general.button_group import AlphaButtonGroup
 
     if triggered == EXPECTANCY_REL_BTN_ID:
         return (
@@ -145,12 +148,12 @@ def toggle_expectancy_mode(_, __):
             True,
             AlphaButtonGroup.ACTIVE_BUTTON_STYLE,
         )
-    else:
-        return (
-            VISIBLE_STYLE,
-            HIDDEN_STYLE,
-            True,
-            AlphaButtonGroup.ACTIVE_BUTTON_STYLE,
-            False,
-            AlphaButtonGroup.DEFAULT_BUTTON_STYLE,
-        )
+
+    return (
+        VISIBLE_STYLE,
+        HIDDEN_STYLE,
+        True,
+        AlphaButtonGroup.ACTIVE_BUTTON_STYLE,
+        False,
+        AlphaButtonGroup.DEFAULT_BUTTON_STYLE,
+    )

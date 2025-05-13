@@ -19,46 +19,43 @@ else:
 
 
 class TradeDirection(Enum):
+    """Trade direction enum."""
+
     LONG = "LONG"
     BUY = "BUY"
     SHORT = "SHORT"
     SELL = "SELL"
 
-    def to_ig(self) -> str:
-        if self is TradeDirection.LONG or self is TradeDirection.BUY:
-            return "BUY"
-        elif self is TradeDirection.SHORT or self is TradeDirection.SELL:
-            return "SELL"
-        else:
-            raise ValueError(f"Invalid TradeDirection: {self}")
-
     def to_mt5(self, order_type: OrderType) -> Any:
+        """Convert TradeDirection to MetaTrader5 order type."""
         direction = self.normalize()
         if direction is TradeDirection.LONG:
             if order_type is OrderType.MARKET:
                 return mt5.ORDER_TYPE_BUY
-            elif order_type is OrderType.LIMIT:
+            if order_type is OrderType.LIMIT:
                 return mt5.ORDER_TYPE_BUY_LIMIT
-        elif direction is TradeDirection.SHORT:
+        if direction is TradeDirection.SHORT:
             if order_type is OrderType.MARKET:
                 return mt5.ORDER_TYPE_SELL
-            elif order_type is OrderType.LIMIT:
+            if order_type is OrderType.LIMIT:
                 return mt5.ORDER_TYPE_SELL_LIMIT
 
         raise ValueError(f"Invalid TradeDirection: {self} in combination with OrderType: {order_type}")
 
     def normalize(self) -> "TradeDirection":
-        if self is TradeDirection.BUY:
+        """Differentiate between LONG/BUY and SHORT/SELL."""
+        if self is TradeDirection.BUY or self is TradeDirection.LONG:
             return TradeDirection.LONG
-        elif self is TradeDirection.SELL:
+        if self is TradeDirection.SELL or self is TradeDirection.SHORT:
             return TradeDirection.SHORT
-        else:
-            return self
+
+        return self
 
     def reverse(self) -> "TradeDirection":
-        if self is TradeDirection.LONG:
-            return TradeDirection.SHORT
-        elif self is TradeDirection.SHORT:
-            return TradeDirection.LONG
-        else:
-            return self
+        """Reverse the trade direction."""
+        if self.normalize() is TradeDirection.LONG.normalize():
+            return TradeDirection.SHORT.normalize()
+        if self.normalize() is TradeDirection.SHORT.normalize():
+            return TradeDirection.LONG.normalize()
+
+        return self

@@ -1,4 +1,4 @@
-from functools import cache
+from typing import Tuple, Dict
 
 import pandas as pd
 from dash import html, dcc, callback, Input, Output, ctx
@@ -34,7 +34,9 @@ HIDDEN_STYLE = {
 }
 
 
-class BalanceOverTime(Molecule):
+class BalanceOverTime(Molecule):  # pylint: disable=too-few-public-methods
+    """A molecule that renders the Balance Over Time chart."""
+
     def __init__(self, absolute_df: pd.DataFrame, relative_df: pd.DataFrame):
         self._absolute_df = absolute_df
         self._relative_df = relative_df
@@ -123,18 +125,13 @@ class BalanceOverTime(Molecule):
             ]
         ).render()
 
-    @cache
     def render(self) -> html.Div:
+        """Render the molecule."""
         return AlphaCard(
             header=self._render_card_header(),
             body=self._render_chart_body(),
             style={"backgroundColor": "#FFFFFF"},
         ).render()
-
-
-# ============================
-# 🔁 Smooth toggle callback
-# ============================
 
 
 @callback(
@@ -148,7 +145,15 @@ class BalanceOverTime(Molecule):
     Input(BALANCE_OVER_TIME_REL_BTN_ID, "n_clicks"),
     prevent_initial_call=True,
 )
-def toggle_mode(abs_clicks, rel_clicks):
+def toggle_mode(_, __) -> Tuple[
+    Dict[str, str],
+    Dict[str, str],
+    bool,
+    Dict[str, str],
+    bool,
+    Dict[str, str],
+]:
+    """Toggle between absolute and relative balance charts."""
     triggered = ctx.triggered_id
 
     if triggered == BALANCE_OVER_TIME_REL_BTN_ID:
@@ -160,12 +165,12 @@ def toggle_mode(abs_clicks, rel_clicks):
             True,
             AlphaButtonGroup.ACTIVE_BUTTON_STYLE,
         )
-    else:
-        return (
-            VISIBLE_STYLE,
-            HIDDEN_STYLE,
-            True,
-            AlphaButtonGroup.ACTIVE_BUTTON_STYLE,
-            False,
-            AlphaButtonGroup.DEFAULT_BUTTON_STYLE,
-        )
+
+    return (
+        VISIBLE_STYLE,
+        HIDDEN_STYLE,
+        True,
+        AlphaButtonGroup.ACTIVE_BUTTON_STYLE,
+        False,
+        AlphaButtonGroup.DEFAULT_BUTTON_STYLE,
+    )

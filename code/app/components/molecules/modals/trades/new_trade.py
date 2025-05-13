@@ -1,19 +1,21 @@
-from typing import List
+from typing import List, Dict, Any
 
-from dash import html, dcc, Input, Output, State, callback, dash
 import dash_bootstrap_components as dbc
+from dash import html, dcc, Input, Output, State, callback, dash
+from dash_bootstrap_components import Alert
 
+from components.atoms.buttons.general.button import AlphaButton
 from components.molecules.molecule import Molecule
 from constants import colors
-from components.atoms.buttons.general.button import AlphaButton
 from constants.style import HIDDEN
-from services.trade_parser import TradeMessageParser
 from entities.trade_details import TradeDetails
-from services.trade_router import TradeRouter
 from quant_core.services.core_logger import CoreLogger
+from services.trade_parser import TradeMessageParser
+from services.trade_router import TradeRouter
 
 
 def render_trade_input_text_area() -> html.Div:
+    """Render the trade input text area."""
     return html.Div(
         [
             dcc.Textarea(
@@ -29,8 +31,11 @@ def render_trade_input_text_area() -> html.Div:
         style={"marginBottom": "1rem"},
     )
 
+
 def render_trade_details_section() -> List[html.Div]:
-    return [html.Div(
+    """Render the trade details section."""
+    return [
+        html.Div(
             [
                 html.H6("📋 Trade Details", className="fw-bold mb-2"),
                 html.Div(
@@ -66,18 +71,20 @@ def render_trade_details_section() -> List[html.Div]:
             [
                 AlphaButton("Execute Trade", "submit-trade-btn", style={"display": "none"}).render(),
             ]
-        )]
+        ),
+    ]
 
-class NewTradeModal(Molecule):
+
+class NewTradeModal(Molecule):  # pylint: disable=too-few-public-methods
+    """A molecule that renders the New Trade modal."""
+
     def render(self) -> dbc.Modal:
+        """Render the New Trade modal."""
         return dbc.Modal(
             [
                 dbc.ModalHeader(dbc.ModalTitle("New Trade")),
                 dbc.ModalBody(
-                    [
-                        render_trade_input_text_area(),
-                        *render_trade_details_section()
-                    ],
+                    [render_trade_input_text_area(), *render_trade_details_section()],
                     style={"maxHeight": "60vh", "overflowY": "auto"},
                 ),
                 dbc.ModalFooter([AlphaButton("Close", "close-trade-modal-btn").render()]),
@@ -107,7 +114,10 @@ class NewTradeModal(Molecule):
     State("new-trade-modal", "is_open"),
     prevent_initial_call=True,
 )
-def toggle_trade_modal(open_click, close_click, is_open):
+def toggle_trade_modal(
+    _, __, is_open: bool
+) -> tuple[bool, str, None, None, Any, Dict[str, str], Dict[str, str], Dict[str, str], Dict[str, str]]:
+    """Toggle the trade modal and reset the input fields."""
     return (
         not is_open,
         "",
@@ -133,7 +143,8 @@ def toggle_trade_modal(open_click, close_click, is_open):
     State("trade-input-text-area", "value"),
     prevent_initial_call=True,
 )
-def parse_trade_signal(_, signal_input):
+def parse_trade_signal(_, signal_input: str) -> tuple[Alert, Any, Any, Any, Any, Any, Any]:
+    """Parse the trade signal and display the details."""
     if not signal_input:
         return (
             dbc.Alert("Please paste a signal...", color=colors.WARNING_COLOR),
@@ -146,10 +157,10 @@ def parse_trade_signal(_, signal_input):
         )
     try:
         trade_details = TradeMessageParser.parse(signal_input)
-    except Exception as e:
-        CoreLogger().error(f"Failed to parse signal: {e}")
+    except Exception as error:  # pylint: disable=broad-exception-caught
+        CoreLogger().error(f"Failed to parse signal: {error}")
         return (
-            dbc.Alert(f"Error parsing signal: {e}", color=colors.ERROR_COLOR),
+            dbc.Alert(f"Error parsing signal: {error}", color=colors.ERROR_COLOR),
             dash.no_update,
             HIDDEN,
             dash.no_update,
@@ -190,14 +201,15 @@ def parse_trade_signal(_, signal_input):
     State("parsed-trade-store", "data"),
     prevent_initial_call=True,
 )
-def execute_trade(_, trade_data):
+def execute_trade(_, trade_data: Dict[str, Any]) -> dbc.Alert:
+    """Execute the trade based on the parsed data."""
     try:
         CoreLogger().info(f"Routing Trade: {trade_data}")
         trade = TradeDetails(**trade_data)
         TradeRouter(trade).route_trade()
 
         return dbc.Alert("✅ Trade successfully routed!", color=colors.SUCCESS_COLOR, dismissable=True)
-    except Exception as e:
-        CoreLogger().error(f"Execution failed: {e}")
+    except Exception as error:  # pylint: disable=broad-exception-caught
+        CoreLogger().error(f"Execution failed: {error}")
 
-        return dbc.Alert(f"Trade execution failed: {e}", color=colors.ERROR_COLOR, dismissable=True)
+        return dbc.Alert(f"Trade execution failed: {error}", color=colors.ERROR_COLOR, dismissable=True)

@@ -22,7 +22,7 @@ TABLES = [
     ("general_settings", GeneralSetting),
     ("trade_config", AccountConfig),
     ("trades", Trade),
-    ("grid_bots", GridBot)
+    ("grid_bots", GridBot),
 ]
 
 engine = create_engine(DATABASE_URL, echo=False)
@@ -30,6 +30,7 @@ SessionLocal = sessionmaker(bind=engine)
 
 
 def init_db() -> None:
+    """Initialize the database on first run."""
     inspector = inspect(engine)
     tables = inspector.get_table_names()
 

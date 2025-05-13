@@ -8,6 +8,7 @@ from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows
 
 
 class DataFeatureDrawDownAndUp(DataFeature):
+    """Data Feature for calculating draw down and draw up values."""
 
     def __init__(
         self,
@@ -26,7 +27,7 @@ class DataFeatureDrawDownAndUp(DataFeature):
 
     def add_feature(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         draw_down_column, draw_up_column = self.get_columns()
-        if all(col in data_frame.columns for col in {draw_down_column, draw_up_column}):
+        if all(col in data_frame.columns for col in (draw_down_column, draw_up_column)):
             return data_frame
 
         check_df_sorted(data_frame=data_frame)

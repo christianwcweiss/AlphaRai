@@ -1,5 +1,5 @@
 import dash
-from dash import html, dcc
+from dash import html
 
 from components.atoms.card.card import AlphaCard
 from components.atoms.content import MainContent
@@ -12,6 +12,8 @@ dash.register_page(__name__, path="/bots", name="Bots")
 
 
 class BotsPage(BasePage):
+    """Bots Page."""
+
     def render(self):
         return PageBody(
             [

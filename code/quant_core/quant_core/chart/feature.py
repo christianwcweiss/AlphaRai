@@ -5,18 +5,20 @@ import pandas as pd
 
 
 class DataFeature(abc.ABC):
+    """Abstract base class for data features."""
+
     @abc.abstractmethod
     def get_columns(self) -> List[str]:
-        pass
+        """Return the columns for the feature."""
 
     @abc.abstractmethod
     def get_feature_columns(self) -> List[str]:
-        pass
+        """Return the columns for the normalized feature."""
 
     @abc.abstractmethod
     def add_feature(self, data_frame: pd.DataFrame) -> pd.DataFrame:
-        pass
+        """Add the feature to the DataFrame."""
 
     @abc.abstractmethod
     def normalize_feature(self, data_frame: pd.DataFrame) -> pd.DataFrame:
-        pass
+        """Normalize the feature values in the DataFrame."""

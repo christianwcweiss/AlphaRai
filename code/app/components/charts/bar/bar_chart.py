@@ -7,12 +7,15 @@ from components.charts.chart import Chart, ChartTraceStyle, ChartLayoutStyle
 from constants.colors import CHART_PALETTE
 
 
-class BarChartTraceStyle(ChartTraceStyle):
+class BarChartTraceStyle(ChartTraceStyle):  # pylint: disable=too-few-public-methods
+    """Trace style for bar charts."""
+
     def __init__(self) -> None:
         self._use_group_colors = True
         self._color_palette = CHART_PALETTE
 
     def to_style_dict(self, group_index: Optional[int] = None) -> Dict[str, Any]:
+        """Converts the trace style to a dictionary."""
         style = {}
         if self._use_group_colors and group_index is not None:
             color = self._color_palette[group_index % len(self._color_palette)]
@@ -20,7 +23,9 @@ class BarChartTraceStyle(ChartTraceStyle):
         return style
 
 
-class BarChart(Chart):
+class BarChart(Chart):  # pylint: disable=too-few-public-methods
+    """Bar chart component."""
+
     def __init__(
         self,
         data_frame: pd.DataFrame,
@@ -34,8 +39,9 @@ class BarChart(Chart):
         x_col: str,
         y_col: str,
         group_by: Optional[str] = None,
-        orientation: str = "v",  # "v" for vertical bars, "h" for horizontal
+        orientation: str = "v",
     ) -> go.Figure:
+        """Plots a bar chart."""
         grouped_data = self._data_frame.groupby(group_by) if group_by else [(None, self._data_frame)]
 
         fig = go.Figure()
@@ -43,7 +49,7 @@ class BarChart(Chart):
         for idx, (group_name, group_data) in enumerate(grouped_data):
             trace_style = BarChartTraceStyle().to_style_dict(group_index=idx)
 
-            bar_kwargs = dict(name=str(group_name) if group_name else y_col, **trace_style)
+            bar_kwargs = {"name": str(group_name) if group_name else y_col, **trace_style}
 
             if orientation == "v":
                 bar_kwargs.update({"x": group_data[x_col], "y": group_data[y_col]})

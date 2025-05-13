@@ -4,7 +4,9 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-class GeneralSetting(Base):
+class GeneralSetting(Base):  # type: ignore  # pylint: disable=too-few-public-methods
+    """General settings for the application."""
+
     __tablename__ = "general_settings"
 
     key = Column(String, primary_key=True, index=True)

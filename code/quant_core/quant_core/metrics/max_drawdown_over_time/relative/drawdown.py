@@ -4,6 +4,8 @@ from quant_core.metrics.trade_metric import TradeMetricOverTime
 
 
 class MaxDrawdownOverTimeRelative(TradeMetricOverTime):
+    """Calculates the maximum drawdown over time as a percentage of the peak equity."""
+
     def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         if data_frame.empty or "profit" not in data_frame.columns:
             return pd.DataFrame(columns=["time", "drawdown_pct"])

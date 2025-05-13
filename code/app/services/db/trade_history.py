@@ -106,8 +106,8 @@ def sync_trades_from_all_accounts(days: int = 9999) -> str:
                 count += 1
 
             results.append(f"{account.friendly_name}: {count} trades synced")
-        except Exception as e:
-            CoreLogger().error(f"Error syncing trades for {account.friendly_name}: {e}")
+        except Exception as error:  # pylint: disable=broad-exception-caught
+            CoreLogger().error(f"Error syncing trades for {account.friendly_name}: {error}")
             results.append(f"{account.friendly_name}: sync failed")
 
     return ", ".join(results)

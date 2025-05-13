@@ -7,7 +7,9 @@ from components.charts.chart import Chart, ChartTraceStyle, ChartLayoutStyle
 from constants.colors import CHART_PALETTE
 
 
-class LineChartTraceStyle(ChartTraceStyle):
+class LineChartTraceStyle(ChartTraceStyle):  # pylint: disable=too-few-public-methods
+    """Trace style for line charts."""
+
     def __init__(
         self,
         line_width: Optional[float] = None,
@@ -21,16 +23,17 @@ class LineChartTraceStyle(ChartTraceStyle):
         self._color_palette = CHART_PALETTE
 
     def to_style_dict(self, group_index: Optional[int] = None) -> Dict[str, Any]:
+        """Converts the trace style to a dictionary for Plotly."""
         style = {"mode": "lines+markers" if self._show_markers else "lines", "line": {}}
 
         if self._use_group_colors and group_index is not None:
             color = self._color_palette[group_index % len(self._color_palette)]
-            style["line"]["color"] = color
+            style["line"]["color"] = color  # type: ignore
 
         if self._line_width is not None:
-            style["line"]["width"] = self._line_width
+            style["line"]["width"] = self._line_width  # type: ignore
         if self._line_dash is not None:
-            style["line"]["dash"] = self._line_dash
+            style["line"]["dash"] = self._line_dash  # type: ignore
 
         if not style["line"]:
             style.pop("line")
@@ -38,7 +41,9 @@ class LineChartTraceStyle(ChartTraceStyle):
         return style
 
 
-class LineChart(Chart):
+class LineChart(Chart):  # pylint: disable=too-few-public-methods
+    """Line chart component for visualizing trends over time."""
+
     def __init__(
         self,
         data_frame: pd.DataFrame,
@@ -53,6 +58,7 @@ class LineChart(Chart):
         y_col: str,
         group_by: Optional[str] = None,
     ) -> go.Figure:
+        """Plots a line chart."""
         grouped_data = self._data_frame.groupby(group_by) if group_by else [(None, self._data_frame)]
 
         fig = go.Figure()

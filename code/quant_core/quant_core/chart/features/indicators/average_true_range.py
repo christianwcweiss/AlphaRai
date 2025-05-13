@@ -9,6 +9,8 @@ from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows
 
 
 class DataFeatureAverageTrueRange(DataFeature):
+    """Data Feature for Average True Range (ATR) indicator."""
+
     def __init__(self, atr_period: int = 14) -> None:
         self._atr_period = atr_period
 

@@ -10,7 +10,9 @@ from models.account import Account
 import pandas as pd
 
 
-class AccountSettingsCard:
+class AccountSettingsCard:  # pylint: disable=too-few-public-methods
+    """A card that displays account settings and a chart."""
+
     def __init__(self, account: Account, enabled_count: int, total_count: int, rel_df: pd.DataFrame | None = None):
         self.account = account
         self.enabled_count = enabled_count
@@ -21,6 +23,7 @@ class AccountSettingsCard:
         self.delete_btn_id = f"delete-account-{account.uid}"
 
     def _encode_image(self, file_path: str) -> str:
+        """Encodes an image to base64."""
         with open(file_path, "rb") as f:
             return base64.b64encode(f.read()).decode()
 
@@ -127,6 +130,7 @@ class AccountSettingsCard:
         ).render()
 
     def render(self) -> html.Div:
+        """Renders the account settings card."""
         return AlphaCard(
             header=self._render_header(),
             body=self._render_body(),

@@ -8,6 +8,8 @@ from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows
 
 
 class DataFeatureKeltnerChannel(DataFeature):
+    """Data Feature for the Keltner Channel."""
+
     def __init__(self, kc_length: int = 20, kc_mult_factor: int = 2) -> None:
         self._kc_length = kc_length
         self._kc_mult_factor = kc_mult_factor
@@ -21,7 +23,7 @@ class DataFeatureKeltnerChannel(DataFeature):
 
     def add_feature(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         kc_mavg_column, kc_upper_column, kc_lower_column = self.get_columns()
-        if all(col in data_frame.columns for col in {kc_mavg_column, kc_upper_column, kc_lower_column}):
+        if all(col in data_frame.columns for col in (kc_mavg_column, kc_upper_column, kc_lower_column)):
             return data_frame
 
         check_df_sorted(data_frame=data_frame)

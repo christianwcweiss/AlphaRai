@@ -3,6 +3,8 @@ from quant_core.metrics.trade_metric import TradeMetricOverTime
 
 
 class AccountBalanceOverTimeAbsolute(TradeMetricOverTime):
+    """Account Balance Over Time (Absolute Value)."""
+
     def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         df = data_frame.copy()
         df["time"] = pd.to_datetime(df["time"])

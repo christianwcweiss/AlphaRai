@@ -1,5 +1,6 @@
 import random
 import string
+from typing import Tuple, Optional
 
 import dash
 import dash_bootstrap_components as dbc
@@ -25,15 +26,16 @@ from services.db.account import (
 from services.db.account_config import get_configs_by_account_id
 from services.db.trade_history import get_all_trades
 
-# Register page
 dash.register_page(__name__, path="/accounts", name="Accounts")
 
 
 def generate_uid(length: int = 8) -> str:
+    """Generate a random UID of the specified length."""
     return "".join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
 
 def render_account_card(account, rel_df):
+    """Render the account card with the given account and relative DataFrame."""
     configs = get_configs_by_account_id(account.id)
     total = len(configs)
     enabled = sum(1 for c in configs if c.enabled)
@@ -42,6 +44,7 @@ def render_account_card(account, rel_df):
 
 
 def reload_mt5_accounts():
+    """Reload the MT5 accounts and their trades."""
     accounts = [account for account in get_all_accounts() if Platform(account.platform.upper()) is Platform.METATRADER]
     accounts = sorted(accounts, key=lambda x: x.friendly_name)
     trades = get_all_trades()
@@ -54,14 +57,16 @@ def reload_mt5_accounts():
     else:
         rel_df = pd.DataFrame()
 
-    return AlphaRow([
-        AlphaCol(render_account_card(account, rel_df), xs=12, sm=6, md=4, lg=3, xl=3)
-        for account in accounts
-    ])
+    return AlphaRow(
+        [AlphaCol(render_account_card(account, rel_df), xs=12, sm=6, md=4, lg=3, xl=3) for account in accounts]
+    )
 
 
 class AccountsPage(BasePage):
+    """Accounts Page."""
+
     def render(self):
+        """Render the Accounts Page."""
         return PageBody(
             [
                 html.Div(id="page-init", children="trigger", style={"display": "none"}),
@@ -96,7 +101,9 @@ class AccountsPage(BasePage):
                                 dbc.ModalFooter(
                                     [
                                         dbc.Button("Save", id="confirm-add-account", color="success"),
-                                        dbc.Button("Cancel", id="close-add-account", color="secondary", className="ms-2"),
+                                        dbc.Button(
+                                            "Cancel", id="close-add-account", color="secondary", className="ms-2"
+                                        ),
                                     ]
                                 ),
                             ],
@@ -108,10 +115,14 @@ class AccountsPage(BasePage):
                             children=[
                                 dbc.ModalHeader("Confirm Deletion"),
                                 dbc.ModalBody("Are you sure you want to delete this account?"),
-                                dbc.ModalFooter([
-                                    dbc.Button("Delete", id="confirm-delete-btn", color="danger"),
-                                    dbc.Button("Cancel", id="cancel-delete-btn", color="secondary", className="ms-2"),
-                                ]),
+                                dbc.ModalFooter(
+                                    [
+                                        dbc.Button("Delete", id="confirm-delete-btn", color="danger"),
+                                        dbc.Button(
+                                            "Cancel", id="cancel-delete-btn", color="secondary", className="ms-2"
+                                        ),
+                                    ]
+                                ),
                             ],
                         ),
                         html.Hr(),
@@ -135,12 +146,14 @@ layout = page.layout
     [State("add-account-modal", "is_open")],
     prevent_initial_call=True,
 )
-def toggle_add_modal(open_click, close_click, save_click, is_open):
+def toggle_add_modal(_, __, ___, is_open: bool) -> bool:
+    """Toggle the add account modal."""
     triggered = ctx.triggered_id
     if triggered == "open-add-mt5-btn":
         return True
-    elif triggered in ["close-add-account", "confirm-add-account"]:
+    if triggered in ["close-add-account", "confirm-add-account"]:
         return False
+
     return is_open
 
 
@@ -151,7 +164,8 @@ def toggle_add_modal(open_click, close_click, save_click, is_open):
     State("input-account-secret", "value"),
     prevent_initial_call=True,
 )
-def save_new_account(_, label, secret):
+def save_new_account(_, label: str, secret: str) -> AlphaRow:
+    """Save the new MT5 account."""
     if not label or not secret:
         raise PreventUpdate
 
@@ -164,7 +178,8 @@ def save_new_account(_, label, secret):
     Input("page-init", "children"),
     prevent_initial_call="initial_duplicate",
 )
-def load_mt5_credentials_on_page_load(_):
+def load_mt5_credentials_on_page_load(_) -> AlphaRow:
+    """Load the MT5 accounts on page load."""
     return reload_mt5_accounts()
 
 
@@ -183,23 +198,25 @@ def load_mt5_credentials_on_page_load(_):
     ],
     prevent_initial_call=True,
 )
-def manage_delete(_, cancel_click, confirm_click, pending_uid, ids):
+def manage_delete(_, __, ___, pending_uid, ____) -> Tuple[
+    dash.no_update,
+    bool,
+    Optional[str],
+]:
+    """Manage the delete confirmation modal and account deletion."""
     triggered = ctx.triggered_id
 
-    # Cancel
     if triggered == "cancel-delete-btn":
         return dash.no_update, False, dash.no_update
 
-    # Confirm deletion
-    elif triggered == "confirm-delete-btn":
+    if triggered == "confirm-delete-btn":
         if pending_uid:
             delete_account(Platform.METATRADER.value, pending_uid)
             return reload_mt5_accounts(), False, None
-        else:
-            raise PreventUpdate
 
-    # Open modal
-    elif isinstance(triggered, dict) and triggered.get("type") == "initiate-delete":
+        raise PreventUpdate
+
+    if isinstance(triggered, dict) and triggered.get("type") == "initiate-delete":
         return dash.no_update, True, triggered["index"]
 
     raise PreventUpdate

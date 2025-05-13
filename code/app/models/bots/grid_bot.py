@@ -4,22 +4,22 @@ from sqlalchemy import (
     String,
     Boolean,
     Float,
-    DateTime,
     UniqueConstraint,
 )
-from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
 
 
 Base = declarative_base()
 
 
-class GridBot(Base):
+class GridBot(Base):  # type: ignore  # pylint: disable=too-few-public-methods
+    """Grid bot model for the application."""
+
     __tablename__ = "grid_bots"
 
     id = Column(Integer, primary_key=True)
     uid = Column(String(8), nullable=False, unique=True)  # Unique bot identifier
-    account_uid = Column(String(8), nullable=False)       # Reference to Account.uid
+    account_uid = Column(String(8), nullable=False)  # Reference to Account.uid
     symbol = Column(String, nullable=False)
     name = Column(String, nullable=False)
     enabled = Column(Boolean, nullable=False, default=True)
@@ -29,9 +29,7 @@ class GridBot(Base):
     n_grids = Column(Integer, nullable=False)  # number of grids between bounds
     base_order_size_percent = Column(Float, nullable=False)  # e.g., 1.5 for 1.5%
 
-    __table_args__ = (
-        UniqueConstraint("account_uid", "symbol", name="uix_account_symbol"),
-    )
+    __table_args__ = (UniqueConstraint("account_uid", "symbol", name="uix_account_symbol"),)
 
     def __repr__(self) -> str:
         return (

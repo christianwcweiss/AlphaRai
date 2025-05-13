@@ -8,6 +8,8 @@ from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows
 
 
 class DataFeatureBollingerBands(DataFeature):
+    """DataFeature for Bollinger Bands."""
+
     def __init__(self, bb_length: int = 20, bb_mult_factor: int = 2) -> None:
         self._bb_length = bb_length
         self._bb_mult_factor = bb_mult_factor
@@ -21,7 +23,7 @@ class DataFeatureBollingerBands(DataFeature):
 
     def add_feature(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         bb_mavg_column, bb_upper_column, bb_lower_column = self.get_columns()
-        if all(col in data_frame.columns for col in {bb_mavg_column, bb_upper_column, bb_lower_column}):
+        if all(col in data_frame.columns for col in (bb_mavg_column, bb_upper_column, bb_lower_column)):
             return data_frame
 
         check_df_sorted(data_frame=data_frame)

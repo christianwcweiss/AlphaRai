@@ -9,8 +9,10 @@ from quant_core.chart.features.indicators.average_true_range import DataFeatureA
 from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows
 
 
-class DataFeatureAdaptiveSuperTrend(DataFeature):
-    def __init__(
+class DataFeatureAdaptiveSuperTrend(DataFeature):  # pylint: disable=too-many-instance-attributes
+    """Data Feature for Adaptive SuperTrend."""
+
+    def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self,
         atr_period: int = 10,
         min_factor: float = 1.0,
@@ -56,7 +58,9 @@ class DataFeatureAdaptiveSuperTrend(DataFeature):
             hv_new_column,
         ]
 
-    def add_feature(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+    def add_feature(  # pylint: disable=too-many-statements,too-many-branches,too-many-locals
+        self, data_frame: pd.DataFrame
+    ) -> pd.DataFrame:
         (
             adapt_super_trend_column,
             adapt_direction_column,
@@ -67,14 +71,14 @@ class DataFeatureAdaptiveSuperTrend(DataFeature):
         ) = self.get_columns()
         if all(
             col in data_frame.columns
-            for col in {
+            for col in (
                 adapt_super_trend_column,
                 adapt_direction_column,
                 chosen_factor_column,
                 lv_new_column,
                 mv_new_column,
                 hv_new_column,
-            }
+            )
         ):
             return data_frame
 
@@ -92,7 +96,6 @@ class DataFeatureAdaptiveSuperTrend(DataFeature):
 
         df["_hl2_"] = 0.5 * (df["high"] + df["low"])
 
-        # 2) Build factor list
         factor_values = []
         v = self._min_factor
         while v <= self._max_factor + 1e-9:
@@ -100,15 +103,12 @@ class DataFeatureAdaptiveSuperTrend(DataFeature):
             v += self._step
 
         if not factor_values:
-            # No valid factors => just return
             return data_frame
 
-        # We'll only do the multi-factor "performance" pass on the last max_data bars.
         df_factors = df.tail(self._max_data).copy()
         df_factors.dropna(subset=[atr_name, "_hl2_", "close"], inplace=True)
 
-        # Container for each factor's running state
-        class SuperTrendState:
+        class _SuperTrendState:  # pylint: disable=too-few-public-methods
             __slots__ = ("upper", "lower", "trend", "output", "perf")
 
             def __init__(self):
@@ -118,13 +118,10 @@ class DataFeatureAdaptiveSuperTrend(DataFeature):
                 self.output = np.nan
                 self.perf = 0.0
 
-        st_list = [SuperTrendState() for _ in factor_values]
+        st_list = [_SuperTrendState() for _ in factor_values]
 
-        # Pine uses alpha = 2/(perfAlpha+1)
         alpha = 2.0 / (self._perf_alpha + 1.0)
 
-        # 3) Multi-factor pass to measure performance
-        # The script references close[1] in places => handle with i-1 carefully
         for i in range(len(df_factors)):
             c = df_factors["close"].iloc[i]
             c1 = df_factors["close"].iloc[i - 1] if i > 0 else c
@@ -239,8 +236,8 @@ class DataFeatureAdaptiveSuperTrend(DataFeature):
         den_series = df["_abs_chg_"].ewm(span=int(self._perf_alpha), min_periods=1).mean()
         cluster_perf_vals = final_perfs[factor_ranks == chosen_rank]
         avg_perf = cluster_perf_vals.mean() if len(cluster_perf_vals) else 0.0
-        if avg_perf < 0:
-            avg_perf = 0
+        avg_perf = max(avg_perf, 0.0)
+
         final_den = den_series.iloc[-1] if len(den_series) else 1e-9
         if final_den == 0:
             final_den = 1e-9

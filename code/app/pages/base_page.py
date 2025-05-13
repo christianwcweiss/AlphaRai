@@ -4,6 +4,8 @@ from dash.development.base_component import Component
 
 
 class BasePage(abc.ABC):
+    """Base class for all pages in the application."""
+
     def __init__(
         self,
         title: str,
@@ -13,7 +15,6 @@ class BasePage(abc.ABC):
     @abc.abstractmethod
     def render(self) -> Component:
         """Render and return the Dash layout component."""
-        pass
 
     @property
     def layout(self) -> Component:

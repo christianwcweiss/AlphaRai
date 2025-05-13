@@ -3,11 +3,13 @@ from quant_core.metrics.trade_metric import TradeMetricOverTime
 
 
 class CommissionOverTime(TradeMetricOverTime):
-    def calculate_grouped(self, df: pd.DataFrame) -> pd.DataFrame:
-        if df.empty or "commission" not in df.columns or "time" not in df.columns:
+    """Calculates the total commission over time."""
+
+    def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+        if data_frame.empty or "commission" not in data_frame.columns or "time" not in data_frame.columns:
             return pd.DataFrame(columns=["time", "commission"])
 
-        df = df.copy()
-        df["time"] = pd.to_datetime(df["time"]).dt.date
+        data_frame = data_frame.copy()
+        data_frame["time"] = pd.to_datetime(data_frame["time"]).dt.date
 
-        return df.groupby("time")["commission"].sum().reset_index()
+        return data_frame.groupby("time")["commission"].sum().reset_index()

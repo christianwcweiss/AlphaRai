@@ -4,7 +4,10 @@ from quant_core.metrics.trade_metric import TradeMetricOverTime
 
 
 class MostTradedSymbols(TradeMetricOverTime):
-    def __init__(self, top_n: int = 5):
+    """Most Traded Symbols Over Time"""
+
+    def __init__(self, top_n: int = 5) -> None:
+        super().__init__()
         self.top_n = top_n
 
     def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:

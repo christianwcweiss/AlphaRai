@@ -4,6 +4,8 @@ from quant_core.bodies.alert_body import AlertBody
 
 
 class TradingViewAlertBody(AlertBody):
+    """Alert body for TradingView alerts."""
+
     ALERT_SOURCE = "Trading View"
 
     def to_dict(self) -> Dict[str, Any]:

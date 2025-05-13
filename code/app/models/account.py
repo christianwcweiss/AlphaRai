@@ -4,7 +4,9 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-class Account(Base):
+class Account(Base):  # type: ignore  # pylint: disable=too-few-public-methods
+    """Represents an account in the database."""
+
     __tablename__ = "accounts"
 
     id = Column(Integer, primary_key=True)

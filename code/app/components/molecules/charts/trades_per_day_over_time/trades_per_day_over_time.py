@@ -1,5 +1,3 @@
-from functools import cache
-
 import pandas as pd
 from dash import html, dcc
 
@@ -10,7 +8,9 @@ from components.charts.line.line_chart import LineChart
 from components.molecules.molecule import Molecule
 
 
-class TradesPerDayOverTimeMolecule(Molecule):
+class TradesPerDayOverTimeMolecule(Molecule):  # pylint: disable=too-few-public-methods
+    """A molecule that renders the Trades Per Day Over Time chart."""
+
     def __init__(self, trades_per_day_df: pd.DataFrame):
         self._df = trades_per_day_df
         self._chart_layout_style = ChartLayoutStyle(
@@ -33,7 +33,6 @@ class TradesPerDayOverTimeMolecule(Molecule):
             config={"displayModeBar": False},
         )
 
-    @cache
     def render(self) -> html.Div:
         return AlphaCard(
             header=AlphaCardHeader([html.H5("TRADES PER DAY")]).render(),

@@ -2,8 +2,10 @@ from datetime import datetime
 from typing import Optional
 
 
-class MT5Trade:
-    def __init__(
+class MT5Trade:  # pylint: disable=too-many-instance-attributes
+    """Represents a trade in MetaTrader 5."""
+
+    def __init__(  # pylint: disable=too-many-arguments, too-many-positional-arguments
         self,
         ticket: int,
         order: int,
@@ -36,64 +38,80 @@ class MT5Trade:
         self._comment = comment
 
     @property
-    def ticket(self):
+    def ticket(self) -> int:
+        """Retrieves the ticket associated with the trade."""
         return self._ticket
 
     @property
-    def order(self):
+    def order(self) -> int:
+        """Retrieves the order associated with the trade."""
         return self._order
 
     @property
-    def time(self):
+    def time(self) -> datetime:
+        """Retrieves the time associated with the trade."""
         return self._time
 
     @property
-    def trade_type(self):
+    def trade_type(self) -> str:
+        """Retrieves the type of trade (buy/sell) associated with the trade."""
         return self._trade_type
 
     @property
-    def size(self):
+    def size(self) -> float:
+        """Retrieves the size associated with the trade."""
         return self._size
 
     @property
-    def symbol(self):
+    def symbol(self) -> str:
+        """Retrieves the symbol associated with the trade."""
         return self._symbol
 
     @property
-    def price(self):
+    def price(self) -> float:
+        """Retrieves the price associated with the trade."""
         return self._price
 
     @property
-    def sl(self):
+    def sl(self) -> Optional[float]:
+        """Retrieves the stop loss associated with the trade."""
         return self._sl
 
     @property
-    def tp(self):
+    def tp(self) -> Optional[float]:
+        """Retrieves the take profit associated with the trade."""
         return self._tp
 
     @property
-    def commission(self):
+    def commission(self) -> float:
+        """Retrieves the commission associated with the trade."""
         return self._commission
 
     @property
-    def swap(self):
+    def swap(self) -> float:
+        """Retrieves the swap associated with the trade."""
         return self._swap
 
     @property
-    def profit(self):
+    def profit(self) -> float:
+        """Retrieves the profit associated with the trade."""
         return self._profit
 
     @property
-    def magic(self):
+    def magic(self) -> Optional[int]:
+        """Retrieves the magic number associated with the trade."""
         return self._magic
 
     @property
-    def comment(self):
+    def comment(self) -> Optional[str]:
+        """Retrieves the comment associated with the trade."""
         return self._comment
 
 
-class CompletedMT5Trade:
-    def __init__(
+class CompletedMT5Trade:  # pylint: disable=too-many-instance-attributes
+    """Represents a completed trade in MetaTrader 5."""
+
+    def __init__(  # pylint: disable=too-many-arguments, too-many-positional-arguments
         self,
         ticket: int,
         order: int,
@@ -124,53 +142,66 @@ class CompletedMT5Trade:
         self._comment = comment
 
     @property
-    def ticket(self):
+    def ticket(self) -> int:
+        """Retrieves the ticket associated with the trade."""
         return self._ticket
 
     @property
-    def order(self):
+    def order(self) -> int:
+        """Retrieves the order associated with the trade."""
         return self._order
 
     @property
-    def time(self):
+    def time(self) -> datetime:
+        """Retrieves the time associated with the trade."""
         return self._time
 
     @property
-    def type_code(self):
-        return self._type_code  # MT5 numeric type (0=buy, 1=sell, etc.)
+    def type_code(self) -> int:
+        """Retrieves the type code associated with the trade."""
+        return self._type_code
 
     @property
-    def entry_type(self):
-        return self._entry_type  # 0=open, 1=close
+    def entry_type(self) -> int:
+        """Retrieves the entry type associated with the trade."""
+        return self._entry_type
 
     @property
-    def size(self):
+    def size(self) -> float:
+        """Retrieves the size associated with the trade."""
         return self._size
 
     @property
-    def symbol(self):
+    def symbol(self) -> str:
+        """Retrieves the symbol associated with the trade."""
         return self._symbol
 
     @property
-    def price(self):
+    def price(self) -> float:
+        """Retrieves the price associated with the trade."""
         return self._price
 
     @property
-    def commission(self):
+    def commission(self) -> float:
+        """Retrieves the commission associated with the trade."""
         return self._commission
 
     @property
-    def swap(self):
+    def swap(self) -> float:
+        """Retrieves the swap associated with the trade."""
         return self._swap
 
     @property
-    def profit(self):
+    def profit(self) -> float:
+        """Retrieves the profit associated with the trade."""
         return self._profit
 
     @property
-    def magic(self):
+    def magic(self) -> Optional[int]:
+        """Retrieves the magic number associated with the trade."""
         return self._magic
 
     @property
-    def comment(self):
+    def comment(self) -> Optional[str]:
+        """Retrieves the comment associated with the trade."""
         return self._comment

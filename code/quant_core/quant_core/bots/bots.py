@@ -16,13 +16,11 @@ class BaseTradingBot(ABC):
         self._symbols = symbols
 
     @abstractmethod
-    def bot_loop(self) -> None:
+    async def bot_loop(self) -> None:
         """
         Main loop for the bot.
         This method should be overridden in subclasses to implement the bot's logic.
         """
-        pass
-
 
     @abstractmethod
     def execute_trade(self, signal: Dict[str, Any], size: float) -> bool:
@@ -30,13 +28,9 @@ class BaseTradingBot(ABC):
         Send the trade order to the broker.
         Returns True if the trade was placed successfully.
         """
-        pass
-
 
     @abstractmethod
     def close_all_positions(self) -> None:
         """
         Force-close all open positions (e.g., during shutdown or risk event).
         """
-        pass
-

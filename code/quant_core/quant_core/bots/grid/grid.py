@@ -1,3 +1,4 @@
+# pylint: disable=R0801
 import asyncio
 from typing import List, Dict, Any
 
@@ -11,15 +12,15 @@ class GridTradingBot(BaseTradingBot):
     Replaces filled orders to maintain the grid.
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self,
         account_id: str,
         symbols: List[str],
         broker_client,  # Must implement `get_price`, `place_limit_order`, `get_open_orders`
         grid_spacing: float = 0.005,  # 0.5%
         grid_levels: int = 5,
-        order_size: float = 0.1
-    ):
+        order_size: float = 0.1,
+    ) -> None:
         super().__init__(account_id, symbols)
         self._broker = broker_client
         self._spacing = grid_spacing
@@ -35,19 +36,13 @@ class GridTradingBot(BaseTradingBot):
         for i in range(1, self._levels + 1):
             offset = mid_price * self._spacing * i
 
-            grid.append({
-                "symbol": symbol,
-                "side": "buy",
-                "price": round(mid_price - offset, 5),
-                "size": self._order_size
-            })
+            grid.append(
+                {"symbol": symbol, "side": "buy", "price": round(mid_price - offset, 5), "size": self._order_size}
+            )
 
-            grid.append({
-                "symbol": symbol,
-                "side": "sell",
-                "price": round(mid_price + offset, 5),
-                "size": self._order_size
-            })
+            grid.append(
+                {"symbol": symbol, "side": "sell", "price": round(mid_price + offset, 5), "size": self._order_size}
+            )
 
         return grid
 
@@ -63,26 +58,17 @@ class GridTradingBot(BaseTradingBot):
 
         # Cancel any orders not matching the grid
         for o in open_orders:
-            match = any(
-                abs(o["price"] - t["price"]) < 1e-5 and o["side"] == t["side"]
-                for t in target_orders
-            )
+            match = any(abs(o["price"] - t["price"]) < 1e-5 and o["side"] == t["side"] for t in target_orders)
             if not match:
                 self._broker.cancel_order(o["order_id"])
                 CoreLogger().info(f"Canceled outdated order {o['order_id']}")
 
         # Submit any missing grid orders
         for t in target_orders:
-            match = any(
-                abs(t["price"] - o["price"]) < 1e-5 and t["side"] == o["side"]
-                for o in open_orders
-            )
+            match = any(abs(t["price"] - o["price"]) < 1e-5 and t["side"] == o["side"] for o in open_orders)
             if not match:
                 order_id = self._broker.place_limit_order(
-                    symbol=t["symbol"],
-                    side=t["side"],
-                    price=t["price"],
-                    size=t["size"]
+                    symbol=t["symbol"], side=t["side"], price=t["price"], size=t["size"]
                 )
                 CoreLogger().info(f"Placed {t['side']} order at {t['price']} → ID: {order_id}")
 
@@ -92,8 +78,8 @@ class GridTradingBot(BaseTradingBot):
             try:
                 for symbol in self._symbols:
                     self._sync_grid(symbol)
-            except Exception as e:
-                CoreLogger().error(f"Grid bot error: {e}")
+            except Exception as error:  # pylint: disable=broad-exception-caught
+                CoreLogger().error(f"Grid bot error: {error}")
 
             await asyncio.sleep(30)  # Grid refresh interval
 

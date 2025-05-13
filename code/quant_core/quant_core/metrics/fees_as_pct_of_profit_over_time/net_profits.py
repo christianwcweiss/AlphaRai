@@ -3,16 +3,23 @@ from quant_core.metrics.trade_metric import TradeMetricOverTime
 
 
 class FeesAsPctOfProfitOverTime(TradeMetricOverTime):
-    def calculate_grouped(self, df: pd.DataFrame) -> pd.DataFrame:
-        if df.empty or "profit" not in df.columns or "commission" not in df.columns or "swap" not in df.columns:
+    """Fees as percentage of profit over time metric."""
+
+    def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+        if (
+            data_frame.empty
+            or "profit" not in data_frame.columns
+            or "commission" not in data_frame.columns
+            or "swap" not in data_frame.columns
+        ):
             return pd.DataFrame(columns=["time", "fees_pct"])
 
-        df = df.copy()
-        df["time"] = pd.to_datetime(df["time"]).dt.date
-        df["fees"] = df["commission"] + df["swap"]
+        data_frame = data_frame.copy()
+        data_frame["time"] = pd.to_datetime(data_frame["time"]).dt.date
+        data_frame["fees"] = data_frame["commission"] + data_frame["swap"]
 
         grouped = (
-            df.groupby("time")
+            data_frame.groupby("time")
             .agg(
                 total_fees=("fees", "sum"),
                 total_profit=("profit", "sum"),

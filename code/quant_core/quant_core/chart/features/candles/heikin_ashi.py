@@ -7,6 +7,7 @@ from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows
 
 
 class DataFeatureHeikinAshi(DataFeature):
+    """Data Feature for Heikin Ashi candles."""
 
     def get_columns(self) -> List[str]:
         return ["ha_open", "ha_close", "ha_high", "ha_low"]

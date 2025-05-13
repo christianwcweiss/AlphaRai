@@ -9,7 +9,9 @@ from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows
 
 
 class DataFeatureSqueezeMomentum(DataFeature):
-    def __init__(
+    """Data Feature for the Squeeze Momentum Indicator."""
+
+    def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self,
         bb_length: int = 20,
         bb_mult_factor: int = 2,
@@ -41,9 +43,9 @@ class DataFeatureSqueezeMomentum(DataFeature):
             f"sqz_val_{suffix}",
         ]
 
-    def add_feature(self, data_frame) -> pd.DataFrame:
+    def add_feature(self, data_frame) -> pd.DataFrame:  # pylint: disable=too-many-locals
         sqz_on_column, sqz_off_column, no_sqz_column, squeeze_val_column = self.get_columns()
-        if all(col in data_frame.columns for col in {sqz_on_column, sqz_off_column, no_sqz_column, squeeze_val_column}):
+        if all(col in data_frame.columns for col in (sqz_on_column, sqz_off_column, no_sqz_column, squeeze_val_column)):
             return data_frame
 
         check_df_sorted(data_frame=data_frame)
@@ -52,12 +54,12 @@ class DataFeatureSqueezeMomentum(DataFeature):
         # Bollinger
         bb_feature = DataFeatureBollingerBands(self._bb_length, self._bb_mult_factor)
         data_frame = bb_feature.add_feature(data_frame)
-        bb_mavg_column, bb_upper_column, bb_lower_column = bb_feature.get_columns()
+        _, bb_upper_column, bb_lower_column = bb_feature.get_columns()
 
         # Keltner
         kc_feature = DataFeatureBollingerBands(self._kc_length, self._kc_mult_factor)
         data_frame = kc_feature.add_feature(data_frame)
-        kc_mavg_column, kc_upper_column, kc_lower_column = kc_feature.get_columns()
+        _, kc_upper_column, kc_lower_column = kc_feature.get_columns()
 
         # Squeeze
         data_frame[sqz_on_column] = (data_frame[bb_lower_column] > data_frame[kc_lower_column]) & (

@@ -3,15 +3,17 @@ from quant_core.metrics.trade_metric import TradeMetricOverTime
 
 
 class AvgHoldTimeOverTime(TradeMetricOverTime):
-    def calculate_grouped(self, df: pd.DataFrame) -> pd.DataFrame:
-        if df.empty or "time" not in df.columns or "duration" not in df.columns:
+    """Calculates the average hold time of trades over time."""
+
+    def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+        if data_frame.empty or "time" not in data_frame.columns or "duration" not in data_frame.columns:
             return pd.DataFrame(columns=["time", "account_id", "hold_time"])
 
-        df = df.copy()
-        df["time"] = pd.to_datetime(df["time"])
+        data_frame = data_frame.copy()
+        data_frame["time"] = pd.to_datetime(data_frame["time"])
         result = []
 
-        for current_day, window_df in self.get_rolling_windows(df, skip_head=True).items():
+        for current_day, window_df in self.get_rolling_windows(data_frame, skip_head=True).items():
             for account, group in window_df.groupby("account_id"):
                 if group.empty:
                     continue
@@ -27,6 +29,6 @@ class AvgHoldTimeOverTime(TradeMetricOverTime):
 
         return pd.DataFrame(result)
 
-    def calculate_ungrouped(self, df: pd.DataFrame) -> pd.DataFrame:
-        grouped = self.calculate_grouped(df)
+    def calculate_ungrouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+        grouped = self.calculate_grouped(data_frame)
         return grouped.groupby("time")["hold_time"].mean().reset_index()

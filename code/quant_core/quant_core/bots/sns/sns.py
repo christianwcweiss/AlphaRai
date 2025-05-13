@@ -35,8 +35,8 @@ class SqsListeningTradingBot(BaseTradingBot):
                     MaxNumberOfMessages=10,
                     WaitTimeSeconds=20,
                 )
-            except Exception as e:
-                CoreLogger().error(f"Failed to receive messages from SQS: {e}")
+            except Exception as error:  # pylint: disable=broad-exception-caught
+                CoreLogger().error(f"Failed to receive messages from SQS: {error}")
                 await asyncio.sleep(self._polling_interval)
                 continue
 
@@ -47,20 +47,16 @@ class SqsListeningTradingBot(BaseTradingBot):
                     await self._handle_signal(message)
 
                     # Delete the message after successful processing
-                    self._sqs.delete_message(
-                        QueueUrl=self._queue_url,
-                        ReceiptHandle=msg["ReceiptHandle"]
-                    )
-                except Exception as e:
-                    CoreLogger().error(f"Failed to handle message: {e}")
+                    self._sqs.delete_message(QueueUrl=self._queue_url, ReceiptHandle=msg["ReceiptHandle"])
+                except Exception as error:  # pylint: disable=broad-exception-caught
+                    CoreLogger().error(f"Failed to handle message: {error}")
 
             await asyncio.sleep(self._polling_interval)
 
     def execute_trade(self, signal: Dict[str, Any], size: float) -> bool:
         CoreLogger().info(f"[{self._account_id}] Placing trade: {signal} with size {size}")
-        # TODO: implement actual trade placement
-        return True
+        raise NotImplementedError("Execute trade not implemented for SQSListeningTradingBot")
 
     def close_all_positions(self) -> None:
         CoreLogger().warning(f"[{self._account_id}] Closing all open positions")
-        # TODO: implement platform-specific logic
+        raise NotImplementedError("Close all positions not implemented for SQSListeningTradingBot")

@@ -1,18 +1,23 @@
+from typing import Optional, List
+
 from db.database import SessionLocal
 from models.general_setting import GeneralSetting
 
 
-def get_all_settings() -> list[GeneralSetting]:
+def get_all_settings() -> List[GeneralSetting]:
+    """Get all settings."""
     with SessionLocal() as session:
         return session.query(GeneralSetting).all()
 
 
-def get_setting_by_key(key: str) -> GeneralSetting | None:
+def get_setting_by_key(key: str) -> Optional[GeneralSetting]:
+    """Get a setting by key."""
     with SessionLocal() as session:
         return session.query(GeneralSetting).filter_by(key=key).first()
 
 
 def upsert_setting(key: str, value: str, is_secret: bool = False) -> GeneralSetting:
+    """Insert or update a setting by key."""
     with SessionLocal() as session:
         setting = session.query(GeneralSetting).filter_by(key=key).first()
         if setting:
@@ -26,7 +31,8 @@ def upsert_setting(key: str, value: str, is_secret: bool = False) -> GeneralSett
         return setting
 
 
-def delete_setting(key: str):
+def delete_setting(key: str) -> None:
+    """Delete a setting by key."""
     with SessionLocal() as session:
         session.query(GeneralSetting).filter_by(key=key).delete()
         session.commit()

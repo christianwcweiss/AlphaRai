@@ -3,7 +3,9 @@ from dash.development.base_component import Component
 from typing import List, Union
 
 
-class PageBody(html.Div):
+class PageBody(html.Div):  # pylint: disable=too-few-public-methods
+    """Page body component for the application."""
+
     def __init__(self, children: Union[Component, List[Component]], **kwargs):
         # You can customize these default styles as needed
         style = {

@@ -9,6 +9,7 @@ from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows
 
 
 class DataFeatureSmoothedHeikinAshi(DataFeature):
+    """Data Feature for the Smoothed Heikin Ashi candles."""
 
     def __init__(self, smooth_length: int) -> None:
         self._smooth_length = smooth_length

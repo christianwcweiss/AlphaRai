@@ -1,10 +1,12 @@
-import requests
+import requests  # type: ignore
 
 from quant_core.enums.discord_channels import DiscordChannel
 from quant_core.services.core_logger import CoreLogger
 
 
-class DiscordBot:
+class DiscordBot:  # pylint: disable=too-few-public-methods
+    """Handles sending messages to Discord channels using webhooks."""
+
     def _send_to_discord(self, title: str, message: str, discord_channel: DiscordChannel) -> None:
         """Sends a log message to a Discord channel using a webhook."""
 
@@ -32,4 +34,5 @@ class DiscordBot:
             CoreLogger().error(f"Failed to send message to Discord: {e}")
 
     def send(self, title: str, message: str, discord_channel: DiscordChannel) -> None:
+        """Sends a message to a Discord channel using a webhook."""
         self._send_to_discord(title, message, discord_channel)

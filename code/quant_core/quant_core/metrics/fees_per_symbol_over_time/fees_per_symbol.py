@@ -3,12 +3,19 @@ from quant_core.metrics.trade_metric import TradeMetricOverTime
 
 
 class FeesPerSymbolOverTime(TradeMetricOverTime):
-    def calculate_grouped(self, df: pd.DataFrame) -> pd.DataFrame:
-        if df.empty or "commission" not in df.columns or "swap" not in df.columns or "symbol" not in df.columns:
+    """Fees per symbol over time."""
+
+    def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+        if (
+            data_frame.empty
+            or "commission" not in data_frame.columns
+            or "swap" not in data_frame.columns
+            or "symbol" not in data_frame.columns
+        ):
             return pd.DataFrame(columns=["time", "symbol", "fees"])
 
-        df = df.copy()
-        df["time"] = pd.to_datetime(df["time"]).dt.date
-        df["fees"] = df["commission"] + df["swap"]
+        data_frame = data_frame.copy()
+        data_frame["time"] = pd.to_datetime(data_frame["time"]).dt.date
+        data_frame["fees"] = data_frame["commission"] + data_frame["swap"]
 
-        return df.groupby(["time", "symbol"])["fees"].sum().reset_index()
+        return data_frame.groupby(["time", "symbol"])["fees"].sum().reset_index()

@@ -3,7 +3,9 @@ import pandas as pd
 from quant_core.metrics.trade_metric import TradeMetricOverTime
 
 
-class ProfitPerSymbolOverTimeAbsolute(TradeMetricOverTime):
+class ProfitPerSymbolOverTimeAbsolute(TradeMetricOverTime):  #
+    """Profit per symbol over time in absolute terms."""
+
     def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         if data_frame.empty or "symbol" not in data_frame.columns or "profit" not in data_frame.columns:
             return pd.DataFrame(columns=["time", "symbol", "profit"])

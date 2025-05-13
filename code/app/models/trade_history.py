@@ -4,7 +4,9 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-class Trade(Base):
+class Trade(Base):  # type: ignore  # pylint: disable=too-few-public-methods
+    """Trade model for SQLAlchemy ORM."""
+
     __tablename__ = "trades"
 
     id = Column(Integer, primary_key=True)

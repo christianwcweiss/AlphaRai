@@ -11,11 +11,14 @@ from services.db.account import get_all_accounts
 from services.db.account_config import get_configs_by_account_id
 
 
-class TradeRouter:
+class TradeRouter:  # pylint: disable=too-few-public-methods
+    """Routes trades to the appropriate accounts based on the provided trade signal."""
+
     def __init__(self, trade: TradeDetails):
         self.trade = trade
 
     def route_trade(self):
+        """Routes the trade to the appropriate accounts."""
         if not self.trade.symbol or not self.trade.direction:
             raise ValueError("Invalid trade signal. Missing symbol or direction.")
 
@@ -100,4 +103,3 @@ class TradeRouter:
                 )
         else:
             CoreLogger().error(f"Unsupported platform: {platform}")
-            return

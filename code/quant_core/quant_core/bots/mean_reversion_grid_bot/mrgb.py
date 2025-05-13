@@ -6,13 +6,13 @@ from quant_core.bots.bots import BaseTradingBot
 from quant_core.services.core_logger import CoreLogger
 
 
-class MeanReversionGridBot(BaseTradingBot):
+class MeanReversionGridBot(BaseTradingBot):  # pylint: disable=too-many-instance-attributes
     """
     A grid bot that activates when price deviates from a statistical mean (SMA, EMA, VWAP).
     Trades around the mean expecting mean reversion.
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self,
         account_id: str,
         symbols: List[str],
@@ -23,7 +23,7 @@ class MeanReversionGridBot(BaseTradingBot):
         deviation_trigger: float = 0.01,  # 1%
         grid_spacing: float = 0.002,
         grid_levels: int = 4,
-        order_size: float = 0.1
+        order_size: float = 0.1,
     ):
         super().__init__(account_id, symbols)
         self._broker = broker_client
@@ -38,13 +38,13 @@ class MeanReversionGridBot(BaseTradingBot):
     def _calculate_mean(self, df: pd.DataFrame) -> float:
         if self._mean_type == "sma":
             return df["close"].rolling(self._mean_period).mean().iloc[-1]
-        elif self._mean_type == "ema":
+        if self._mean_type == "ema":
             return df["close"].ewm(span=self._mean_period).mean().iloc[-1]
-        elif self._mean_type == "vwap":
+        if self._mean_type == "vwap":
             vwap = (df["high"] + df["low"] + df["close"]) / 3
             return (vwap * df["volume"]).cumsum() / df["volume"].cumsum().iloc[-1]
-        else:
-            raise ValueError(f"Unsupported mean type: {self._mean_type}")
+
+        raise ValueError(f"Unsupported mean type: {self._mean_type}")
 
     def _build_grid(self, mean_price: float) -> List[Dict[str, Any]]:
         grid = []
@@ -60,17 +60,16 @@ class MeanReversionGridBot(BaseTradingBot):
             CoreLogger().info(f"[{symbol}] No grid triggered. Deviation {deviation:.4f} < {self._trigger}")
             return
 
-        CoreLogger().info(f"[{symbol}] Price deviated {deviation:.2%} from {self._mean_type.upper()} mean. Building grid...")
+        CoreLogger().info(
+            f"[{symbol}] Price deviated {deviation:.2%} from {self._mean_type.upper()} mean. Building grid..."
+        )
 
         self._broker.cancel_all_orders(symbol)
         grid = self._build_grid(mean_price)
 
         for order in grid:
             order_id = self._broker.place_limit_order(
-                symbol=symbol,
-                side=order["side"],
-                price=order["price"],
-                size=order["size"]
+                symbol=symbol, side=order["side"], price=order["price"], size=order["size"]
             )
             CoreLogger().info(f"Placed {order['side']} order at {order['price']} (ID: {order_id})")
 
@@ -83,8 +82,8 @@ class MeanReversionGridBot(BaseTradingBot):
                     current_price = self._broker.get_price(symbol)
                     mean_price = self._calculate_mean(df)
                     self._sync_grid(symbol, current_price, mean_price)
-                except Exception as e:
-                    CoreLogger().error(f"Error in grid bot for {symbol}: {e}")
+                except Exception as error:  # pylint: disable=broad-exception-caught
+                    CoreLogger().error(f"Error in grid bot for {symbol}: {error}")
 
             await asyncio.sleep(30)
 

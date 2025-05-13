@@ -11,7 +11,7 @@ class DcaTradingBot(BaseTradingBot):
     Useful for long-term accumulation or volatility dips.
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self,
         account_id: str,
         symbols: List[str],
@@ -19,7 +19,7 @@ class DcaTradingBot(BaseTradingBot):
         dca_levels: int = 5,
         price_spacing: float = 0.01,  # 1% drop per level
         order_size: float = 0.1,
-        max_position: float = 1.0
+        max_position: float = 1.0,
     ):
         super().__init__(account_id, symbols)
         self._broker = broker_client
@@ -27,7 +27,7 @@ class DcaTradingBot(BaseTradingBot):
         self._spacing = price_spacing
         self._order_size = order_size
         self._max_position = max_position
-        self._active_orders = {}
+        self._active_orders: Any = {}
 
     def _place_dca_grid(self, symbol: str):
         price = self._broker.get_price(symbol)
@@ -35,12 +35,7 @@ class DcaTradingBot(BaseTradingBot):
 
         for i in range(self._levels):
             level_price = round(price * (1 - self._spacing * i), 5)
-            orders.append({
-                "symbol": symbol,
-                "side": "buy",
-                "price": level_price,
-                "size": self._order_size
-            })
+            orders.append({"symbol": symbol, "side": "buy", "price": level_price, "size": self._order_size})
 
         # Cancel all existing DCA orders for this symbol
         self._broker.cancel_all_orders(symbol)
@@ -48,10 +43,7 @@ class DcaTradingBot(BaseTradingBot):
         # Place new grid
         for order in orders:
             order_id = self._broker.place_limit_order(
-                symbol=order["symbol"],
-                side=order["side"],
-                price=order["price"],
-                size=order["size"]
+                symbol=order["symbol"], side=order["side"], price=order["price"], size=order["size"]
             )
             CoreLogger().info(f"[{symbol}] Placed DCA order: BUY {order['size']} @ {order['price']} (ID: {order_id})")
 
@@ -71,8 +63,8 @@ class DcaTradingBot(BaseTradingBot):
                 try:
                     if self._check_position_limit(symbol):
                         self._place_dca_grid(symbol)
-                except Exception as e:
-                    CoreLogger().error(f"Error in DCA bot for {symbol}: {e}")
+                except Exception as error:  # pylint: disable=broad-exception-caught
+                    CoreLogger().error(f"Error in DCA bot for {symbol}: {error}")
 
             await asyncio.sleep(60)  # Check once per minute
 

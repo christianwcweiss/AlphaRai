@@ -9,6 +9,8 @@ from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows
 
 
 class DataFeatureSuperTrend(DataFeature):
+    """Data Feature for SuperTrend indicator."""
+
     def __init__(self, factor: float = 3.0, atr_period: int = 14) -> None:
         self._factor = factor
         self._atr_period = atr_period
@@ -16,9 +18,9 @@ class DataFeatureSuperTrend(DataFeature):
     def get_columns(self) -> List[str]:
         return [f"super_trend_{self._factor}_{self._atr_period}", f"st_direction_{self._factor}_{self._atr_period}"]
 
-    def add_feature(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+    def add_feature(self, data_frame: pd.DataFrame) -> pd.DataFrame:  # pylint: disable=too-many-branches
         st_value_column, st_direction_column = self.get_columns()
-        if all(col in data_frame.columns for col in {st_value_column, st_direction_column}):
+        if all(col in data_frame.columns for col in (st_value_column, st_direction_column)):
             return data_frame
 
         check_df_sorted(data_frame=data_frame)

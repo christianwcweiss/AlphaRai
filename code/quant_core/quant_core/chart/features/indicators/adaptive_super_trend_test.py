@@ -162,10 +162,10 @@ class TestDataFeatureAdaptiveSuperTrend:
         (
             adapt_st_trend_column,
             adapt_st_direction_column,
-            atr_cluster_column,
-            lv_new_column,
-            mv_new_column,
-            hv_new_column,
+            _,
+            _,
+            _,
+            _,
         ) = feature.get_columns()
         adapt_st_feature_column = feature.get_feature_columns()[0]
 

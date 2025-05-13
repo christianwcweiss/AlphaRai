@@ -2,12 +2,15 @@ from typing import Optional, Union, List
 
 from dash import html
 from dash.development.base_component import Component
+from components.atoms.text.paragraph import Paragraph
 
 from components.atoms.atom import Atom
 from constants import colors
 
 
 class AlphaCardHeader(Atom):
+    """Header for the AlphaCard component."""
+
     def __init__(self, children: Union[Component, List[Component]]) -> None:
         self.children = children
 
@@ -15,6 +18,7 @@ class AlphaCardHeader(Atom):
         return
 
     def render(self) -> html.Div:
+        """Renders the header of the card."""
         return html.Div(
             children=self.children if isinstance(self.children, list) else [self.children],
             style={
@@ -29,6 +33,8 @@ class AlphaCardHeader(Atom):
 
 
 class AlphaCardBody(Atom):
+    """Body for the AlphaCard component."""
+
     def __init__(self, children: Union[Component, List[Component]]):
         self.children = children
 
@@ -36,6 +42,7 @@ class AlphaCardBody(Atom):
         return
 
     def render(self) -> html.Div:
+        """Renders the body of the card."""
         return html.Div(
             children=self.children if isinstance(self.children, list) else [self.children],
             style={
@@ -45,7 +52,9 @@ class AlphaCardBody(Atom):
         )
 
 
-class AlphaCard(Atom):
+class AlphaCard(Atom):  # pylint: disable=too-many-instance-attributes
+    """A card component for displaying content in a visually appealing way."""
+
     DEFAULT_STYLE = {
         "padding": "1.5rem",
         "borderRadius": "0.5rem",
@@ -58,7 +67,7 @@ class AlphaCard(Atom):
         "justifyContent": "flex-start",
     }
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments, too-many-positional-arguments
         self,
         children: Union[html.Div, List[html.Div]] = None,
         title: Optional[str] = None,
@@ -87,7 +96,7 @@ class AlphaCard(Atom):
         self.validate()
 
     def validate(self) -> None:
-        pass
+        """Validates the card properties."""
 
     def _render_header(self) -> html.Div:
         if self._custom_header:
@@ -101,8 +110,6 @@ class AlphaCard(Atom):
                 )
             )
         if self._subtitle:
-            from components.atoms.text.paragraph import Paragraph
-
             header_items.append(Paragraph(text=self._subtitle).render())
         return html.Div(header_items)
 
@@ -158,10 +165,12 @@ class AlphaCard(Atom):
                     },
                 )
             )
-        else:
-            return card_div
+
+        return card_div
 
     def render(self) -> html.Div:
+        """Renders the card component."""
         header_section = self._render_header()
         main_section = self._render_children()
+
         return self._render_card(header_section, main_section)

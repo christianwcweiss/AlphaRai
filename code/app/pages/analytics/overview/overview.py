@@ -35,6 +35,8 @@ def _render_account_dropdown() -> dcc.Dropdown:
 
 
 class AnalysisOverviewPage(BasePage):
+    """Overview Page for Analytics."""
+
     def render(self):
         return PageBody(
             [
@@ -60,6 +62,7 @@ layout = AnalysisOverviewPage("Overview").layout
     Input("account-dropdown", "value"),
 )
 def render_overview_tab(selected_account):
+    """Render the overview tab based on the selected account."""
     trades = get_all_trades()
     if not trades:
         return dbc.Alert("⚠️ No trade data found.", color="warning")

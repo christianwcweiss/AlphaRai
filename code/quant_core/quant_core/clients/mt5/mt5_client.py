@@ -1,9 +1,10 @@
+# pylint: disable=no-member
 import json
 from datetime import datetime, timedelta
-from typing import Optional, Any, List
+from typing import Optional, Any, List, Dict
 from unittest.mock import Mock
 
-import MetaTrader5 as mt5
+import MetaTrader5 as mt5  # type: ignore
 import boto3
 import pandas as pd
 
@@ -25,6 +26,8 @@ ORDER_TYPE_MAP = {
 
 
 class Mt5Client:
+    """A client for interacting with MetaTrader 5."""
+
     def __init__(self, secret_id: str):
         self._secret_id = secret_id
         self._initialized = False
@@ -51,35 +54,37 @@ class Mt5Client:
             self._initialized = False
             return
 
-        if not mt5.initialize():
+        if not mt5.initialize():  # type: ignore
             CoreLogger().error("MetaTrader5 initialize() failed.")
             return
 
-        authorized = mt5.login(login=int(login), password=password, server=server)
+        authorized = mt5.login(login=int(login), password=password, server=server)  # type: ignore
         if not authorized:
             CoreLogger().error(f"MT5 login failed for account: {login}")
-            mt5.shutdown()
+            mt5.shutdown()  # type: ignore
             return
 
         CoreLogger().info("MetaTrader5 successfully initialized and logged in.")
         self._initialized = True
 
     def shutdown(self) -> None:
+        """Shutdown the MT5 client."""
         if self._initialized:
             mt5.shutdown()
             self._initialized = False
             CoreLogger().info("MetaTrader5 shutdown successful.")
 
     def get_balance(self) -> float:
+        """Get the current balance from MT5."""
         if not self._initialized:
             raise ValueError("MT5 not initialized.")
 
-        account_info = mt5.account_info()
+        account_info = mt5.account_info()  # type: ignore
         if account_info is None:
             raise ValueError("Failed to retrieve MT5 account info.")
         return account_info.balance
 
-    def send_order(
+    def send_order(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self,
         symbol: str,
         trade_direction: TradeDirection,
@@ -90,6 +95,7 @@ class Mt5Client:
         limit_level: Optional[float] = None,
         comment: Optional[str] = None,
     ) -> Any:
+        """Sends an order to MT5."""
         if not self._initialized:
             CoreLogger().error("MT5 is not initialized.")
             return None
@@ -108,9 +114,10 @@ class Mt5Client:
             "type_time": mt5.ORDER_TIME_DAY,
         }
 
-        result = mt5.order_send(request)
+        result = mt5.order_send(request)  # type: ignore
         if result is None or result.retcode != mt5.TRADE_RETCODE_DONE:
             CoreLogger().error(f"MT5 Order failed: {result}")
+
         return result
 
     def get_history(self, days: int = 365) -> List[CompletedMT5Trade]:
@@ -121,7 +128,7 @@ class Mt5Client:
             raise ValueError("MT5 not initialized.")
 
         date_from = datetime.now() - timedelta(days=days)
-        raw_trades = mt5.history_deals_get(date_from, datetime.now())
+        raw_trades = mt5.history_deals_get(date_from, datetime.now())  # type: ignore
 
         if raw_trades is None:
             CoreLogger().error("❌ Failed to retrieve trade history from MT5.")
@@ -173,10 +180,11 @@ class Mt5Client:
             ]
         )
 
-    def get_all_symbols(self) -> list[dict]:
-        raw_symbols = mt5.symbols_get()
+    def get_all_symbols(self) -> List[Dict[str, Any]]:
+        """Get all symbols from MT5."""
+        raw_symbols = mt5.symbols_get()  # type: ignore
         if raw_symbols is None:
-            raise RuntimeError(f"Failed to fetch symbols: {mt5.last_error()}")
+            raise RuntimeError(f"Failed to fetch symbols: {mt5.last_error()}")  # type: ignore
 
         return [
             {

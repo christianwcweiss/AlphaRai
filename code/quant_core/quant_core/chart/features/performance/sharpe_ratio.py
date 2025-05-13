@@ -10,6 +10,8 @@ from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows, get
 
 
 class DataFeatureSharpeRatio(DataFeature):
+    """Data Feature for calculating the Sharpe Ratio."""
+
     def __init__(
         self,
         direction: TradeDirection,
@@ -31,7 +33,7 @@ class DataFeatureSharpeRatio(DataFeature):
 
         return [f"sharpe_ratio_{suffix}"]
 
-    def add_feature(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+    def add_feature(self, data_frame: pd.DataFrame) -> pd.DataFrame:  # pylint: disable=too-many-locals
         sharpe_column = self.get_columns()[0]
         if sharpe_column in data_frame:
             return data_frame

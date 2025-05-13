@@ -19,6 +19,7 @@ class ColoredFormatter(logging.Formatter):
     """
 
     def format(self, record: logging.LogRecord) -> str:
+        """Format the log record with color."""
         log_fmt = "%(asctime)s - %(levelname)s - %(message)s"
         formatter = logging.Formatter(log_fmt)
         original_message = formatter.format(record)
@@ -30,7 +31,10 @@ class ColoredFormatter(logging.Formatter):
 
 
 class CoreLogger:
+    """Singleton class for logging in the application."""
+
     _instance = None
+    _logger = None
 
     def __new__(cls) -> "CoreLogger":
         if cls._instance is None:
@@ -60,6 +64,7 @@ class CoreLogger:
             self._logger.addHandler(file_handler)
 
     def get_logger(self) -> logging.Logger:
+        """Returns the logger instance."""
         return self._logger
 
     def debug(self, message: str) -> None:

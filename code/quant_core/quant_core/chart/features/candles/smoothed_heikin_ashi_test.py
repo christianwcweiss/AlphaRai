@@ -239,8 +239,6 @@ class TestDataFeatureSmoothedHeikinAshi:
         data_frame = feature.add_feature(data_frame)
         data_frame = feature.normalize_feature(data_frame)
 
-        breakpoint()
-
         assert (
             data_frame[ha_open_column].apply(lambda x: round(x, 4))[-len(open_expected_values) :].values.tolist()
             == open_expected_values
