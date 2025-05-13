@@ -5,7 +5,9 @@ from components.charts.chart import Chart, ChartLayoutStyle
 from constants.colors import CHART_PALETTE
 
 
-class PieChart(Chart):
+class PieChart(Chart):  # pylint: disable=too-few-public-methods
+    """Pie chart component for visualizing proportions of a whole."""
+
     def __init__(
         self,
         data_frame: pd.DataFrame,
@@ -26,7 +28,7 @@ class PieChart(Chart):
                 go.Pie(
                     labels=self._data_frame[label_col],
                     values=self._data_frame[value_col],
-                    marker=dict(colors=colors),
+                    marker={"colors": colors},
                     hole=0.4,  # optional: donut style
                     sort=False,
                 )

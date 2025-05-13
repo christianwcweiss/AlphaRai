@@ -4,8 +4,10 @@ from dash import html
 from components.atoms.atom import Atom
 
 
-class AlphaModal(Atom):
-    def __init__(
+class AlphaModal(Atom):  # pylint: disable=too-few-public-methods, too-many-instance-attributes
+    """A modal component for Dash applications."""
+
+    def __init__(  # pylint: disable=too-many-arguments, too-many-positional-arguments
         self,
         modal_id: str,
         title: str,

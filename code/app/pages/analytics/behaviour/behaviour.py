@@ -10,20 +10,20 @@ from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
 from components.molecules.charts.trades_per_day_over_time.trades_per_day_over_time import TradesPerDayOverTimeMolecule
 from components.molecules.charts.win_rate_over_time.win_rate_over_time import WinRateOverTimeMolecule
-from db.database import SessionLocal
-from models.account import Account
+from db.database import MainSessionLocal
+from models.main.account import Account
 from pages.analytics.analysis import TAB_LABELS
 from pages.base_page import BasePage
 from quant_core.enums.platform import Platform
 from quant_core.metrics.trades_per_day_over_time.trades_per_day import TradesPerDayOverTime
 from quant_core.metrics.win_rate_over_time.win_rate_over_time import WinRateOverTime
-from services.db.trade_history import get_all_trades
+from services.db.cache.trade_history import get_all_trades
 
 dash.register_page(__name__, path="/analytics/behavior", name="Behavior")
 
 
 def _render_account_dropdown() -> dcc.Dropdown:
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         accounts = session.query(Account).filter_by(platform=Platform.METATRADER.value, enabled=True).all()
 
     return dcc.Dropdown(
@@ -36,6 +36,8 @@ def _render_account_dropdown() -> dcc.Dropdown:
 
 
 class BehaviorPage(BasePage):
+    """Behavior Page."""
+
     def render(self):
         return PageBody(
             [
@@ -64,6 +66,7 @@ layout = BehaviorPage("Behavior").layout
     Input("behavior-account-dropdown", "value"),
 )
 def render_behaviour_tab(selected_account):
+    """Render the behavior tab."""
     trades = get_all_trades()
     if not trades:
         return dbc.Alert("⚠️ No trade data found.", color="warning")
@@ -77,8 +80,8 @@ def render_behaviour_tab(selected_account):
     if df.empty:
         return dbc.Alert("⚠️ No trade data available for the selected account.", color="warning")
 
-    win_rate_metric_df = WinRateOverTime().calculate_grouped(df)
-    trades_per_day_metric_df = TradesPerDayOverTime().calculate_grouped(df)
+    win_rate_metric_df = WinRateOverTime().calculate(df)
+    trades_per_day_metric_df = TradesPerDayOverTime().calculate(df)
 
     return AlphaRow(
         [
@@ -97,6 +100,6 @@ def render_behaviour_tab(selected_account):
                 md=12,
                 lg=6,
                 xl=4,
-            )
+            ),
         ]
     )

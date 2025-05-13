@@ -1,5 +1,3 @@
-from functools import cache
-
 import pandas as pd
 from dash import html, dcc
 
@@ -17,7 +15,9 @@ VISIBLE_STYLE = {
 }
 
 
-class SharpeRatioOverTimeMolecule(Molecule):
+class SharpeRatioOverTimeMolecule(Molecule):  # pylint: disable=too-few-public-methods
+    """A molecule that renders the Sharpe Ratio Over Time chart."""
+
     def __init__(self, df: pd.DataFrame):
         self._df = df
         self._chart_layout_style = ChartLayoutStyle(
@@ -63,12 +63,10 @@ class SharpeRatioOverTimeMolecule(Molecule):
         )
 
     def _render_chart_body(self):
-        return AlphaCardBody(
-            [AlphaRow([AlphaCol([self._render_chart()])])]
-        ).render()
+        return AlphaCardBody([AlphaRow([AlphaCol([self._render_chart()])])]).render()
 
-    @cache
     def render(self) -> html.Div:
+        """Render the Sharpe Ratio Over Time chart."""
         return AlphaCard(
             header=self._render_card_header(),
             body=self._render_chart_body(),

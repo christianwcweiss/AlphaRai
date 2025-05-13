@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 import dash
 import dash_bootstrap_components as dbc
 from dash import html, callback, Input, Output, State, ctx
@@ -9,16 +11,18 @@ from components.atoms.modal.modal import AlphaModal
 from components.atoms.table.table import AlphaTable
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
+from models.main.general_setting import GeneralSetting
 from pages.base_page import BasePage
-from services.db.general_setting import get_all_settings, upsert_setting, delete_setting
-from services.db.trade_history import sync_trades_from_all_accounts
+from quant_core.services.core_logger import CoreLogger
+from services.db.main.general_setting import get_all_settings, upsert_setting, delete_setting
+from services.db.cache.trade_history import sync_trades_from_all_accounts
 
 dash.register_page(__name__, path="/settings", name="Settings")
 
-REQUIRED_KEYS = {"polygon_api_key"}
+_REQUIRED_KEYS = {"polygon_api_key"}
 
 
-def _settings_modal_fields(prefix: str, key="", value=""):
+def _settings_modal_fields(prefix: str, key: str = "", value: str = "") -> html.Div:
     return html.Div(
         [
             dbc.Input(
@@ -33,16 +37,19 @@ def _settings_modal_fields(prefix: str, key="", value=""):
     )
 
 
-def get_all_settings_with_required_defaults():
-    settings = {s.key: s for s in get_all_settings()}
-    for required_key in REQUIRED_KEYS:
+def get_all_settings_with_required_defaults() -> List[GeneralSetting]:
+    """Return all settings, ensuring required keys are present."""
+    settings = {setting.key: setting for setting in get_all_settings()}
+    for required_key in _REQUIRED_KEYS:
         if required_key not in settings:
             upsert_setting(required_key, "")
-            settings[required_key] = next(s for s in get_all_settings() if s.key == required_key)
+            settings[required_key] = next(setting for setting in get_all_settings() if setting.key == required_key)
+
     return list(settings.values())
 
 
-def build_table():
+def build_table() -> html.Table:
+    """Build the settings table with all settings and their actions."""
     settings = get_all_settings_with_required_defaults()
     headers = ["Key", "Value", "Actions"]
     rows = []
@@ -61,7 +68,7 @@ def build_table():
             ]
         )
 
-        if setting.key not in REQUIRED_KEYS:
+        if setting.key not in _REQUIRED_KEYS:
             actions.children.append(
                 AlphaCol(
                     AlphaButton(
@@ -78,8 +85,11 @@ def build_table():
     return AlphaTable(table_id="general-settings-table", headers=headers, rows=rows).render()
 
 
-class GeneralSettingsPage(BasePage):
+class GeneralSettingsPage(BasePage):  # pylint: disable=too-few-public-methods
+    """General Settings Page."""
+
     def render(self):
+        """Render the page layout."""
         return PageBody(
             [
                 PageHeader("Settings").render(),
@@ -126,7 +136,8 @@ layout = page.layout
     State("add-setting-modal", "is_open"),
     prevent_initial_call=True,
 )
-def toggle_add_modal(open_click, confirm_click, cancel_click, is_open):
+def toggle_add_modal(_, __, ___, ____) -> bool:
+    """Toggle the add setting modal."""
     return ctx.triggered_id == "open-add-setting-btn"
 
 
@@ -137,14 +148,17 @@ def toggle_add_modal(open_click, confirm_click, cancel_click, is_open):
     Input({"type": "edit-setting", "index": dash.ALL}, "n_clicks"),
     prevent_initial_call=True,
 )
-def open_edit_modal(edit_clicks):
+def open_edit_modal(edit_clicks: List[int]) -> Tuple[bool, str, str]:
+    """Open the edit modal and populate it with the selected setting's key and value."""
     if not any(edit_clicks):
         raise dash.exceptions.PreventUpdate
-    triggered = ctx.triggered_id
-    key = triggered.get("index")
+
+    key = ctx.triggered_id.get("index")
     setting = next((s for s in get_all_settings() if s.key == key), None)
+
     if not setting:
         raise dash.exceptions.PreventUpdate
+
     return True, setting.key, setting.value
 
 
@@ -155,12 +169,14 @@ def open_edit_modal(edit_clicks):
     State("modal-add-value", "value"),
     prevent_initial_call=True,
 )
-def save_new_setting(_, key, value):
+def save_new_setting(_, key: str, value: str) -> html.Table:
+    """Save new setting to the database."""
     if not key or not value:
         raise dash.exceptions.PreventUpdate
     if key in (s.key for s in get_all_settings()):
-        raise dash.exceptions.PreventUpdate  # prevent duplicate keys
+        raise dash.exceptions.PreventUpdate
     upsert_setting(key, value)
+
     return build_table()
 
 
@@ -171,10 +187,12 @@ def save_new_setting(_, key, value):
     State("modal-edit-value", "value"),
     prevent_initial_call=True,
 )
-def save_edited_setting(_, key, value):
+def save_edited_setting(_, key: str, value: str) -> html.Table:
+    """Save edited setting to the database."""
     if not key:
         raise dash.exceptions.PreventUpdate
     upsert_setting(key, value)
+
     return build_table()
 
 
@@ -183,11 +201,12 @@ def save_edited_setting(_, key, value):
     Input({"type": "delete-setting", "index": dash.ALL}, "n_clicks"),
     prevent_initial_call=True,
 )
-def delete_selected_setting(_):
-    triggered = ctx.triggered_id
-    key = triggered.get("index")
-    if key and key not in REQUIRED_KEYS:
+def delete_selected_setting(_) -> html.Table:
+    """Delete selected setting if it's not required."""
+    key = ctx.triggered_id.get("index")
+    if key and key not in _REQUIRED_KEYS:
         delete_setting(key)
+
     return build_table()
 
 
@@ -196,9 +215,12 @@ def delete_selected_setting(_):
     Input("sync-trades-btn", "n_clicks"),
     prevent_initial_call=True,
 )
-def sync_trades_from_tradingview(n_clicks):
+def sync_trades_from_metatrader_5(_) -> dbc.Alert:
+    """Sync Trades from MetaTrader 5 and store them in the database."""
     try:
         result = sync_trades_from_all_accounts()
+        CoreLogger().info("Successfully synced trades from MetaTrader.")
         return dbc.Alert(f"✅ Synced trades: {result}", color="success", dismissable=True)
-    except Exception as e:
-        return dbc.Alert(f"❌ Sync failed: {str(e)}", color="danger", dismissable=True)
+    except Exception as error:  # pylint: disable=broad-exception-caught
+        CoreLogger().error(f"During sync trades from MetaTrader the following error occured: {str(error)}")
+        return dbc.Alert(f"❌ Sync failed: {str(error)}", color="danger", dismissable=True)

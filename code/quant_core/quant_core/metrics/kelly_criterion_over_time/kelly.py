@@ -1,23 +1,17 @@
 import pandas as pd
 
+from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 
-class KellyCriterionPerAccount:
-    def calculate(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = df.copy()
-        df = df[df["profit"].notna()]
-        result = []
 
-        for account, group in df.groupby("account_id"):
-            wins = group[group["profit"] > 0]
-            losses = group[group["profit"] < 0]
+class KellyCriterionPerAccountOverTime(TradeMetricOverTime):  # pylint: disable=too-few-public-methods
+    """Calculate Kelly Criterion per account."""
 
-            win_rate = len(wins) / len(group) if len(group) > 0 else 0.0
-            avg_win = wins["profit"].mean() if not wins.empty else 0.0
-            avg_loss = abs(losses["profit"].mean()) if not losses.empty else 1e-6
-
-            rr = avg_win / avg_loss if avg_loss > 0 else 0.0
-            kelly = (win_rate - (1 - win_rate) / rr) * 100 if rr > 0 else 0.0
-
-            result.append({"account_id": account, "kelly_pct": round(kelly, 2)})
-
-        return pd.DataFrame(result)
+    def calculate(
+        self,
+        data_frame: pd.DataFrame,
+        group_by_account_id: bool = True,
+        group_by_symbol: bool = False,
+        rolling_window: int = 30,
+    ) -> pd.DataFrame:
+        """Calculate Kelly Criterion per account."""
+        raise NotImplementedError("Kelly Criterion calculation is not implemented yet.")

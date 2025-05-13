@@ -10,6 +10,8 @@ from exceptions.ui import ComponentPropertyError
 
 
 class AlphaToolbarButton(Atom):
+    """A button component for Dash, allowing for various styles and states."""
+
     DEFAULT_STYLE = {
         "backgroundColor": colors.LIGHT_GREY,
         "color": colors.DARK_TEXT_COLOR,
@@ -51,6 +53,8 @@ class AlphaToolbarButton(Atom):
 
 
 class AlphaToolbar(Atom):
+    """A toolbar component for Dash, allowing for a collection of buttons or controls to be displayed together."""
+
     DEFAULT_STYLE = {
         "display": "flex",
         "justifyContent": "center",
@@ -82,7 +86,7 @@ class AlphaToolbar(Atom):
 
     def render(self) -> html.Div:
         return html.Div(
-            [child for child in self._children],
+            self._children,
             id=self._id,
             style=self._style,
         )

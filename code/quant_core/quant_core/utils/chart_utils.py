@@ -5,14 +5,17 @@ from quant_core.enums.trade_direction import TradeDirection
 
 
 def calculate_stop_loss(direction: TradeDirection, entry_price: float, distance: float) -> float:
+    """Calculate stop loss price based on direction and entry price."""
     return entry_price - distance if direction.normalize() is TradeDirection.LONG else entry_price + distance
 
 
 def calculate_take_profit(direction: TradeDirection, entry_price: float, distance: float) -> float:
+    """Calculate take profit price based on direction and entry price."""
     return entry_price + distance if direction.normalize() is TradeDirection.LONG else entry_price - distance
 
 
 def get_data_frame_period(data_frame: pd.DataFrame) -> TimePeriod:
+    """Get the most frequent time period from the DataFrame."""
     data_frame["date_diff"] = data_frame["date"].diff()
     diff_series = data_frame["date_diff"].dropna()
 
@@ -31,10 +34,12 @@ def get_data_frame_period(data_frame: pd.DataFrame) -> TimePeriod:
 
 
 def check_df_sorted(data_frame: pd.DataFrame) -> None:
+    """Check if the DataFrame is sorted by date."""
     if "date" not in data_frame or not data_frame["date"].is_monotonic_increasing:
         raise AssertionError("DataFrame 'date' column does not exist or must be sorted ascending.")
 
 
 def check_enough_rows(data_frame: pd.DataFrame) -> None:
+    """Check if the DataFrame has enough rows."""
     if len(data_frame) < 1000:
         raise AssertionError("DataFrame must have at least 1000 rows.")

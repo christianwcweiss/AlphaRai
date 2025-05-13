@@ -5,7 +5,9 @@ import pandas as pd
 import plotly.graph_objects as go
 
 
-class ChartMargin(abc.ABC):
+class ChartMargin(abc.ABC):  # pylint: disable=too-few-public-methods
+    """Class for chart margins."""
+
     def __init__(
         self,
         left: float = 0.0,
@@ -20,11 +22,14 @@ class ChartMargin(abc.ABC):
 
     @property
     def margins(self) -> Dict[str, float]:
+        """Retrieves the margins for the chart."""
         return {"l": self._left, "r": self._right, "t": self._top, "b": self._bottom}
 
 
-class ChartLayoutStyle:
-    def __init__(
+class ChartLayoutStyle:  # pylint: disable=too-few-public-methods, too-many-instance-attributes
+    """Class for chart layout styles."""
+
+    def __init__(  # pylint: disable=too-many-arguments, too-many-positional-arguments
         self,
         title: Optional[str] = None,
         x_axis_title: Optional[str] = None,
@@ -59,6 +64,7 @@ class ChartLayoutStyle:
         self.show_y_axis = show_y_axis
 
     def to_layout_dict(self) -> Dict[str, Any]:
+        """Convert the layout style to a dictionary for Plotly."""
         layout = {
             "title": {
                 "text": self.title if self.show_title and self.title else "",
@@ -99,19 +105,20 @@ class ChartLayoutStyle:
         return layout
 
 
-class ChartTraceStyle(abc.ABC):
+class ChartTraceStyle(abc.ABC):  # pylint: disable=too-few-public-methods
+    """Abstract base class for chart trace styles."""
+
     @abc.abstractmethod
     def to_style_dict(self) -> Dict[str, Any]:
         """Convert the chart style to a dictionary for Plotly."""
-        pass
 
 
-class Chart(abc.ABC):
+class Chart(abc.ABC):  # pylint: disable=too-few-public-methods
+    """Abstract base class for all charts."""
+
     _layout_style: ChartLayoutStyle
-    _trace_style: ChartTraceStyle
     _data_frame: pd.DataFrame
 
     @abc.abstractmethod
-    def plot(self, *args, **kwargs) -> go.Figure:
+    def plot(self, **kwargs) -> go.Figure:
         """Plot the chart with the given x and y columns."""
-        pass

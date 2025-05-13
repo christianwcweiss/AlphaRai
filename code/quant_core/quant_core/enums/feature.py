@@ -2,6 +2,8 @@ from enum import Enum
 
 
 class Feature(Enum):
+    """Feature types for technical analysis and data processing."""
+
     ATR = "atr"
     SMOOTHED_HA = "smoothed_ha"
     SHARPE_RATIO = "sharpe_ratio"

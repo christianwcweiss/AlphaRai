@@ -8,10 +8,12 @@ from exceptions.ui import ComponentPropertyError
 
 
 class Paragraph(Atom):
+    """A paragraph component for Dash applications."""
+
     DEFAULT_STYLE = {
         "marginTop": "0.25rem",
         "marginBottom": "0.75rem",
-        "color": colors.TEXT_COLOR,
+        "color": colors.TEXT_ON_ACCENT,
         "fontSize": "0.95rem",
         "lineHeight": "1.5",
     }

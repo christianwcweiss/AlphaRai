@@ -1,3 +1,5 @@
+from typing import List
+
 import dash
 import dash_bootstrap_components as dbc
 from dash import html, callback, Input, Output, State, ctx
@@ -12,7 +14,7 @@ from components.frame.body import PageBody
 from pages.base_page import BasePage
 from quant_core.confluences.confluences import CONFLUENCE_LIST
 from quant_core.enums.time_period import TimePeriod
-from services.db.confluence import get_all_confluences, get_confluence_by_id, upsert_confluence, delete_confluence
+from services.db.main.confluence import get_all_confluences, get_confluence_by_id, upsert_confluence, delete_confluence
 
 dash.register_page(__name__, path="/confluences", name="Confluences")
 
@@ -47,7 +49,8 @@ def _confluence_modal_fields(prefix: str, confluence_id="", period="", weight=10
     )
 
 
-def build_confluence_table():
+def build_confluence_table() -> html.Table:
+    """Build the confluence settings table."""
     confluences = get_all_confluences()
     headers = ["ID", "Time Period", "Weight", "Enabled", "Actions"]
     rows = []
@@ -83,7 +86,9 @@ def build_confluence_table():
 
 
 class ConfluencesPage(BasePage):
-    def render(self):
+    """Confluences Page."""
+
+    def render(self) -> html.Div:
         return PageBody(
             [
                 PageHeader("Confluences").render(),
@@ -126,7 +131,8 @@ layout = page.layout
     State("add-confluence-modal", "is_open"),
     prevent_initial_call=True,
 )
-def toggle_add_modal(open_click, confirm_click, cancel_click, is_open):
+def toggle_add_modal(_, __, ___, ____) -> bool:
+    """Toggle the add confluence modal."""
     return ctx.triggered_id == "open-add-confluence-btn"
 
 
@@ -138,7 +144,8 @@ def toggle_add_modal(open_click, confirm_click, cancel_click, is_open):
     Input({"type": "edit-confluence", "index": dash.ALL}, "n_clicks"),
     prevent_initial_call=True,
 )
-def open_edit_modal(edit_clicks):
+def open_edit_modal(edit_clicks: List[int]) -> tuple[bool, str, int, int]:
+    """Open the edit confluence modal."""
     if not any(edit_clicks):
         raise dash.exceptions.PreventUpdate
 
@@ -160,7 +167,8 @@ def open_edit_modal(edit_clicks):
     State("modal-add-weight", "value"),
     prevent_initial_call=True,
 )
-def save_new_confluence(_, confluence_id, period, weight):
+def save_new_confluence(_, confluence_id: str, period: int, weight: int) -> html.Table:
+    """Save the new confluence."""
     if not confluence_id or not period:
         raise dash.exceptions.PreventUpdate
 
@@ -176,11 +184,13 @@ def save_new_confluence(_, confluence_id, period, weight):
     State("modal-edit-weight", "value"),
     prevent_initial_call=True,
 )
-def save_edited_confluence(_, confluence_id, period, weight):
+def save_edited_confluence(_, confluence_id: str, period: int, weight: int) -> html.Table:
+    """Save the edited confluence."""
     if not confluence_id or not period:
         raise dash.exceptions.PreventUpdate
 
     upsert_confluence(confluence_id, TimePeriod(period), weight)
+
     return build_confluence_table()
 
 
@@ -189,8 +199,10 @@ def save_edited_confluence(_, confluence_id, period, weight):
     Input({"type": "delete-confluence", "index": dash.ALL}, "n_clicks"),
     prevent_initial_call=True,
 )
-def delete_selected_confluence(_):
+def delete_selected_confluence(_) -> html.Table:
+    """Delete the selected confluence."""
     triggered = ctx.triggered_id
     confluence_id = triggered.get("index")
     delete_confluence(confluence_id)
+
     return build_confluence_table()

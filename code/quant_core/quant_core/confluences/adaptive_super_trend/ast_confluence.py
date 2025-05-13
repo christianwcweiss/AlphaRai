@@ -1,15 +1,18 @@
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 import pandas as pd
 
 from quant_core.confluences.confluence import Confluence
 from quant_core.enums.trade_direction import TradeDirection
+from quant_core.features.indicators.adaptive_super_trend import DataFeatureAdaptiveSuperTrend
 
 
 class ConfluenceAdaptiveSuperTrendDirection(Confluence):
+    """Confluence that checks if the Adaptive SuperTrend indicator aligns with the trade direction."""
+
     __NAME__ = "Adaptive SuperTrend Direction"
     __DESCRIPTION__ = "Scores 1.0 if SuperTrend aligns with trade direction, 0.0 if opposite, 0.5 if unknown."
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
         self._atr_period = config.get("atr_period", 10)
         self._min_factor = config.get("min_factor", 1.0)
@@ -19,8 +22,6 @@ class ConfluenceAdaptiveSuperTrendDirection(Confluence):
         self._from_cluster = config.get("from_cluster", "Best")
 
     def check(self, data_frame: pd.DataFrame, direction: TradeDirection) -> float:
-        from quant_core.chart.features.indicators.adaptive_super_trend import DataFeatureAdaptiveSuperTrend
-
         ast = DataFeatureAdaptiveSuperTrend(
             atr_period=self._atr_period,
             min_factor=self._min_factor,
@@ -43,7 +44,7 @@ class ConfluenceAdaptiveSuperTrendDirection(Confluence):
 
         if direction.normalize() is TradeDirection.LONG.normalize():
             return 1.0 if trend == 1 else 0.0
-        elif direction.normalize() is TradeDirection.SHORT.normalize():
+        if direction.normalize() is TradeDirection.SHORT.normalize():
             return 1.0 if trend == 0 else 0.0
-        else:
-            return 0.5
+
+        return 0.5

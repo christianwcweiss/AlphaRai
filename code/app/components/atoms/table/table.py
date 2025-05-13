@@ -6,6 +6,8 @@ from components.atoms.atom import Atom
 
 
 class AlphaTableCell(Atom):
+    """A cell in the table."""
+
     DEFAULT_CELL_STYLE = {
         "border": "1px solid #ccc",
         "textAlign": "center",
@@ -24,16 +26,19 @@ class AlphaTableCell(Atom):
     def render(self) -> Component:
         if self._is_header:
             return html.Th(self._content, style=self.DEFAULT_CELL_STYLE)
-        else:
-            return html.Td(self._content, style=self.DEFAULT_CELL_STYLE)
+
+        return html.Td(self._content, style=self.DEFAULT_CELL_STYLE)
 
 
 class AlphaTableRow(Atom):
+    """A row in the table."""
+
     def __init__(self, cells: List[AlphaTableCell]):
         self._cells = cells
         self.validate()
 
     def validate(self) -> None:
+        """Validate the row."""
         if not self._cells:
             raise ValueError("Row must have at least one cell.")
 
@@ -41,7 +46,9 @@ class AlphaTableRow(Atom):
         return html.Tr([cell.render() for cell in self._cells])
 
 
-class AlphaTable(Atom):
+class AlphaTable(Atom):  # pylint: disable=too-few-public-methods
+    """A table component for Dash applications."""
+
     DEFAULT_STYLE = {
         "width": "100%",
         "borderCollapse": "collapse",
