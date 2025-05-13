@@ -3,7 +3,7 @@ from functools import cache
 import pandas as pd
 from dash import html, dcc, callback, Input, Output, ctx
 
-from components.atoms.buttons.button_group import AlphaButtonGroup
+from components.atoms.buttons.general.button_group import AlphaButtonGroup
 from components.atoms.card.card import AlphaCard, AlphaCardHeader, AlphaCardBody
 from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.charts.chart import ChartLayoutStyle, ChartMargin

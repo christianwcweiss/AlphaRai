@@ -1,7 +1,7 @@
 import dash
 from dash import html, Input, Output, State, ctx, callback
 
-from components.atoms.buttons.button import AlphaButton
+from components.atoms.buttons.general.button import AlphaButton
 from components.atoms.content import MainContent
 from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.atoms.text.page import PageHeader

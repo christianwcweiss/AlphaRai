@@ -14,6 +14,7 @@ class AvgTradeDurationOverTime(TradeMetricOverTime):
 
         result = []
 
+
         for current_day, window_df in self.get_rolling_windows(df, skip_head=True).items():
             for account, group in window_df.groupby("account_id"):
                 for result_type, result_group in group.groupby("result"):

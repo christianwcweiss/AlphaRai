@@ -1,7 +1,7 @@
 import pytest
 from dash import html
 
-from components.atoms.buttons.button import AlphaButton
+from components.atoms.buttons.general.button import AlphaButton
 from exceptions.ui import ComponentPropertyError
 from quant_dev.builder import Builder
 

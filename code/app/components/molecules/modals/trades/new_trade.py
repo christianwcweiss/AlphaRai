@@ -1,15 +1,72 @@
+from typing import List
+
 from dash import html, dcc, Input, Output, State, callback, dash
 import dash_bootstrap_components as dbc
 
 from components.molecules.molecule import Molecule
 from constants import colors
-from components.atoms.buttons.button import AlphaButton
+from components.atoms.buttons.general.button import AlphaButton
 from constants.style import HIDDEN
 from services.trade_parser import TradeMessageParser
 from entities.trade_details import TradeDetails
 from services.trade_router import TradeRouter
 from quant_core.services.core_logger import CoreLogger
 
+
+def render_trade_input_text_area() -> html.Div:
+    return html.Div(
+        [
+            dcc.Textarea(
+                id="trade-input-text-area",
+                style={"width": "100%", "height": "500px", "display": "block"},
+                placeholder="Paste signal here...",
+            ),
+            html.Br(),
+            AlphaButton("Parse Signal", "parse-trade-btn").render(),
+            html.Br(),
+        ],
+        id="trade-input-container",
+        style={"marginBottom": "1rem"},
+    )
+
+def render_trade_details_section() -> List[html.Div]:
+    return [html.Div(
+            [
+                html.H6("📋 Trade Details", className="fw-bold mb-2"),
+                html.Div(
+                    id="parsed-trade-output",
+                    style={
+                        "backgroundColor": "#f8f9fa",
+                        "padding": "1rem",
+                        "borderRadius": "0.5rem",
+                        "boxShadow": "0 2px 6px rgba(0,0,0,0.05)",
+                    },
+                ),
+            ],
+            id="trade-details-section",
+            style={"marginBottom": "1.5rem", "display": "none"},
+        ),
+        html.Div(
+            [
+                html.H6("🧠 Confluences", className="fw-bold mb-2"),
+                html.Div("(To be implemented...)", className="text-muted"),
+            ],
+            id="confluence-section",
+            style={"marginBottom": "1.5rem", "display": "none"},
+        ),
+        html.Div(
+            [
+                html.H6("⚖️ Risk Overview", className="fw-bold mb-2"),
+                html.Div("(To be implemented...)", className="text-muted"),
+            ],
+            id="risk-section",
+            style={"marginBottom": "1.5rem", "display": "none"},
+        ),
+        html.Div(
+            [
+                AlphaButton("Execute Trade", "submit-trade-btn", style={"display": "none"}).render(),
+            ]
+        )]
 
 class NewTradeModal(Molecule):
     def render(self) -> dbc.Modal:
@@ -18,57 +75,8 @@ class NewTradeModal(Molecule):
                 dbc.ModalHeader(dbc.ModalTitle("New Trade")),
                 dbc.ModalBody(
                     [
-                        html.Div(
-                            [
-                                dcc.Textarea(
-                                    id="trade-input-text-area",
-                                    style={"width": "100%", "height": "500px", "display": "block"},
-                                    placeholder="Paste signal here...",
-                                ),
-                                html.Br(),
-                                AlphaButton("Parse Signal", "parse-trade-btn").render(),
-                                html.Br(),
-                            ],
-                            id="trade-input-container",
-                            style={"marginBottom": "1rem"},
-                        ),
-                        html.Div(
-                            [
-                                html.H6("📋 Trade Details", className="fw-bold mb-2"),
-                                html.Div(
-                                    id="parsed-trade-output",
-                                    style={
-                                        "backgroundColor": "#f8f9fa",
-                                        "padding": "1rem",
-                                        "borderRadius": "0.5rem",
-                                        "boxShadow": "0 2px 6px rgba(0,0,0,0.05)",
-                                    },
-                                ),
-                            ],
-                            id="trade-details-section",
-                            style={"marginBottom": "1.5rem", "display": "none"},
-                        ),
-                        html.Div(
-                            [
-                                html.H6("🧠 Confluences", className="fw-bold mb-2"),
-                                html.Div("(To be implemented...)", className="text-muted"),
-                            ],
-                            id="confluence-section",
-                            style={"marginBottom": "1.5rem", "display": "none"},
-                        ),
-                        html.Div(
-                            [
-                                html.H6("⚖️ Risk Overview", className="fw-bold mb-2"),
-                                html.Div("(To be implemented...)", className="text-muted"),
-                            ],
-                            id="risk-section",
-                            style={"marginBottom": "1.5rem", "display": "none"},
-                        ),
-                        html.Div(
-                            [
-                                AlphaButton("Execute Trade", "submit-trade-btn", style={"display": "none"}).render(),
-                            ]
-                        ),
+                        render_trade_input_text_area(),
+                        *render_trade_details_section()
                     ],
                     style={"maxHeight": "60vh", "overflowY": "auto"},
                 ),
@@ -187,7 +195,9 @@ def execute_trade(_, trade_data):
         CoreLogger().info(f"Routing Trade: {trade_data}")
         trade = TradeDetails(**trade_data)
         TradeRouter(trade).route_trade()
+
         return dbc.Alert("✅ Trade successfully routed!", color=colors.SUCCESS_COLOR, dismissable=True)
     except Exception as e:
         CoreLogger().error(f"Execution failed: {e}")
+
         return dbc.Alert(f"Trade execution failed: {e}", color=colors.ERROR_COLOR, dismissable=True)

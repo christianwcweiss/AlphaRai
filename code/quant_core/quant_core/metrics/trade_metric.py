@@ -5,7 +5,7 @@ import pandas as pd
 
 
 class TradeMetricOverTime(ABC):
-    def __init__(self, rolling_window_days: int = 30) -> None:
+    def __init__(self, rolling_window_days: int = 5) -> None:
         self.rolling_window_days = rolling_window_days
 
     def _normalize_time(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -36,11 +36,17 @@ class TradeMetricOverTime(ABC):
 
         return grouped.groupby("time")[metric_cols].mean().reset_index()
 
-    def get_rolling_windows(self, df: pd.DataFrame, skip_head: bool = False) -> Dict[pd.Timestamp, pd.DataFrame]:
+    def get_rolling_windows(
+            self,
+            df: pd.DataFrame,
+            skip_head: bool = False,
+            aggregation_resolution: str = "D"
+    ) -> Dict[pd.Timestamp, pd.DataFrame]:
         """
-        Returns a dict of {date: trades within the past `rolling_window_days` including that date}.
-        - Includes all calendar dates (via pd.date_range)
-        - Skips the first N days if `skip_head=True` (to ensure full window)
+        Returns a dict of {aggregated_time: trades within the past `rolling_window_days` up to that point}.
+        - Supports arbitrary aggregation_resolution (e.g., 'D', 'H', 'W')
+        - If 'D', truncates timestamps to midnight for consistent grouping
+        - Skips first N windows if skip_head=True
         """
         df = df.copy()
         df["time"] = pd.to_datetime(df["time"])
@@ -49,20 +55,26 @@ class TradeMetricOverTime(ABC):
         if df.empty:
             return {}
 
-        start_date = df["time"].min().normalize()
-        end_date = df["time"].max().normalize()
+        # Truncate timestamps to daily resolution if requested
+        if aggregation_resolution == "D":
+            df["agg_time"] = df["time"].dt.normalize()
+        else:
+            # General fallback using to_period and back to timestamp
+            df["agg_time"] = df["time"].dt.to_period(aggregation_resolution).dt.to_timestamp()
 
-        # Create full date range (even if no trades)
-        all_days = pd.date_range(start=start_date, end=end_date, freq="D")
+        start_time = df["agg_time"].min()
+        end_time = df["agg_time"].max()
+
+        all_periods = pd.date_range(start=start_time, end=end_time, freq=aggregation_resolution)
 
         if skip_head:
-            all_days = all_days[self.rolling_window_days :]
+            all_periods = all_periods[self.rolling_window_days:]
 
         result = {}
 
-        for current_day in all_days:
-            window_start = current_day - pd.Timedelta(days=self.rolling_window_days)
-            mask = (df["time"] > window_start) & (df["time"] <= current_day)
-            result[current_day.date()] = df.loc[mask]
+        for current_period in all_periods:
+            window_start = current_period - pd.Timedelta(days=self.rolling_window_days)
+            mask = (df["time"] > window_start) & (df["time"] <= current_period)
+            result[current_period] = df.loc[mask]
 
         return result

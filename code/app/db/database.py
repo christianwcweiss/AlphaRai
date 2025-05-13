@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 
 from models.account import Account
 from models.account_config import AccountConfig
+from models.bots.grid_bot import GridBot
 from models.confluence import ConfluenceConfig
 from models.general_setting import GeneralSetting
 from models.trade_history import Trade
@@ -21,6 +22,7 @@ TABLES = [
     ("general_settings", GeneralSetting),
     ("trade_config", AccountConfig),
     ("trades", Trade),
+    ("grid_bots", GridBot)
 ]
 
 engine = create_engine(DATABASE_URL, echo=False)

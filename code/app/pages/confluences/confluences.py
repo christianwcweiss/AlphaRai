@@ -2,7 +2,7 @@ import dash
 import dash_bootstrap_components as dbc
 from dash import html, callback, Input, Output, State, ctx
 
-from components.atoms.buttons.button import AlphaButton
+from components.atoms.buttons.general.button import AlphaButton
 from components.atoms.content import MainContent
 from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.atoms.modal.modal import AlphaModal
@@ -14,7 +14,7 @@ from quant_core.confluences.confluences import CONFLUENCE_LIST
 from quant_core.enums.time_period import TimePeriod
 from services.db.confluence import get_all_confluences, get_confluence_by_id, upsert_confluence, delete_confluence
 
-dash.register_page(__name__, path="/settings/confluences", name="Confluences")
+dash.register_page(__name__, path="/confluences", name="Confluences")
 
 
 def _confluence_modal_fields(prefix: str, confluence_id="", period="", weight=100):
@@ -82,7 +82,7 @@ def build_confluence_table():
     return AlphaTable(table_id="confluence-settings-table", headers=headers, rows=rows).render()
 
 
-class ConfluencesSettingsPage(BasePage):
+class ConfluencesPage(BasePage):
     def render(self):
         return PageBody(
             [
@@ -112,7 +112,7 @@ class ConfluencesSettingsPage(BasePage):
         )
 
 
-page = ConfluencesSettingsPage("Confluences")
+page = ConfluencesPage("Confluences")
 layout = page.layout
 
 

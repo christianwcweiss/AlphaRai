@@ -1,1 +1,1 @@
-TAB_LABELS = ["overview", "performance"]
+TAB_LABELS = ["overview", "performance", "behavior"]

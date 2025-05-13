@@ -1,7 +1,7 @@
 from dash import dcc, page_container, Dash, callback, Output, Input, State, dash, html
 import dash_bootstrap_components as dbc
 
-from components.atoms.buttons.button import AlphaButton
+from components.atoms.buttons.general.button import AlphaButton
 from components.molecules.modals.logs.log_viewer import LogViewer
 from components.frame.top_bar import TopBar
 from components.molecules.modals.trades.new_trade import NewTradeModal
