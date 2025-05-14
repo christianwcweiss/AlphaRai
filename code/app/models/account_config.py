@@ -13,20 +13,16 @@ class AccountConfig(Base):  # type: ignore  # pylint: disable=too-few-public-met
     id = Column(Integer, primary_key=True, index=True)
     account_id = Column(String, index=True)  # Renamed from uid
     signal_asset_id = Column(String, nullable=False)
-    platform_asset_id = Column(String, nullable=False)
-
-    # Trading logic
     entry_stagger_method = Column(String, default="linear")
     n_staggers = Column(Integer, default=1)
-
-    # Risk configuration
     risk_percent = Column(Float, nullable=False, default=0.5)
-    decimal_points = Column(Integer, nullable=False)
-    lot_size = Column(Float, nullable=False, default=1.0)
-
-    # Metadata
-    asset_type = Column(Enum(AssetType), nullable=True)
     enabled = Column(Boolean, default=False)
+
+    # symbols
+    platform_asset_id = Column(String, nullable=False)
+    asset_type = Column(Enum(AssetType), nullable=True)
+    lot_size = Column(Float, nullable=False, default=1.0)
+    decimal_points = Column(Integer, nullable=False)
 
     def __repr__(self):
         return (

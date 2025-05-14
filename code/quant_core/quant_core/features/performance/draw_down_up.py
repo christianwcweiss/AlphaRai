@@ -2,7 +2,7 @@ from typing import List
 
 import pandas as pd
 
-from quant_core.chart.feature import DataFeature
+from quant_core.features.feature import DataFeature
 from quant_core.enums.trade_direction import TradeDirection
 from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows
 

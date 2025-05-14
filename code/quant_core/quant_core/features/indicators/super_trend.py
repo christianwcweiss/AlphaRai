@@ -3,8 +3,8 @@ from typing import List
 import numpy as np
 import pandas as pd
 
-from quant_core.chart.feature import DataFeature
-from quant_core.chart.features.indicators.average_true_range import DataFeatureAverageTrueRange
+from quant_core.features.feature import DataFeature
+from quant_core.features.indicators.average_true_range import DataFeatureAverageTrueRange
 from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows
 
 

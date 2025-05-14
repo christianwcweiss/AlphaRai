@@ -36,6 +36,7 @@ ignored_globally = [
     "R0801",  # duplicate-code, disable at some point
     "C0104",  # disallowed-name, doesn't matter
     "W0221",  # arguments-differ, disable at some point
+    "C0327",  # mixed-line-endings - managed by black
 ]
 
 files = sys.argv[1:]

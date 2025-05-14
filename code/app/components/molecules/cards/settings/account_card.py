@@ -1,5 +1,7 @@
 import base64
 import os
+from typing import Optional
+
 from dash import html, dcc
 import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
@@ -13,11 +15,13 @@ import pandas as pd
 class AccountSettingsCard:  # pylint: disable=too-few-public-methods
     """A card that displays account settings and a chart."""
 
-    def __init__(self, account: Account, enabled_count: int, total_count: int, rel_df: pd.DataFrame | None = None):
+    def __init__(
+        self, account: Account, enabled_count: int, total_count: int, data_frame: Optional[pd.DataFrame] = None
+    ):
         self.account = account
         self.enabled_count = enabled_count
         self.total_count = total_count
-        self.rel_df = rel_df
+        self.data_frame = data_frame
         self.icon_id = f"account-options-btn-{account.id}"
         self.popover_id = f"account-options-popover-{account.id}"
         self.delete_btn_id = f"delete-account-{account.uid}"
@@ -89,7 +93,7 @@ class AccountSettingsCard:  # pylint: disable=too-few-public-methods
 
     def _render_body(self) -> html.Div:
         # Chart
-        if self.rel_df is not None and not self.rel_df.empty:
+        if self.data_frame is not None and not self.data_frame.empty:
             line_chart_layout_style = ChartLayoutStyle(
                 title="",
                 x_axis_title="",
@@ -110,7 +114,7 @@ class AccountSettingsCard:  # pylint: disable=too-few-public-methods
                 show_y_axis=False,
             )
             fig = LineChart(
-                data_frame=self.rel_df,
+                data_frame=self.data_frame,
                 line_layout_style=line_chart_layout_style,
             ).plot(
                 x_col="time",
