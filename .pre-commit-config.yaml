@@ -27,6 +27,11 @@ repos:
     hooks:
       - id: mypy
         args: ["--ignore-missing-imports"]
+        additional_dependencies:
+          [
+            types-pytz,
+            types-croniter
+          ]
 
   - repo: local
     hooks:

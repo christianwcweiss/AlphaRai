@@ -34,7 +34,6 @@ class CoreLogger:
     """Singleton class for logging in the application."""
 
     _instance = None
-    _logger = None
 
     def __new__(cls) -> "CoreLogger":
         if cls._instance is None:
@@ -48,7 +47,9 @@ class CoreLogger:
         return os.getenv("LOG_FILE_PATH", f"{os.path.join(os.path.dirname(__name__), 'logs', 'app.log')}")
 
     def _initialize_logger(self) -> None:
-        self._logger = logging.getLogger("core_logger")
+        self._logger = logging.getLogger(  # type: ignore  # pylint: disable=attribute-defined-outside-init
+            "core_logger"
+        )
         log_level = os.getenv("LOG_LEVEL", "INFO")
         self._logger.setLevel(log_level)
 

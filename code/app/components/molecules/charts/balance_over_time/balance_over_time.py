@@ -157,7 +157,7 @@ def toggle_mode(_, __) -> Tuple[
     triggered = ctx.triggered_id
 
     if triggered == BALANCE_OVER_TIME_REL_BTN_ID:
-        return (
+        return (  # type: ignore[return-value]
             HIDDEN_STYLE,
             VISIBLE_STYLE,
             False,
@@ -166,7 +166,7 @@ def toggle_mode(_, __) -> Tuple[
             AlphaButtonGroup.ACTIVE_BUTTON_STYLE,
         )
 
-    return (
+    return (  # type: ignore[return-value]
         VISIBLE_STYLE,
         HIDDEN_STYLE,
         True,
