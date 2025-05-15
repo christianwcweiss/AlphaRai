@@ -1,11 +1,11 @@
 import pandas as pd
-from quant_core.metrics.trade_metric import TradeMetricOverTime
+from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 
 
 class FeesAsPctOfProfitOverTime(TradeMetricOverTime):
     """Fees as percentage of profit over time metric."""
 
-    def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+    def calculate(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         if (
             data_frame.empty
             or "profit" not in data_frame.columns

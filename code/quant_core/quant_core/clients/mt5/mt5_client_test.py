@@ -1,14 +1,13 @@
 # pylint: disable=no-member
 import json
 from datetime import datetime, timedelta
-from typing import Optional, Any, List
+from typing import Optional, Any, List, Dict
 from unittest.mock import Mock
 
 import MetaTrader5 as mt5  # type: ignore
 import boto3
 import pandas as pd
 
-from quant_core.entities.mt5.mt5_symbol import MT5Symbol
 from quant_core.entities.mt5.mt5_trade import CompletedMT5Trade
 from quant_core.enums.order_type import OrderType
 from quant_core.enums.trade_direction import TradeDirection
@@ -181,112 +180,17 @@ class Mt5Client:
             ]
         )
 
-    def get_all_symbols(self) -> List[MT5Symbol]:
+    def get_all_symbols(self) -> List[Dict[str, Any]]:
         """Get all symbols from MT5."""
-        raw_symbols = mt5.symbols_get()
+        raw_symbols = mt5.symbols_get()  # type: ignore
         if raw_symbols is None:
-            raise RuntimeError(f"Failed to fetch symbols: {mt5.last_error()}")
+            raise RuntimeError(f"Failed to fetch symbols: {mt5.last_error()}")  # type: ignore
 
-        symbols = []
-        for symbol in raw_symbols:
-            symbols.append(
-                MT5Symbol(
-                    is_custom=symbol.custom,
-                    chart_mode=symbol.chart_mode,
-                    select=symbol.select,
-                    visible=symbol.visible,
-                    session_deals=symbol.session_deals,
-                    session_buy_orders=symbol.session_buy_orders,
-                    session_sell_orders=symbol.session_sell_orders,
-                    volume=symbol.volume,
-                    volume_high=symbol.volumehigh,
-                    volume_low=symbol.volumelow,
-                    time=symbol.time,
-                    digits=symbol.digits,
-                    spread=symbol.spread,
-                    spread_float=symbol.spread_float,
-                    ticks_bookdepth=symbol.ticks_bookdepth,
-                    trade_calc_mode=symbol.trade_calc_mode,
-                    trade_mode=symbol.trade_mode,
-                    start_time=symbol.start_time,
-                    expiration_time=symbol.expiration_time,
-                    trade_stops_level=symbol.trade_stops_level,
-                    trade_freeze_level=symbol.trade_freeze_level,
-                    trade_exemode=symbol.trade_exemode,
-                    swap_mode=symbol.swap_mode,
-                    swap_rollover3days=symbol.swap_rollover3days,
-                    margin_hedged_use_leg=symbol.margin_hedged_use_leg,
-                    expiration_mode=symbol.expiration_mode,
-                    filling_mode=symbol.filling_mode,
-                    order_mode=symbol.order_mode,
-                    order_gtc_mode=symbol.order_gtc_mode,
-                    option_mode=symbol.option_mode,
-                    option_right=symbol.option_right,
-                    bid=symbol.bid,
-                    bidhigh=symbol.bidhigh,
-                    bidlow=symbol.bidlow,
-                    ask=symbol.ask,
-                    askhigh=symbol.askhigh,
-                    asklow=symbol.asklow,
-                    last=symbol.last,
-                    lasthigh=symbol.lasthigh,
-                    lastlow=symbol.lastlow,
-                    volume_real=symbol.volume_real,
-                    volumehigh_real=symbol.volumehigh_real,
-                    volumelow_real=symbol.volumelow_real,
-                    option_strike=symbol.option_strike,
-                    point=symbol.point,
-                    trade_tick_value=symbol.trade_tick_value,
-                    trade_tick_value_profit=symbol.trade_tick_value_profit,
-                    trade_tick_value_loss=symbol.trade_tick_value_loss,
-                    trade_contract_size=symbol.trade_contract_size,
-                    trade_accrued_interest=symbol.trade_accrued_interest,
-                    trade_face_value=symbol.trade_face_value,
-                    trade_liquidity_rate=symbol.trade_liquidity_rate,
-                    volume_min=symbol.volume_min,
-                    volume_max=symbol.volume_max,
-                    volume_step=symbol.volume_step,
-                    volume_limit=symbol.volume_limit,
-                    swap_long=symbol.swap_long,
-                    swap_short=symbol.swap_short,
-                    margin_initial=symbol.margin_initial,
-                    margin_maintenance=symbol.margin_maintenance,
-                    session_volume=symbol.session_volume,
-                    session_turnover=symbol.session_turnover,
-                    session_interest=symbol.session_interest,
-                    session_buy_orders_volume=symbol.session_buy_orders_volume,
-                    session_sell_orders_volume=symbol.session_sell_orders_volume,
-                    session_open=symbol.session_open,
-                    session_close=symbol.session_close,
-                    session_aw=symbol.session_aw,
-                    session_price_settlement=symbol.session_price_settlement,
-                    session_price_limit_min=symbol.session_price_limit_min,
-                    session_price_limit_max=symbol.session_price_limit_max,
-                    margin_hedged=symbol.margin_hedged,
-                    price_change=symbol.price_change,
-                    price_volatility=symbol.price_volatility,
-                    price_theoretical=symbol.price_theoretical,
-                    price_greeks_delta=symbol.price_greeks_delta,
-                    price_greeks_theta=symbol.price_greeks_theta,
-                    price_greeks_gamma=symbol.price_greeks_gamma,
-                    price_greeks_vega=symbol.price_greeks_vega,
-                    price_greeks_rho=symbol.price_greeks_rho,
-                    price_greeks_omega=symbol.price_greeks_omega,
-                    price_sensitivity=symbol.price_sensitivity,
-                    basis=symbol.basis,
-                    category=symbol.category,
-                    currency_base=symbol.currency_base,
-                    currency_profit=symbol.currency_profit,
-                    currency_margin=symbol.currency_margin,
-                    bank=symbol.bank,
-                    description=symbol.description,
-                    exchange=symbol.exchange,
-                    formula=symbol.formula,
-                    isin=symbol.isin,
-                    name=symbol.name,
-                    page=symbol.page,
-                    path=symbol.path,
-                )
-            )
-
-        return symbols
+        return [
+            {
+                "name": s.name,
+                "digits": s.digits,
+                "lot_size": getattr(s, "trade_contract_size", 1.0),  # ← this
+            }
+            for s in raw_symbols
+        ]

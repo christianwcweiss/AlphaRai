@@ -19,4 +19,4 @@ class PredictionLabel(Enum):
         if self is PredictionLabel.SELL or self is PredictionLabel.STRONG_SELL:
             return TradeDirection.SHORT
 
-        raise ValueError(f"Invalid PredictionLabel: {self}")
+        return TradeDirection.NEUTRAL

@@ -80,8 +80,8 @@ def render_behaviour_tab(selected_account):
     if df.empty:
         return dbc.Alert("⚠️ No trade data available for the selected account.", color="warning")
 
-    win_rate_metric_df = WinRateOverTime().calculate_grouped(df)
-    trades_per_day_metric_df = TradesPerDayOverTime().calculate_grouped(df)
+    win_rate_metric_df = WinRateOverTime().calculate(df)
+    trades_per_day_metric_df = TradesPerDayOverTime().calculate(df)
 
     return AlphaRow(
         [

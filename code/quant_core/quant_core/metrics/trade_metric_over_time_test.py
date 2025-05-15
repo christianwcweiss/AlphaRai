@@ -1,0 +1,2 @@
+class TestTradeMetricOverTime:
+    pass

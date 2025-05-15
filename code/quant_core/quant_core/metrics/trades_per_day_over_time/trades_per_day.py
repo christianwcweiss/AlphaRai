@@ -1,11 +1,11 @@
 import pandas as pd
-from quant_core.metrics.trade_metric import TradeMetricOverTime
+from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 
 
 class TradesPerDayOverTime(TradeMetricOverTime):
     """Trades per day over time metric."""
 
-    def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+    def calculate(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         if data_frame.empty or "time" not in data_frame.columns:
             return pd.DataFrame(columns=["time", "account_id", "trade_count"])
 
@@ -19,7 +19,3 @@ class TradesPerDayOverTime(TradeMetricOverTime):
                 result.append({"time": current_day, "account_id": account, "trade_count": trade_count})
 
         return pd.DataFrame(result)
-
-    def calculate_ungrouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
-        grouped = self.calculate_grouped(data_frame)
-        return grouped.groupby("time")["trade_count"].sum().reset_index()

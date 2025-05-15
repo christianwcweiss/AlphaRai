@@ -1,5 +1,5 @@
 import pandas as pd
-from quant_core.metrics.trade_metric import TradeMetricOverTime
+from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 
 
 class ExpectancyOverTimeRelative(TradeMetricOverTime):
@@ -8,7 +8,7 @@ class ExpectancyOverTimeRelative(TradeMetricOverTime):
     def __init__(self, rolling_window: int = 30):
         super().__init__(rolling_window)
 
-    def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:  # pylint: disable=too-many-locals
+    def calculate(self, data_frame: pd.DataFrame) -> pd.DataFrame:  # pylint: disable=too-many-locals
         data_frame = data_frame.copy()
         data_frame["time"] = pd.to_datetime(data_frame["time"])
         data_frame = data_frame[data_frame["profit"].notna()]
@@ -34,7 +34,3 @@ class ExpectancyOverTimeRelative(TradeMetricOverTime):
                 )
 
         return pd.DataFrame(result)
-
-    def calculate_ungrouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
-        grouped = self.calculate_grouped(data_frame)
-        return grouped.groupby("time")["expectancy_pct"].mean().reset_index()

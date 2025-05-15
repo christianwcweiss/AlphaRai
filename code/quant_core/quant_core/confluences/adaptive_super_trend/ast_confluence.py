@@ -3,7 +3,7 @@ import pandas as pd
 
 from quant_core.confluences.confluence import Confluence
 from quant_core.enums.trade_direction import TradeDirection
-from quant_core.chart.features.indicators.adaptive_super_trend import DataFeatureAdaptiveSuperTrend
+from quant_core.features.indicators.adaptive_super_trend import DataFeatureAdaptiveSuperTrend
 
 
 class ConfluenceAdaptiveSuperTrendDirection(Confluence):

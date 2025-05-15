@@ -83,13 +83,13 @@ def sync_with_mt5(account_id: str, secret_id: str) -> None:
         upsert_config(
             account_id,
             {
-                "signal_asset_id": symbol["name"],
-                "platform_asset_id": symbol["name"],
-                "entry_stagger_method": StaggerMethod.LINEAR.value,
-                "n_staggers": 1,
+                "signal_asset_id": symbol.name,
+                "platform_asset_id": symbol.name,
+                "entry_stagger_method": StaggerMethod.FIBONACCI.value,
+                "n_staggers": 3,
                 "risk_percent": 0.5,
-                "decimal_points": symbol["digits"],
-                "lot_size": symbol.get("lot_size", 1.0),  # new field with fallback
+                "decimal_points": symbol.digits,
+                "lot_size": symbol.trade_contract_size,
                 "enabled": False,
                 "asset_type": None,
             },

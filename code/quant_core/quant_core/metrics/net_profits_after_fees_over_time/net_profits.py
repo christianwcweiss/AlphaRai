@@ -1,11 +1,11 @@
 import pandas as pd
-from quant_core.metrics.trade_metric import TradeMetricOverTime
+from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 
 
 class SwapOverTime(TradeMetricOverTime):
     """Calculates the total swap over time."""
 
-    def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+    def calculate(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         if data_frame.empty or "swap" not in data_frame.columns or "time" not in data_frame.columns:
             return pd.DataFrame(columns=["time", "swap"])
 

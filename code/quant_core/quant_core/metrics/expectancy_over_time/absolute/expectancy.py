@@ -1,6 +1,6 @@
 import pandas as pd
 
-from quant_core.metrics.trade_metric import TradeMetricOverTime
+from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 
 
 class ExpectancyOverTimeAbsolute(TradeMetricOverTime):
@@ -9,7 +9,7 @@ class ExpectancyOverTimeAbsolute(TradeMetricOverTime):
     def __init__(self, rolling_window_days: int = 30) -> None:
         super().__init__(rolling_window_days)
 
-    def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+    def calculate(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         data_frame = data_frame.copy()
         data_frame["time"] = pd.to_datetime(data_frame["time"])
         data_frame = data_frame[data_frame["profit"].notna()]
@@ -28,7 +28,3 @@ class ExpectancyOverTimeAbsolute(TradeMetricOverTime):
                 result.append({"time": current_day, "account_id": account, "expectancy": round(expectancy, 2)})
 
         return pd.DataFrame(result)
-
-    def calculate_ungrouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
-        grouped = self.calculate_grouped(data_frame)
-        return grouped.groupby("time")["expectancy"].sum().reset_index()

@@ -1,11 +1,11 @@
 import pandas as pd
-from quant_core.metrics.trade_metric import TradeMetricOverTime
+from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 
 
 class ProfitByWeekdayOverTime(TradeMetricOverTime):
     """Calculates the profit by weekday over time."""
 
-    def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+    def calculate(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         if data_frame.empty or "time" not in data_frame.columns or "profit" not in data_frame.columns:
             return pd.DataFrame(columns=["account_id", "weekday", "avg_profit"])
 
@@ -21,9 +21,3 @@ class ProfitByWeekdayOverTime(TradeMetricOverTime):
                 result.extend(weekday_group.to_dict(orient="records"))
 
         return pd.DataFrame(result)
-
-    def calculate_ungrouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
-        data_frame = data_frame.copy()
-        data_frame["time"] = pd.to_datetime(data_frame["time"])
-        data_frame["weekday"] = data_frame["time"].dt.day_name()
-        return data_frame.groupby("weekday")["profit"].mean().reset_index(name="avg_profit")

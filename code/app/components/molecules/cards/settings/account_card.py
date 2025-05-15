@@ -118,7 +118,7 @@ class AccountSettingsCard:  # pylint: disable=too-few-public-methods
                 line_layout_style=line_chart_layout_style,
             ).plot(
                 x_col="time",
-                y_col="percentage_growth",
+                y_col="relative_balance",
             )
         else:
             fig = go.Figure(layout=go.Layout(title="No Data", height=100))

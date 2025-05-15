@@ -1,11 +1,11 @@
 import pandas as pd
-from quant_core.metrics.trade_metric import TradeMetricOverTime
+from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 
 
 class SortinoRatioOverTime(TradeMetricOverTime):
     """Calculates the Sortino ratio over time."""
 
-    def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+    def calculate(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         data_frame = data_frame.copy()
         data_frame["time"] = pd.to_datetime(data_frame["time"])
         data_frame = data_frame[data_frame["profit"].notna()]
@@ -27,8 +27,3 @@ class SortinoRatioOverTime(TradeMetricOverTime):
                 result.append({"time": current_day, "account_id": account, "sortino": round(sortino, 2)})
 
         return pd.DataFrame(result)
-
-    def calculate_ungrouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
-        grouped = self.calculate_grouped(data_frame)
-
-        return grouped.groupby("time")["sortino"].mean().reset_index()

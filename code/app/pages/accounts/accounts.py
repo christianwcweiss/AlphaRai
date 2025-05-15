@@ -45,7 +45,7 @@ def render_account_card(account, rel_df):
 
 def reload_mt5_accounts():
     """Reload the MT5 accounts and their trades."""
-    accounts = [account for account in get_all_accounts() if Platform(account.platform.upper()) is Platform.METATRADER]
+    accounts = [account for account in get_all_accounts() if account.platform is Platform.METATRADER]
     accounts = sorted(accounts, key=lambda x: x.friendly_name)
     trades = get_all_trades()
     df = pd.DataFrame([t.__dict__ for t in trades]) if trades else pd.DataFrame()
@@ -53,7 +53,7 @@ def reload_mt5_accounts():
     if not df.empty:
         df = df[[col for col in df.columns if not col.startswith("_sa_")]]
         metric = AccountBalanceOverTimeRelative()
-        rel_df = metric.calculate_grouped(df)
+        rel_df = metric.calculate(df)
     else:
         rel_df = pd.DataFrame()
 

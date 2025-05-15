@@ -49,7 +49,7 @@ def _render_account_dropdown() -> dcc.Dropdown:
 def _render_chart(  # pylint: disable=too-many-arguments, too-many-positional-arguments
     metric, df: pd.DataFrame, y_col: str, title: str, y_axis_title: str, y_range=None, split_by_account=True
 ) -> AlphaCol:
-    result = metric.calculate_grouped(df) if split_by_account else metric.calculate_ungrouped(df)
+    result = metric.calculate(df)
     return AlphaCol(
         dcc.Graph(
             figure=LineChart(
@@ -142,12 +142,12 @@ def render_performance_tab(selected_account):
     if df.empty:
         return dbc.Alert("⚠️ No trade data available for the selected account.", color="warning")
 
-    abs_df = ExpectancyOverTimeAbsolute().calculate_grouped(df)
-    rel_df = ExpectancyOverTimeRelative().calculate_grouped(df)
-    pf_df = ProfitFactorOverTime().calculate_grouped(df)
-    rr_df = RiskRewardRatioOverTime().calculate_grouped(df)
-    sharpe_df = SharpeRatioOverTime().calculate_grouped(df)
-    sortino_df = SortinoRatioOverTime().calculate_grouped(df)
+    abs_df = ExpectancyOverTimeAbsolute().calculate(df)
+    rel_df = ExpectancyOverTimeRelative().calculate(df)
+    pf_df = ProfitFactorOverTime().calculate(df)
+    rr_df = RiskRewardRatioOverTime().calculate(df)
+    sharpe_df = SharpeRatioOverTime().calculate(df)
+    sortino_df = SortinoRatioOverTime().calculate(df)
 
     return AlphaRow(
         [

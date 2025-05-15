@@ -1,6 +1,6 @@
 import pandas as pd
 
-from quant_core.metrics.trade_metric import TradeMetricOverTime
+from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 
 
 class MostTradedSymbols(TradeMetricOverTime):
@@ -10,7 +10,7 @@ class MostTradedSymbols(TradeMetricOverTime):
         super().__init__()
         self.top_n = top_n
 
-    def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+    def calculate(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         if data_frame.empty or "symbol" not in data_frame.columns:
             return pd.DataFrame(columns=["symbol", "trade_count"])
 

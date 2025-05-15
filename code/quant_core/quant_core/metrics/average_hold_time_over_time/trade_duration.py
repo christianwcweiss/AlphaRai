@@ -1,11 +1,11 @@
 import pandas as pd
-from quant_core.metrics.trade_metric import TradeMetricOverTime
+from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 
 
 class AvgHoldTimeOverTime(TradeMetricOverTime):
     """Calculates the average hold time of trades over time."""
 
-    def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+    def calculate(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         if data_frame.empty or "time" not in data_frame.columns or "duration" not in data_frame.columns:
             return pd.DataFrame(columns=["time", "account_id", "hold_time"])
 
@@ -28,7 +28,3 @@ class AvgHoldTimeOverTime(TradeMetricOverTime):
                 )
 
         return pd.DataFrame(result)
-
-    def calculate_ungrouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
-        grouped = self.calculate_grouped(data_frame)
-        return grouped.groupby("time")["hold_time"].mean().reset_index()

@@ -23,6 +23,7 @@ class TradeDirection(Enum):
 
     LONG = "LONG"
     BUY = "BUY"
+    NEUTRAL = "NEUTRAL"
     SHORT = "SHORT"
     SELL = "SELL"
 

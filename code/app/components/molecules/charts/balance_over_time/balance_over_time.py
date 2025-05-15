@@ -101,7 +101,7 @@ class BalanceOverTime(Molecule):  # pylint: disable=too-few-public-methods
                     figure=LineChart(
                         data_frame=self._relative_df,
                         line_layout_style=self._chart_layout_style,
-                    ).plot(x_col="time", y_col="percentage_growth", group_by="account_id"),
+                    ).plot(x_col="time", y_col="relative_balance", group_by="account_id"),
                     config={"displayModeBar": False},
                 )
             ],

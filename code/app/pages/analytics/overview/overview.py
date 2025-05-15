@@ -79,8 +79,8 @@ def render_overview_tab(selected_account):
     absolute_metric = AccountBalanceOverTimeAbsolute()
     relative_metric = AccountBalanceOverTimeRelative()
 
-    abs_df = absolute_metric.calculate_grouped(df)
-    rel_df = relative_metric.calculate_grouped(df)
+    abs_df = absolute_metric.calculate(df)
+    rel_df = relative_metric.calculate(df)
 
     return AlphaRow(
         [
