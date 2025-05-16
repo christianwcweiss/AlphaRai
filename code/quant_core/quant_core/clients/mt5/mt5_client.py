@@ -1,5 +1,6 @@
 # pylint: disable=no-member
 import json
+from collections import defaultdict
 from datetime import datetime, timedelta
 from random import randint
 from typing import Optional, Any, List
@@ -9,10 +10,12 @@ import MetaTrader5 as mt5  # type: ignore
 import boto3
 import pandas as pd
 
+from quant_core.entities.dto.trade import AlphaTradeDTO
 from quant_core.entities.mt5.mt5_symbol import MT5Symbol
 from quant_core.entities.mt5.mt5_trade import CompletedMT5Trade
 from quant_core.enums.order_type import OrderType
 from quant_core.enums.trade_direction import TradeDirection
+from quant_core.enums.trade_event_type import TradeEventType
 from quant_core.services.core_logger import CoreLogger
 
 ORDER_TYPE_MAP = {
@@ -134,13 +137,14 @@ class Mt5Client:
         raw_trades = mt5.history_deals_get(date_from, datetime.now())  # type: ignore
 
         if raw_trades is None:
-            CoreLogger().error("❌ Failed to retrieve trade history from MT5.")
+            CoreLogger().error("Failed to retrieve trade history from MT5.")
             return []
 
-        CoreLogger().info(f"✅ Retrieved {len(raw_trades)} trades from MT5.")
+        CoreLogger().info(f"Retrieved {len(raw_trades)} trades from MT5.")
 
         return [
             CompletedMT5Trade(
+                position_id=deal.position_id,
                 ticket=deal.ticket,
                 order=deal.order,
                 time=datetime.fromtimestamp(deal.time),
@@ -165,6 +169,7 @@ class Mt5Client:
         return pd.DataFrame(
             [
                 {
+                    "id": t.position_id,
                     "ticket": t.ticket,
                     "order": t.order,
                     "time": t.time,
@@ -182,6 +187,64 @@ class Mt5Client:
                 for t in self.get_history(days=days)
             ]
         )
+
+    def get_history_alpha_trades(self, account_id: str, days: int = 365) -> List[AlphaTradeDTO]:
+        """
+        Returns a list of AlphaTradeDTO instances for all closed trades in the past X days.
+        """
+        mt5_trades = sorted(self.get_history(days=days), key=lambda x: x.time)
+        default_dict_dp = defaultdict(list)
+        result = []
+
+        for trade in mt5_trades:
+            if trade.type_code == 2:
+                result.append(
+                    AlphaTradeDTO(
+                        id=trade.position_id,
+                        account_id=account_id,
+                        order=trade.ticket,
+                        trade_group="-",
+                        opened_at=trade.time,
+                        closed_at=trade.time,
+                        direction=TradeDirection.NEUTRAL,
+                        event=TradeEventType.DEPOSIT,
+                        size=trade.size,
+                        symbol=trade.symbol,
+                        entry_price=0.0,
+                        exit_price=0.0,
+                        profit=trade.profit,
+                        swap=trade.swap,
+                        commission=trade.commission,
+                    )
+                )
+            else:
+                default_dict_dp[trade.position_id].append(trade)
+                if len(default_dict_dp[trade.position_id]) == 2:
+                    opened_trade = default_dict_dp[trade.position_id][0]
+                    closed_trade = default_dict_dp[trade.position_id][1]
+                    direction = TradeDirection.LONG if opened_trade.type_code == 0 else TradeDirection.SHORT
+                    result.append(
+                        AlphaTradeDTO(
+                            id=opened_trade.position_id,
+                            account_id=account_id,
+                            order=opened_trade.ticket,
+                            trade_group=f"{opened_trade.magic}",
+                            opened_at=opened_trade.time,
+                            closed_at=closed_trade.time,
+                            direction=direction,
+                            event=TradeEventType.LONG if direction is TradeDirection.LONG else TradeEventType.SHORT,
+                            size=opened_trade.size,
+                            symbol=opened_trade.symbol,
+                            entry_price=opened_trade.price,
+                            exit_price=closed_trade.price,
+                            profit=closed_trade.profit,
+                            swap=closed_trade.swap,
+                            commission=closed_trade.commission,
+                        )
+                    )
+                    del default_dict_dp[trade.position_id]
+
+        return result
 
     def get_all_symbols(self) -> List[MT5Symbol]:
         """Get all symbols from MT5."""
