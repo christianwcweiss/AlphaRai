@@ -1,6 +1,7 @@
 # pylint: disable=no-member
 import json
 from datetime import datetime, timedelta
+from random import randint
 from typing import Optional, Any, List
 from unittest.mock import Mock
 
@@ -93,6 +94,7 @@ class Mt5Client:
         size: float,
         stop_loss: float,
         take_profit: float,
+        magic: Optional[int] = None,
         limit_level: Optional[float] = None,
         comment: Optional[str] = None,
     ) -> Any:
@@ -110,7 +112,7 @@ class Mt5Client:
             "sl": stop_loss,
             "tp": take_profit,
             "deviation": 10,
-            "magic": 234000,
+            "magic": magic or randint(100000, 999999),
             "comment": comment or "-",
             "type_time": mt5.ORDER_TIME_DAY,
         }

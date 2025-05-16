@@ -1,3 +1,5 @@
+from random import randint
+
 from entities.trade_details import TradeDetails
 from models.account_config import AccountConfig
 from quant_core.enums.order_type import OrderType
@@ -64,9 +66,9 @@ class TradeRouter:  # pylint: disable=too-few-public-methods
             balance = trader.get_balance()
 
             CoreLogger().debug("Successfully created MT5 Trader!")
+            group_magic = randint(100000, 999999)
 
             for i, entry_price in enumerate(entry_prices):
-                # Divide total risk across all entries
                 individual_risk_percent = config.risk_percent / config.n_staggers
 
                 size = calculate_position_size(
@@ -98,6 +100,7 @@ class TradeRouter:  # pylint: disable=too-few-public-methods
                     size=size,
                     stop_loss=stop_loss,
                     take_profit=take_profit,
+                    magic=group_magic,
                     limit_level=price,
                     comment=f"Algopro{self.trade.timeframe.value}",
                 )

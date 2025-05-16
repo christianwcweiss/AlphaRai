@@ -29,11 +29,7 @@ class AccountBalanceOverTimeAbsolute(TradeMetricOverTime):
         else:
             balance_df["initial_balance"] = sum(initial_balances.values())
 
-        groups = []
-        if group_by_account_id:
-            groups.append("account_id")
-        if group_by_symbol:
-            groups.append("symbol")
+        groups = self._get_groups(group_by_account_id=group_by_account_id, group_by_symbol=group_by_symbol)
 
         if groups:
             balance_df["initial_balance"] = balance_df.groupby(groups)["initial_balance"].transform("max")

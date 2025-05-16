@@ -26,7 +26,8 @@ class AccountBalanceOverTimeRelative(TradeMetricOverTime):
         )
 
         balance_df["relative_balance"] = (
-            (balance_df["absolute_balance"] - balance_df["initial_balance"]) / balance_df["initial_balance"]
+            1 + (balance_df["absolute_balance"] - balance_df["initial_balance"]) / balance_df["initial_balance"]
         ) * 100
+        balance_df["initial_balance"] = 100
 
-        return balance_df[balance_df.columns.difference(["initial_balance", "absolute_balance"])]
+        return balance_df[balance_df.columns.difference(["absolute_balance"])]

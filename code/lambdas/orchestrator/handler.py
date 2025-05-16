@@ -3,7 +3,7 @@ from http import HTTPStatus
 from typing import Any, Dict, Tuple
 
 from quant_core.bodies.trading_view import TradingViewAlertBody
-from quant_core.chart.features.indicators.average_true_range import DataFeatureAverageTrueRange
+from quant_core.features.indicators.average_true_range import DataFeatureAverageTrueRange
 from quant_core.clients.aws.sns import SNSClient
 from quant_core.clients.polygon_client.poly_client import PolygonClient
 from quant_core.entities.response import Response

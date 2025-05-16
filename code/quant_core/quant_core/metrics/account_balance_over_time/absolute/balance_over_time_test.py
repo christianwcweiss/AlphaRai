@@ -210,15 +210,15 @@ class TestAccountBalanceOverTimeAbsolute:
                 if symbol is np.nan:
                     continue
 
-                account_balance_df = balance_df[
+                account_symbol_balance_df = balance_df[
                     (balance_df["account_id"] == account_id) & (balance_df["symbol"] == symbol)
                 ]
-                assert len(account_balance_df) > 0
+                assert len(account_symbol_balance_df) > 0
                 assert (
-                    round(account_balance_df.iloc[-1]["absolute_balance"], 2)
+                    round(account_symbol_balance_df.iloc[-1]["absolute_balance"], 2)
                     == account_symbol_results[account_id][symbol]
                 ), (
                     f"Expected {account_symbol_results[account_id][symbol]} "
                     f"for account {account_id} and symbol {symbol}, "
-                    f"but got {round(account_balance_df.iloc[-1]['absolute_balance'], 2)}"
+                    f"but got {round(account_symbol_balance_df.iloc[-1]['absolute_balance'], 2)}"
                 )

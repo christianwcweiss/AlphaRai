@@ -25,6 +25,7 @@ class Mt5Trader(Trader):
         size: float,
         stop_loss: float,
         take_profit: float,
+        magic: Optional[int] = None,
         limit_level: Optional[float] = None,
         comment: Optional[str] = None,
     ) -> Any:
@@ -36,6 +37,7 @@ class Mt5Trader(Trader):
             size=size,
             stop_loss=stop_loss,
             take_profit=take_profit,
+            magic=magic,
             limit_level=limit_level,
             comment=comment,
         )
