@@ -51,11 +51,11 @@ def get_stagger_levels(from_price: float, to_price: float, stagger_method: Stagg
 
     if stagger_method is StaggerMethod.NONE:
         return [from_price for _ in range(k)]
-    elif stagger_method is StaggerMethod.FIBONACCI:
+    if stagger_method is StaggerMethod.FIBONACCI:
         return _fibonacci_staggering(from_price, to_price, k)
-    elif stagger_method is StaggerMethod.LINEAR:
+    if stagger_method is StaggerMethod.LINEAR:
         return _linear_staggering(from_price, to_price, k)
-    elif stagger_method is StaggerMethod.LOGARITHMIC:
+    if stagger_method is StaggerMethod.LOGARITHMIC:
         return _logarithmic_staggering(from_price, to_price, k)
 
     raise ValueError(f"Invalid stagger method: {stagger_method}")
@@ -71,11 +71,11 @@ def get_stagger_sizes(size: float, max_size: float, k: int, stagger_method: Stag
 
     if stagger_method is StaggerMethod.NONE:
         return [size for _ in range(k)]
-    elif stagger_method is StaggerMethod.FIBONACCI:
+    if stagger_method is StaggerMethod.FIBONACCI:
         return _fibonacci_staggering(size, max_size, k)
-    elif stagger_method is StaggerMethod.LINEAR:
+    if stagger_method is StaggerMethod.LINEAR:
         return _linear_staggering(size, max_size, k)
-    elif stagger_method is StaggerMethod.LOGARITHMIC:
+    if stagger_method is StaggerMethod.LOGARITHMIC:
         return _logarithmic_staggering(size, max_size, k)
 
     raise ValueError(f"Invalid stagger method: {stagger_method}")
@@ -111,19 +111,17 @@ def calculate_weighted_risk_reward(risk_rewards: List[float], sizes: List[float]
 def calculate_position_size(
     entry_price: float, stop_loss_price: float, lot_size: float, percentage_risk: float, balance: float
 ) -> float:
+    """Calculate the position size based on entry price, stop loss, lot size, risk percentage and account balance."""
     if entry_price <= 0 or stop_loss_price <= 0 or lot_size <= 0 or percentage_risk <= 0 or balance <= 0:
         raise ValueError("All input values must be greater than zero.")
 
-    # Calculate monetary risk
     risk_amount = (percentage_risk / 100.0) * balance
 
-    # Pip or point difference
     stop_distance = abs(entry_price - stop_loss_price)
     if stop_distance == 0:
         raise ValueError("Stop loss and entry cannot be the same.")
 
-    # Size (volume)
     size = risk_amount / (stop_distance * lot_size)
-    size = round(max(size, 0.01), 2)  # MT5 requires minimum 0.01 lots
+    size = round(max(size, 0.01), 2)
 
     return size

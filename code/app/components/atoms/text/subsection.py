@@ -8,6 +8,8 @@ from exceptions.ui import ComponentPropertyError
 
 
 class SubsectionHeader(Atom):
+    """A subsection header component for Dash applications."""
+
     DEFAULT_STYLE = {
         "paddingTop": "1rem",
         "marginTop": "1rem",

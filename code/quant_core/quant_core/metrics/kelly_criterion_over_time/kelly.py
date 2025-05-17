@@ -1,8 +1,11 @@
 import pandas as pd
 
 
-class KellyCriterionPerAccount:
+class KellyCriterionPerAccount:  # pylint: disable=too-few-public-methods
+    """Calculate Kelly Criterion per account."""
+
     def calculate(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Calculate Kelly Criterion per account."""
         df = df.copy()
         df = df[df["profit"].notna()]
         result = []

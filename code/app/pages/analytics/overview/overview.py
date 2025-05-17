@@ -35,6 +35,8 @@ def _render_account_dropdown() -> dcc.Dropdown:
 
 
 class AnalysisOverviewPage(BasePage):
+    """Overview Page for Analytics."""
+
     def render(self):
         return PageBody(
             [
@@ -60,6 +62,7 @@ layout = AnalysisOverviewPage("Overview").layout
     Input("account-dropdown", "value"),
 )
 def render_overview_tab(selected_account):
+    """Render the overview tab based on the selected account."""
     trades = get_all_trades()
     if not trades:
         return dbc.Alert("⚠️ No trade data found.", color="warning")
@@ -76,8 +79,8 @@ def render_overview_tab(selected_account):
     absolute_metric = AccountBalanceOverTimeAbsolute()
     relative_metric = AccountBalanceOverTimeRelative()
 
-    abs_df = absolute_metric.calculate_grouped(df)
-    rel_df = relative_metric.calculate_grouped(df)
+    abs_df = absolute_metric.calculate(df)
+    rel_df = relative_metric.calculate(df)
 
     return AlphaRow(
         [

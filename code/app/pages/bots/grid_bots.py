@@ -1,5 +1,5 @@
 import dash
-from dash import html, dcc
+from dash import html
 
 from components.atoms.card.card import AlphaCard
 from components.atoms.content import MainContent
@@ -12,8 +12,10 @@ from services.db.bots.grid_bot import get_all_grid_bots
 dash.register_page(__name__, path="/bots/grid-bots", name="Grid Bots")
 
 
-class GridBotsPage(BasePage):
-    def render(self):
+class GridBotsPage(BasePage):  # pylint: disable=too-few-public-methods
+    """Grid Bots Page."""
+
+    def render(self) -> html.Div:
         bots = get_all_grid_bots()
 
         return PageBody(
@@ -38,7 +40,9 @@ class GridBotsPage(BasePage):
                                 AlphaCol(
                                     AlphaCard(
                                         title=bot.name,
-                                        subtitle=f"{bot.symbol} • {bot.n_grids} grids • {'Enabled' if bot.enabled else 'Disabled'}",
+                                        subtitle=f"{bot.symbol} "
+                                        f"• {bot.n_grids} grids "
+                                        f"• {'Enabled' if bot.enabled else 'Disabled'}",
                                         href=f"/bots/grid-bots/{bot.uid}",
                                     ).render()
                                 )

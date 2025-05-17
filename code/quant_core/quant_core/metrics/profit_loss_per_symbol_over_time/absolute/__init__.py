@@ -1,10 +1,12 @@
 import pandas as pd
 
-from quant_core.metrics.trade_metric import TradeMetricOverTime
+from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 
 
 class ProfitPerSymbolOverTimeRelative(TradeMetricOverTime):
-    def calculate_grouped(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+    """Calculate profit per symbol over time as a percentage of total profit for that day."""
+
+    def calculate(self, data_frame: pd.DataFrame) -> pd.DataFrame:
         if data_frame.empty or "symbol" not in data_frame.columns or "profit" not in data_frame.columns:
             return pd.DataFrame(columns=["time", "symbol", "profit_pct"])
 

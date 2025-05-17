@@ -17,6 +17,7 @@ dash.register_page(__name__, path=COCKPIT_PATH, name="Cockpit")
 
 
 def render_account_card(account: Account) -> AlphaCol:
+    """Render a single account card."""
     return AlphaCol(
         AlphaButton(
             label=f"{account.platform} {account.friendly_name}",
@@ -32,12 +33,16 @@ def render_account_card(account: Account) -> AlphaCol:
 
 
 def render_account_cards() -> AlphaRow:
+    """Render account cards based on the current accounts."""
     accounts = get_all_accounts()
     return AlphaRow([render_account_card(account) for account in accounts])
 
 
-class CockpitPage(BasePage):
+class CockpitPage(BasePage):  # pylint: disable=too-few-public-methods
+    """Cockpit Page."""
+
     def render(self):
+        """Render the cockpit page."""
         return PageBody(
             [
                 PageHeader(self._title).render(),
@@ -59,8 +64,11 @@ layout = CockpitPage("Cockpit").layout
     Input({"type": "account-toggle", "index": dash.ALL}, "n_clicks"),
     State({"type": "account-toggle", "index": dash.ALL}, "id"),
 )
-def toggle_accounts(_, __):
+def toggle_accounts(_, __) -> AlphaRow:
+    """Toggle account enabled state."""
     if not ctx.triggered_id:
         return render_account_cards()
+
     toggle_account_enabled(ctx.triggered_id["index"])
+
     return render_account_cards()

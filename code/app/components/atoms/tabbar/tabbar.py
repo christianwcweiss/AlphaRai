@@ -4,7 +4,9 @@ from components.atoms.atom import Atom
 from constants import colors
 
 
-class AlphaTabToolbar(Atom):
+class AlphaTabToolbar(Atom):  # pylint: disable=too-few-public-methods
+    """A toolbar for tab navigation."""
+
     def __init__(
         self,
         tab_labels: List[str],
@@ -12,11 +14,6 @@ class AlphaTabToolbar(Atom):
         current_tab: Optional[str] = None,
         link_with_hash: bool = True,
     ):
-        """
-        :param tab_labels: List of tab names like ["overview", "performance"]
-        :param base_href: Base page path (default: "/analysis")
-        :param current_tab: Currently active tab (e.g. "overview")
-        """
         self.tab_labels = tab_labels
         self.base_href = base_href
         self.current_tab = current_tab or tab_labels[0]

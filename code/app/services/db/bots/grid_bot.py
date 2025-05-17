@@ -1,3 +1,5 @@
+from typing import Optional
+
 from db.database import SessionLocal
 from models.bots.grid_bot import GridBot
 from quant_core.services.core_logger import CoreLogger
@@ -10,14 +12,15 @@ def get_all_grid_bots() -> list[GridBot]:
         return session.query(GridBot).all()
 
 
-def get_grid_bot_by_uid(uid: str) -> GridBot | None:
+def get_grid_bot_by_uid(uid: str) -> Optional[GridBot]:
     """Fetch a single grid bot by UID."""
     with SessionLocal() as session:
         CoreLogger().info(f"Fetching grid bot with uid: {uid}")
+
         return session.query(GridBot).filter_by(uid=uid).first()
 
 
-def upsert_grid_bot(
+def upsert_grid_bot(  # pylint: disable=too-many-arguments, too-many-positional-arguments
     uid: str,
     account_uid: str,
     name: str,
@@ -27,6 +30,7 @@ def upsert_grid_bot(
     n_grids: int,
     base_order_size_percent: float,
 ):
+    """Upsert a grid bot in the database."""
     with SessionLocal() as session:
         CoreLogger().info(
             f"Upserting grid bot {uid} for account_uid={account_uid}, symbol={symbol}, "
@@ -59,11 +63,8 @@ def upsert_grid_bot(
         return bot
 
 
-def delete_grid_bot(uid: str):
-    if not uid:
-        CoreLogger().warning("Tried to delete grid bot without UID.")
-        return
-
+def delete_grid_bot(uid: str) -> None:
+    """Delete a grid bot by UID."""
     with SessionLocal() as session:
         bot = session.query(GridBot).filter_by(uid=uid).first()
         if bot:
@@ -74,7 +75,8 @@ def delete_grid_bot(uid: str):
             CoreLogger().warning(f"No grid bot found for UID: {uid}")
 
 
-def toggle_grid_bot_enabled(uid: str) -> GridBot | None:
+def toggle_grid_bot_enabled(uid: str) -> Optional[GridBot]:
+    """Toggle the enabled status of a grid bot by UID."""
     with SessionLocal() as session:
         bot = session.query(GridBot).filter_by(uid=uid).first()
         if bot:

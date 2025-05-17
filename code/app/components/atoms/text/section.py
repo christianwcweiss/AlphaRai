@@ -8,7 +8,9 @@ from constants import colors
 from exceptions.ui import ComponentPropertyError
 
 
-class SectionHeader(Atom):
+class SectionHeader(Atom):  # pylint: disable=too-few-public-methods
+    """Section header component for Dash applications."""
+
     DEFAULT_STYLE = {"marginBottom": "0.25rem", "marginTop": "20px", "color": colors.PRIMARY_COLOR}
 
     def __init__(self, title: str, subtitle: Optional[str] = None) -> None:

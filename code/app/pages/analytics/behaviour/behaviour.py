@@ -36,6 +36,8 @@ def _render_account_dropdown() -> dcc.Dropdown:
 
 
 class BehaviorPage(BasePage):
+    """Behavior Page."""
+
     def render(self):
         return PageBody(
             [
@@ -64,6 +66,7 @@ layout = BehaviorPage("Behavior").layout
     Input("behavior-account-dropdown", "value"),
 )
 def render_behaviour_tab(selected_account):
+    """Render the behavior tab."""
     trades = get_all_trades()
     if not trades:
         return dbc.Alert("⚠️ No trade data found.", color="warning")
@@ -77,8 +80,8 @@ def render_behaviour_tab(selected_account):
     if df.empty:
         return dbc.Alert("⚠️ No trade data available for the selected account.", color="warning")
 
-    win_rate_metric_df = WinRateOverTime().calculate_grouped(df)
-    trades_per_day_metric_df = TradesPerDayOverTime().calculate_grouped(df)
+    win_rate_metric_df = WinRateOverTime().calculate(df)
+    trades_per_day_metric_df = TradesPerDayOverTime().calculate(df)
 
     return AlphaRow(
         [
@@ -97,6 +100,6 @@ def render_behaviour_tab(selected_account):
                 md=12,
                 lg=6,
                 xl=4,
-            )
+            ),
         ]
     )

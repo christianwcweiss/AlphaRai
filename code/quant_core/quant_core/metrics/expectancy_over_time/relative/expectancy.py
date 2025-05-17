@@ -1,20 +1,22 @@
 import pandas as pd
-from quant_core.metrics.trade_metric import TradeMetricOverTime
+from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 
 
 class ExpectancyOverTimeRelative(TradeMetricOverTime):
+    """Calculates the expectancy over time relative to the initial balance."""
+
     def __init__(self, rolling_window: int = 30):
         super().__init__(rolling_window)
 
-    def calculate_grouped(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = df.copy()
-        df["time"] = pd.to_datetime(df["time"])
-        df = df[df["profit"].notna()]
+    def calculate(self, data_frame: pd.DataFrame) -> pd.DataFrame:  # pylint: disable=too-many-locals
+        data_frame = data_frame.copy()
+        data_frame["time"] = pd.to_datetime(data_frame["time"])
+        data_frame = data_frame[data_frame["profit"].notna()]
         result = []
 
-        initial_balances = self._get_initial_balances(df)
+        initial_balances = self._get_initial_balances(data_frame)
 
-        for current_day, window_df in self.get_rolling_windows(df, skip_head=True).items():
+        for current_day, window_df in self.get_rolling_windows(data_frame, skip_head=True).items():
             for account, group in window_df.groupby("account_id"):
                 wins = group[group["profit"] > 0]
                 losses = group[group["profit"] < 0]
@@ -32,7 +34,3 @@ class ExpectancyOverTimeRelative(TradeMetricOverTime):
                 )
 
         return pd.DataFrame(result)
-
-    def calculate_ungrouped(self, df: pd.DataFrame) -> pd.DataFrame:
-        grouped = self.calculate_grouped(df)
-        return grouped.groupby("time")["expectancy_pct"].mean().reset_index()

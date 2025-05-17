@@ -1,3 +1,5 @@
+from random import randint
+
 from entities.trade_details import TradeDetails
 from models.account_config import AccountConfig
 from quant_core.enums.order_type import OrderType
@@ -11,11 +13,14 @@ from services.db.account import get_all_accounts
 from services.db.account_config import get_configs_by_account_id
 
 
-class TradeRouter:
+class TradeRouter:  # pylint: disable=too-few-public-methods
+    """Routes trades to the appropriate accounts based on the provided trade signal."""
+
     def __init__(self, trade: TradeDetails):
         self.trade = trade
 
     def route_trade(self):
+        """Routes the trade to the appropriate accounts."""
         if not self.trade.symbol or not self.trade.direction:
             raise ValueError("Invalid trade signal. Missing symbol or direction.")
 
@@ -61,9 +66,9 @@ class TradeRouter:
             balance = trader.get_balance()
 
             CoreLogger().debug("Successfully created MT5 Trader!")
+            group_magic = randint(100000, 999999)
 
             for i, entry_price in enumerate(entry_prices):
-                # Divide total risk across all entries
                 individual_risk_percent = config.risk_percent / config.n_staggers
 
                 size = calculate_position_size(
@@ -95,9 +100,9 @@ class TradeRouter:
                     size=size,
                     stop_loss=stop_loss,
                     take_profit=take_profit,
+                    magic=group_magic,
                     limit_level=price,
                     comment=f"Algopro{self.trade.timeframe.value}",
                 )
         else:
             CoreLogger().error(f"Unsupported platform: {platform}")
-            return

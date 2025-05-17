@@ -21,17 +21,17 @@ def get_trade_by_ticket(ticket: int) -> Trade | None:
         return session.query(Trade).filter_by(ticket=ticket).first()
 
 
-def upsert_trade(trade_data: dict, account_id: int):
+def upsert_trade(trade_data: dict, account_id: str):
     """
     Insert or update a trade based on ticket number.
 
     trade_data should include fields matching the Trade model (except id/account_id).
     """
     with SessionLocal() as session:
-        ticket = trade_data.get("ticket")
-        CoreLogger().info(f"Upserting trade with ticket: {ticket} for account_id: {account_id}")
+        position_id = trade_data.get("id")
+        CoreLogger().info(f"Upserting trade with position_id: {position_id} for account_id: {account_id}")
 
-        trade = session.query(Trade).filter_by(ticket=ticket, account_id=account_id).first()
+        trade = session.query(Trade).filter_by(id=position_id, account_id=account_id).first()
 
         if trade:
             for key, value in trade_data.items():
@@ -81,33 +81,34 @@ def sync_trades_from_all_accounts(days: int = 9999) -> str:
 
     for account in get_all_accounts():
         try:
-            data_frame = Mt5Client(account.secret_name).get_history_df(days=days)
-            CoreLogger().info(f"Fetched {len(data_frame)} trades for account {account.friendly_name}")
+            alpha_trades = Mt5Client(account.secret_name).get_history_alpha_trades(account_id=account.uid, days=days)
+            CoreLogger().info(f"Fetched {len(alpha_trades)} trades for account {account.friendly_name}")
 
             count = 0
 
-            for _, row in data_frame.iterrows():
+            for trade in alpha_trades:
                 trade_data = {
-                    "ticket": row.ticket,
-                    "order": row.order,
-                    "time": row.time,
-                    "type": row.type,
-                    "entry": row.entry,
-                    "size": row.size,
-                    "symbol": row.symbol,
-                    "price": row.price,
-                    "commission": row.commission,
-                    "swap": row.swap,
-                    "profit": row.profit,
-                    "magic": row.magic,
-                    "comment": row.comment,
+                    "position_id": trade.id,
+                    "order": trade.order,
+                    "trade_group": trade.trade_group,
+                    "opened_at": trade.opened_at,
+                    "closed_at": trade.closed_at,
+                    "direction": trade.direction.value,
+                    "event": trade.event.value,
+                    "size": trade.size,
+                    "symbol": trade.symbol,
+                    "entry_price": trade.entry_price,
+                    "exit_price": trade.exit_price,
+                    "profit": trade.profit,
+                    "swap": trade.swap,
+                    "commission": trade.commission,
                 }
-                upsert_trade(trade_data, account.id)
+                upsert_trade(trade_data, account.uid)
                 count += 1
 
             results.append(f"{account.friendly_name}: {count} trades synced")
-        except Exception as e:
-            CoreLogger().error(f"Error syncing trades for {account.friendly_name}: {e}")
+        except Exception as error:  # pylint: disable=broad-exception-caught
+            CoreLogger().error(f"Error syncing trades for {account.friendly_name}: {error}")
             results.append(f"{account.friendly_name}: sync failed")
 
     return ", ".join(results)

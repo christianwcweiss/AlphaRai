@@ -2,7 +2,9 @@ from enum import Enum
 
 
 class AssetType(Enum):
-    UNKNOWN = "unknown"
+    """Asset types for financial instruments."""
+
+    UNKNOWN = "UNKNOWN"
     STOCK = "STOCK"
     CRYPTO = "CRYPTO"
     FOREX = "FOREX"

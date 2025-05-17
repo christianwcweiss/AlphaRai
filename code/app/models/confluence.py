@@ -6,7 +6,9 @@ from quant_core.enums.time_period import TimePeriod
 Base = declarative_base()
 
 
-class ConfluenceConfig(Base):
+class ConfluenceConfig(Base):  # type: ignore  # pylint: disable=too-few-public-methods
+    """Represents a confluence configuration in the database."""
+
     __tablename__ = "confluences"
 
     confluence_id = Column(String, primary_key=True)

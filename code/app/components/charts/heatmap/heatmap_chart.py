@@ -4,7 +4,9 @@ import plotly.graph_objects as go
 from components.charts.chart import Chart, ChartLayoutStyle
 
 
-class HeatmapChart(Chart):
+class HeatmapChart(Chart):  # pylint: disable=too-few-public-methods
+    """Heatmap chart component."""
+
     def __init__(
         self,
         data_frame: pd.DataFrame,
@@ -20,6 +22,7 @@ class HeatmapChart(Chart):
         value_col: str,
         aggfunc: str = "sum",
     ) -> go.Figure:
+        """Plots a heatmap chart."""
         pivot_df = self._data_frame.pivot_table(
             index=y_col,
             columns=x_col,
@@ -34,7 +37,7 @@ class HeatmapChart(Chart):
                 x=pivot_df.columns,
                 y=pivot_df.index,
                 colorscale="Viridis",
-                colorbar=dict(title=value_col),
+                colorbar={"title": value_col},
             )
         )
 
