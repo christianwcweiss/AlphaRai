@@ -33,10 +33,11 @@ class TestTradeMetricOverTime:
 
         normalized_df = trade_metric_over_time._normalize_time(data_frame)
 
-        assert "time" in normalized_df.columns
+        assert "closed_at" in normalized_df.columns
         assert len(normalized_df) == len(data_frame)
-        assert normalized_df["time"].is_monotonic_increasing
-        assert normalized_df["time"].dtype == "datetime64[ns]"
+        assert normalized_df["opened_at"].is_monotonic_increasing
+        assert normalized_df["opened_at"].dtype == "datetime64[ns]"
+        assert normalized_df["closed_at"].dtype == "datetime64[ns]"
 
     @pytest.mark.parametrize("skip_head", [True, False])
     def test_rolling_window_days(self, skip_head: bool) -> None:
@@ -44,8 +45,8 @@ class TestTradeMetricOverTime:
         data_frame = Builder.get_trade_history()
         data_frame = trade_metric_over_time._normalize_time(data_frame=data_frame)
         rolling_window = Builder.build_random_int(10, 50)
-        min_date = data_frame["time"].min().replace(hour=0, minute=0, second=0, microsecond=0)
-        max_date = data_frame["time"].max().replace(hour=0, minute=0, second=0, microsecond=0)
+        min_date = data_frame["closed_at"].min().replace(hour=0, minute=0, second=0, microsecond=0)
+        max_date = data_frame["closed_at"].max().replace(hour=0, minute=0, second=0, microsecond=0)
 
         rolling_windows = trade_metric_over_time.get_rolling_windows(
             data_frame, rolling_window=rolling_window, skip_head=skip_head
@@ -64,18 +65,19 @@ class TestTradeMetricOverTime:
 
             assert isinstance(window_time, pd.Timestamp)
             assert isinstance(window_df, pd.DataFrame)
-            assert "time" in window_df.columns
+            assert "closed_at" in window_df.columns
             assert len(window_df) >= 0
-            assert window_df["time"].is_monotonic_increasing
-            assert window_df["time"].dtype == "datetime64[ns]"
-            assert window_df["agg_time"].min() >= window_time - pd.Timedelta(days=rolling_window)
-            assert window_df["agg_time"].max() <= window_time
+            assert window_df["opened_at"].is_monotonic_increasing
+            assert window_df["opened_at"].dtype == "datetime64[ns]"
+            assert window_df["closed_at"].dtype == "datetime64[ns]"
+            assert window_df["agg_time_closed"].min() >= window_time - pd.Timedelta(days=rolling_window)
+            assert window_df["agg_time_closed"].max() <= window_time
 
         if not skip_head:
             concatenate_df = pd.concat(rolling_windows.values()).drop_duplicates()
             assert len(concatenate_df) == len(
                 data_frame
-            ), f"Missing:{data_frame[~data_frame['time'].isin(concatenate_df['time'])]}"
+            ), f"Missing:{data_frame[~data_frame['closed_at'].isin(concatenate_df['closed_at'])]}"
 
     @pytest.mark.parametrize("skip_head", [True, False])
     def test_rolling_window_hours(self, skip_head: bool) -> None:
@@ -83,8 +85,8 @@ class TestTradeMetricOverTime:
         data_frame = Builder.get_trade_history()
         data_frame = trade_metric_over_time._normalize_time(data_frame=data_frame)
         rolling_window = Builder.build_random_int(10, 50)
-        min_date = data_frame["time"].min().replace(minute=0, second=0, microsecond=0)
-        max_date = data_frame["time"].max().replace(minute=0, second=0, microsecond=0)
+        min_date = data_frame["closed_at"].min().replace(minute=0, second=0, microsecond=0)
+        max_date = data_frame["closed_at"].max().replace(minute=0, second=0, microsecond=0)
 
         rolling_windows = trade_metric_over_time.get_rolling_windows(
             data_frame, rolling_window=rolling_window, skip_head=skip_head, aggregation_resolution="H"
@@ -102,20 +104,21 @@ class TestTradeMetricOverTime:
 
             assert isinstance(window_time, pd.Timestamp)
             assert isinstance(window_df, pd.DataFrame)
-            assert "time" in window_df.columns
+            assert "closed_at" in window_df.columns
             assert len(window_df) >= 0
-            assert window_df["time"].is_monotonic_increasing
-            assert window_df["time"].dtype == "datetime64[ns]"
-            assert window_df["agg_time"].min() >= window_time - pd.Timedelta(hours=rolling_window)
-            assert window_df["agg_time"].max() <= window_time
-            assert window_df["time"].dt.floor("H").min() >= window_time - pd.Timedelta(hours=rolling_window)
-            assert window_df["time"].dt.floor("H").max() <= window_time
+            assert window_df["opened_at"].is_monotonic_increasing
+            assert window_df["opened_at"].dtype == "datetime64[ns]"
+            assert window_df["closed_at"].dtype == "datetime64[ns]"
+            assert window_df["agg_time_closed"].min() >= window_time - pd.Timedelta(hours=rolling_window)
+            assert window_df["agg_time_closed"].max() <= window_time
+            assert window_df["closed_at"].dt.floor("H").min() >= window_time - pd.Timedelta(hours=rolling_window)
+            assert window_df["closed_at"].dt.floor("H").max() <= window_time
 
         if not skip_head:
             concatenate_df = pd.concat(rolling_windows.values()).drop_duplicates()
             assert len(concatenate_df) == len(
                 data_frame
-            ), f"Missing:{data_frame[~data_frame['time'].isin(concatenate_df['time'])]}"
+            ), f"Missing:{data_frame[~data_frame['closed_at'].isin(concatenate_df['closed_at'])]}"
 
     def test_unknown_aggregation_resolution(self) -> None:
         trade_metric_over_time = TradeMetricOverTime

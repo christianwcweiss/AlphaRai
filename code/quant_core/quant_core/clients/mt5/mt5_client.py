@@ -238,11 +238,35 @@ class Mt5Client:
                             entry_price=opened_trade.price,
                             exit_price=closed_trade.price,
                             profit=closed_trade.profit,
-                            swap=closed_trade.swap,
-                            commission=closed_trade.commission,
+                            swap=opened_trade.swap + closed_trade.swap,
+                            commission=closed_trade.commission + opened_trade.commission,
                         )
                     )
                     del default_dict_dp[trade.position_id]
+
+        for trade in default_dict_dp.values():
+            # TODO: Market orders and partially closed is not supported yet, this is a workaround!
+            if len(trade) == 1:
+                opened_trade = trade[0]
+                result.append(
+                    AlphaTradeDTO(
+                        id=opened_trade.position_id,
+                        account_id=account_id,
+                        order=opened_trade.ticket,
+                        trade_group=f"{opened_trade.magic}",
+                        opened_at=opened_trade.time,
+                        closed_at=opened_trade.time,
+                        direction=TradeDirection.NEUTRAL,
+                        event=TradeEventType.DEPOSIT,
+                        size=opened_trade.size,
+                        symbol=opened_trade.symbol,
+                        entry_price=0.0,
+                        exit_price=0.0,
+                        profit=opened_trade.profit,
+                        swap=opened_trade.swap,
+                        commission=opened_trade.commission,
+                    )
+                )
 
         return result
 

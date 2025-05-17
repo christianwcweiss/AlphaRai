@@ -78,7 +78,7 @@ class BalanceOverTime(Molecule):  # pylint: disable=too-few-public-methods
             ]
         ).render()
 
-    def _render_absolute_chart(self):
+    def _render_absolute_chart(self) -> html.Div:
         return html.Div(
             id=BALANCE_OVER_TIME_ABS_DIV_ID,
             children=[
@@ -86,14 +86,14 @@ class BalanceOverTime(Molecule):  # pylint: disable=too-few-public-methods
                     figure=LineChart(
                         data_frame=self._absolute_df,
                         line_layout_style=self._chart_layout_style,
-                    ).plot(x_col="time", y_col="absolute_balance", group_by="account_id"),
-                    config={"displayModeBar": False},
+                    ).plot(x_col="closed_at", y_col="absolute_balance", group_by="account_id"),
+                    config={"displayModeBar": True},
                 )
             ],
             style=VISIBLE_STYLE,
         )
 
-    def _render_relative_chart(self):
+    def _render_relative_chart(self) -> html.Div:
         return html.Div(
             id=BALANCE_OVER_TIME_REL_DIV_ID,
             children=[
@@ -101,8 +101,8 @@ class BalanceOverTime(Molecule):  # pylint: disable=too-few-public-methods
                     figure=LineChart(
                         data_frame=self._relative_df,
                         line_layout_style=self._chart_layout_style,
-                    ).plot(x_col="time", y_col="relative_balance", group_by="account_id"),
-                    config={"displayModeBar": False},
+                    ).plot(x_col="closed_at", y_col="relative_balance", group_by="account_id"),
+                    config={"displayModeBar": True},
                 )
             ],
             style=HIDDEN_STYLE,

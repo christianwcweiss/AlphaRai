@@ -42,7 +42,10 @@ class TestAccountBalanceOverTimeAbsolute:
         assert "absolute_balance" in balance_df.columns
         assert len(balance_df) == len(data_frame)
 
-    def test_ungrouped_result(self) -> None:
+    @pytest.mark.parametrize(
+        "expected_result", [90302.48]
+    )
+    def test_ungrouped_result(self, expected_result: float) -> None:
         data_frame = Builder.get_trade_history()
 
         balance_df = AccountBalanceOverTimeAbsolute().calculate(
@@ -55,15 +58,14 @@ class TestAccountBalanceOverTimeAbsolute:
         assert "symbol" not in balance_df.columns
         assert "initial_balance" in balance_df.columns
         assert "absolute_balance" in balance_df.columns
-        assert round(balance_df.iloc[-1]["absolute_balance"], 2) == 111140.95
+        assert round(balance_df.iloc[-1]["absolute_balance"], 2) == expected_result
 
     def test_grouped_by_account_result(self) -> None:
         data_frame = Builder.get_trade_history()
         # Verified manual calculation
         account_results = {
-            "A2NRRYL4": 81186.46,
-            "0EUEV5SO": 9906.83,
-            "46TGTINM": 20047.66,
+            "A2NRRYL4": 80148.94,
+            "0EUEV5SO": 10153.54,
         }
 
         balance_df = AccountBalanceOverTimeAbsolute().calculate(
@@ -86,32 +88,10 @@ class TestAccountBalanceOverTimeAbsolute:
         data_frame = Builder.get_trade_history()
         # Verified manual calculation
         symbol_results = {
-            "ADAUSD": 110034.5,
-            "AUDUSD": 109138.73,
-            "AUDJPY": 110500.06,
-            "AUS200.cash": 110004.46,
-            "BTCUSD": 110394.37,
-            "DOTUSD": 110000.1,
-            "ETHUSD": 110291.37,
-            "EURAUD": 110353.04,
-            "EURGBP": 110175.18,
-            "EURJPY": 108758.26,
-            "EURUSD": 107273.59,
-            "EU50.cash": 110010.24,
-            "FRA40.cash": 110016.66,
-            "GBPAUD": 110661.45,
-            "GBPJPY": 109953.27,
-            "GBPUSD": 111180.21,
-            "GER40.cash": 110050.46,
-            "USDCAD": 109675.86,
-            "USDJPY": 110723.64,
-            "USDCHF": 111058.86,
-            "NZDUSD": 109487.98,
-            "UK100.cash": 109717.64,
-            "US100.cash": 110286.52,
-            "US500.cash": 109997.2,
-            "XAUUSD": 111248.24,
-            "XRPUSD": 110149.06,
+            "EURUSD": 87577.09,
+            "GBPUSD": 91022.27,
+            "USDCHF": 90815.93,
+            "USDJPY": 90807.0,
         }
 
         balance_df = AccountBalanceOverTimeAbsolute().calculate(
@@ -141,57 +121,17 @@ class TestAccountBalanceOverTimeAbsolute:
         # Verified manual calculation
         account_symbol_results = {
             "A2NRRYL4": {
-                "ADAUSD": 80034.5,
-                "AUDUSD": 79274.77,
-                "AUDJPY": 80445.29,
-                "AUS200.cash": 80004.02,
-                "BTCUSD": 80396.19,
-                "DOTUSD": 80000.1,
-                "ETHUSD": 80295.86,
-                "EURAUD": 80334.0,
-                "EURGBP": 80162.09,
-                "EURJPY": 78862.47,
-                "EURUSD": 77428.45,
-                "EU50.cash": 80009.71,
-                "FRA40.cash": 80016.66,
-                "GBPAUD": 80582.55,
-                "GBPJPY": 79951.99,
-                "GBPUSD": 80954.97,
-                "USDCAD": 79748.06,
-                "USDJPY": 80739.78,
-                "USDCHF": 80872.02,
-                "NZDUSD": 79600.43,
-                "UK100.cash": 79740.67,
-                "US100.cash": 80275.02,
-                "XAUUSD": 81307.8,
-                "XRPUSD": 80149.06,
+                "EURUSD": 77761.01,
+                "GBPUSD": 80825.92,
+                "USDCHF": 80699.48,
+                "USDJPY": 80793.4,
             },
             "0EUEV5SO": {
-                "AUDUSD": 9863.96,
-                "AUDJPY": 10054.77,
-                "AUS200.cash": 10000.44,
-                "BTCUSD": 9998.18,
-                "ETHUSD": 9995.51,
-                "EURAUD": 10019.04,
-                "EURGBP": 10013.09,
-                "EURJPY": 9895.79,
-                "EURUSD": 9845.14,
-                "EU50.cash": 10000.53,
-                "GBPAUD": 10078.9,
-                "GBPJPY": 10001.28,
-                "GBPUSD": 10225.24,
-                "USDCAD": 9927.8,
-                "USDJPY": 9983.86,
-                "USDCHF": 10186.84,
-                "NZDUSD": 9887.55,
-                "UK100.cash": 9976.97,
-                "US100.cash": 10011.5,
-                "XAUUSD": 9940.44,
-            },
-            "46TGTINM": {
-                "GER40.cash": 20050.46,
-                "US500.cash": 19997.2,
-            },
+                "EURUSD": 9816.08,
+                "GBPUSD": 10196.35,
+                "USDCHF": 10116.45,
+                "USDJPY": 10013.6,
+            }
         }
 
         balance_df = AccountBalanceOverTimeAbsolute().calculate(

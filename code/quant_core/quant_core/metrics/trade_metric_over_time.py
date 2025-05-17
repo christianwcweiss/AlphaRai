@@ -3,12 +3,14 @@ from typing import Dict, Optional, Literal
 
 import pandas as pd
 
+from quant_core.enums.trade_event_type import TradeEventType
+
 
 class TradeMetricOverTime(ABC):
     """Trade metric over time base class."""
 
     def _get_initial_balances(self, data_frame: pd.DataFrame) -> Dict[str, float]:
-        return data_frame[data_frame["type"] == 2].groupby("account_id")["profit"].sum().to_dict()
+        return data_frame[data_frame["event"] == TradeEventType.DEPOSIT.value].groupby("account_id")["profit"].sum().to_dict()
 
     @abstractmethod
     def calculate(
@@ -24,8 +26,9 @@ class TradeMetricOverTime(ABC):
     def _normalize_time(data_frame: pd.DataFrame) -> pd.DataFrame:
         """Normalize time to a specific resolution."""
         data_frame = data_frame.copy()
-        data_frame["time"] = pd.to_datetime(data_frame["time"])
-        data_frame = data_frame.sort_values("time")
+        data_frame["opened_at"] = pd.to_datetime(data_frame["opened_at"])
+        data_frame["closed_at"] = pd.to_datetime(data_frame["closed_at"])
+        data_frame = data_frame.sort_values("opened_at")
 
         return data_frame
 
@@ -60,14 +63,16 @@ class TradeMetricOverTime(ABC):
             return {}
 
         if aggregation_resolution == "D":
-            data_frame["agg_time"] = data_frame["time"].dt.normalize()
+            data_frame["agg_time_opened"] = data_frame["opened_at"].dt.normalize()
+            data_frame["agg_time_closed"] = data_frame["closed_at"].dt.normalize()
         elif aggregation_resolution == "H":
-            data_frame["agg_time"] = data_frame["time"].dt.floor("H")
+            data_frame["agg_time_opened"] = data_frame["opened_at"].dt.floor("H")
+            data_frame["agg_time_closed"] = data_frame["closed_at"].dt.floor("H")
         else:
             raise ValueError(f"Unsupported aggregation resolution: {aggregation_resolution}")
 
-        start_time = data_frame["agg_time"].min()
-        end_time = data_frame["agg_time"].max()
+        start_time = data_frame["agg_time_opened"].min()
+        end_time = data_frame["agg_time_closed"].max()
 
         all_periods = pd.date_range(start=start_time, end=end_time, freq=aggregation_resolution, inclusive="both")
 
@@ -81,7 +86,7 @@ class TradeMetricOverTime(ABC):
             )
             window_start = current_period - delta
             window_end = current_period
-            mask = (data_frame["agg_time"] > window_start) & (data_frame["agg_time"] <= window_end)
+            mask = (data_frame["agg_time_closed"] > window_start) & (data_frame["agg_time_closed"] <= window_end)
 
             result[current_period] = data_frame.loc[mask]
 

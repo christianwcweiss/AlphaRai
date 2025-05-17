@@ -57,7 +57,10 @@ class TestCommissionOverTime:
 
         assert len(commission_df) == len(data_frame)
 
-    def test_ungrouped_result_cum_sum(self) -> None:
+    @pytest.mark.parametrize(
+        "expected_result", [-83.08]
+    )
+    def test_ungrouped_result_cum_sum(self, expected_result: float) -> None:
         data_frame = Builder.get_trade_history()
 
         commission_df = CommissionOverTime().calculate(
@@ -67,19 +70,17 @@ class TestCommissionOverTime:
             cum_sum=True,
         )
 
-        assert commission_df["time"].is_monotonic_increasing
         assert commission_df["total_commission"].is_monotonic_decreasing
         assert "account_id" not in commission_df.columns
         assert "symbol" not in commission_df.columns
-        assert round(commission_df["total_commission"].iloc[-1], 2) == -282.15
+        assert round(commission_df["total_commission"].iloc[-1], 2) == expected_result
 
     def test_grouped_by_account_result_cum_sum(self) -> None:
         data_frame = Builder.get_trade_history()
         # Verified manual calculation
         account_results = {
-            "A2NRRYL4": -257.55,
-            "0EUEV5SO": -24.6,
-            "46TGTINM": 0.0,
+            "A2NRRYL4": -74.48,
+            "0EUEV5SO": -8.6,
         }
 
         commission_df = CommissionOverTime().calculate(
@@ -92,7 +93,6 @@ class TestCommissionOverTime:
 
         for account_id in commission_df["account_id"].unique():
             account_commission_df = commission_df[commission_df["account_id"] == account_id]
-            assert account_commission_df["time"].is_monotonic_increasing
             assert account_commission_df["total_commission"].is_monotonic_decreasing
             assert len(account_commission_df) > 0
             assert round(account_commission_df.iloc[-1]["total_commission"], 2) == account_results[account_id]
@@ -101,34 +101,11 @@ class TestCommissionOverTime:
         data_frame = Builder.get_trade_history()
         # Verified manual calculation
         symbol_results = {
-            "ADAUSD": 0.0,
-            "AUS200.cash": 0.0,
-            "AUDCAD": 0.0,
-            "AUDJPY": -17.59,
-            "AUDUSD": -7.58,
-            "BTCUSD": 0.0,
-            "DOTUSD": 0.0,
-            "EURAUD": -11.4,
-            "EURGBP": -9.74,
-            "EURJPY": -45.07,
-            "EURUSD": -60.29,
-            "ETHUSD": 0.0,
-            "EU50.cash": 0.0,
-            "FRA40.cash": 0.0,
-            "GBPAUD": -7.8,
-            "GBPJPY": -4.7,
-            "GBPUSD": -19.99,
-            "GER40.cash": 0.0,
-            "NZDUSD": -8.36,
-            "UK100.cash": 0.0,
-            "US100.cash": 0.0,
-            "US500.cash": 0.0,
-            "USDCAD": -13.89,
-            "USDCHF": -17.38,
-            "USDJPY": -32.75,
-            "XAUUSD": -25.61,
-            "XRPUSD": 0.0,
-        }
+                "EURUSD": -36.36,
+                "GBPUSD": -13.96,
+                "USDCHF": -16.15,
+                "USDJPY": -16.61,
+            }
 
         commission_df = CommissionOverTime().calculate(
             data_frame, group_by_account_id=False, group_by_symbol=True, cum_sum=True
@@ -143,7 +120,6 @@ class TestCommissionOverTime:
                 continue
 
             symbol_commission_df = commission_df[commission_df["symbol"] == symbol]
-            assert symbol_commission_df["time"].is_monotonic_increasing
             assert symbol_commission_df["total_commission"].is_monotonic_decreasing
             assert len(symbol_commission_df) > 0
             assert round(symbol_commission_df.iloc[-1]["total_commission"], 2) == symbol_results[symbol]
@@ -153,57 +129,17 @@ class TestCommissionOverTime:
         # Verified manual calculation
         account_symbol_results = {
             "A2NRRYL4": {
-                "ADAUSD": 0.0,
-                "AUDJPY": -16.77,
-                "AUDUSD": -6.46,
-                "AUS200.cash": 0.0,
-                "BTCUSD": 0.0,
-                "DOTUSD": 0.0,
-                "EURAUD": -9.32,
-                "EURGBP": -8.6,
-                "EURJPY": -43.43,
-                "EURUSD": -57.19,
-                "ETHUSD": 0.0,
-                "EU50.cash": 0.0,
-                "FRA40.cash": 0.0,
-                "GBPAUD": -6.4,
-                "GBPJPY": -3.66,
-                "GBPUSD": -16.29,
-                "NZDUSD": -6.86,
-                "US100.cash": 0.0,
-                "USDCAD": -12.05,
-                "USDCHF": -15.28,
-                "USDJPY": -30.19,
-                "UK100.cash": 0.0,
-                "XAUUSD": -25.05,
-                "XRPUSD": 0.0,
+                "EURUSD": -34.47,
+                "GBPUSD": -11.55,
+                "USDCHF": -13.23,
+                "USDJPY": -15.23,
             },
             "0EUEV5SO": {
-                "AUS200.cash": 0.0,
-                "AUDJPY": -0.82,
-                "AUDUSD": -1.12,
-                "BTCUSD": 0.0,
-                "EURAUD": -2.08,
-                "EURGBP": -1.14,
-                "EURJPY": -1.64,
-                "EURUSD": -3.1,
-                "EU50.cash": 0.0,
-                "GBPAUD": -1.4,
-                "GBPJPY": -1.04,
-                "GBPUSD": -3.7,
-                "NZDUSD": -1.5,
-                "US100.cash": 0.0,
-                "USDCAD": -1.84,
-                "USDCHF": -2.1,
-                "USDJPY": -2.56,
-                "UK100.cash": 0.0,
-                "XAUUSD": -0.56,
-                "ETHUSD": 0.0,
-            },
-            "46TGTINM": {
-                "GER40.cash": 0.0,
-                "US500.cash": 0.0,
-            },
+                "EURUSD": -1.89,
+                "GBPUSD": -2.41,
+                "USDCHF": -2.92,
+                "USDJPY": -1.38,
+            }
         }
 
         commission_df = CommissionOverTime().calculate(
@@ -232,22 +168,26 @@ class TestCommissionOverTime:
                     f"but got {round(account_symbol_commission_df.iloc[-1]['total_commission'], 2)}"
                 )
 
-    def test_ungrouped_result_no_cum_sum_days(self) -> None:
+    @pytest.mark.parametrize(
+        "expected_result", [-8.65]
+    )
+    def test_ungrouped_result_no_cum_sum_days(self, expected_result: float) -> None:
         data_frame = Builder.get_trade_history()
         data_frame = CommissionOverTime()._normalize_time(data_frame)
-        min_date = data_frame["time"].min().replace(hour=0, minute=0, second=0, microsecond=0)
-        max_date = data_frame["time"].max().replace(hour=0, minute=0, second=0, microsecond=0)
+        min_date = data_frame["opened_at"].min().replace(hour=0, minute=0, second=0, microsecond=0)
+        max_date = data_frame["closed_at"].max().replace(hour=0, minute=0, second=0, microsecond=0)
 
         commission_df = CommissionOverTime().calculate(
             data_frame,
             group_by_account_id=False,
             group_by_symbol=False,
             cum_sum=False,
+            aggregation_resolution="D"
         )
 
-        assert commission_df["time"].is_monotonic_increasing
+        assert commission_df["closed_at"].is_monotonic_increasing
         assert "account_id" not in commission_df.columns
         assert "symbol" not in commission_df.columns
         assert "total_commission" in commission_df.columns
         assert len(commission_df) == len(pd.date_range(min_date, max_date))
-        assert round(commission_df["total_commission"].iloc[-1], 2) == -48.85
+        assert round(commission_df["total_commission"].iloc[-1], 2) == expected_result

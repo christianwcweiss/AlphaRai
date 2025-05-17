@@ -1,4 +1,5 @@
 from typing import Optional, Literal
+from itertools import product
 
 import pandas as pd
 from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
@@ -22,15 +23,15 @@ class CommissionOverTime(TradeMetricOverTime):
 
         data_frame = data_frame.drop_duplicates(keep="last")
 
-        return data_frame[["time"] + groups + ["total_commission"]]
+        return data_frame[["closed_at"] + groups + ["total_commission"]]
 
-    def _calculate_comission_in_period_windows(
-        self,
-        data_frame: pd.DataFrame,
-        group_by_account_id: bool = False,
-        group_by_symbol: bool = False,
-        rolling_window: Optional[int] = 7,
-        aggregation_resolution: Literal["D", "H"] = "D",
+    def _calculate_commission_in_period_windows(
+            self,
+            data_frame: pd.DataFrame,
+            group_by_account_id: bool = False,
+            group_by_symbol: bool = False,
+            rolling_window: Optional[int] = 7,
+            aggregation_resolution: Literal["D", "H"] = "D",
     ) -> pd.DataFrame:
         rolling_windows = self.get_rolling_windows(
             data_frame=data_frame,
@@ -40,23 +41,57 @@ class CommissionOverTime(TradeMetricOverTime):
         )
 
         groups = self._get_groups(group_by_account_id=group_by_account_id, group_by_symbol=group_by_symbol)
-
         result = []
+
+        group_values = {
+            group: data_frame[group].dropna().unique()
+            for group in groups
+        }
+
         for window_time, window_df in rolling_windows.items():
+            if not window_df.empty:
+                if groups:
+                    window_df["total_commission"] = window_df.groupby(groups)["commission"].transform("sum")
+                else:
+                    window_df["total_commission"] = window_df["commission"].sum()
+
+                window_df["closed_at"] = window_time
+                window_df = window_df.drop_duplicates(subset=groups + ["closed_at"], keep="last")
+                result.extend(window_df.to_dict("records"))
+
             if groups:
-                window_df["total_commission"] = window_df.groupby(groups)["commission"].transform("sum")
+                all_combos = list(product(*(group_values[g] for g in groups)))
+                expected_rows = pd.DataFrame([
+                    dict(zip(groups, combo)) | {"closed_at": window_time, "total_commission": 0.0}
+                    for combo in all_combos
+                ])
             else:
-                window_df["total_commission"] = window_df["commission"].sum()
+                expected_rows = pd.DataFrame([{
+                    "closed_at": window_time,
+                    "total_commission": 0.0,
+                    **{col: pd.NA for col in groups}
+                }])
 
-            window_df["time"] = window_time
-            window_df = window_df.drop_duplicates(subset=groups + ["time"], keep="last")
+            for group_col in groups:
+                expected_dtype = data_frame[group_col].dtype
+                expected_rows[group_col] = expected_rows[group_col].astype(expected_dtype)
 
-            for _, row in window_df.iterrows():
-                result.append(row)
+            result_df_temp = pd.DataFrame(result)
+            merge_keys = ["closed_at"] + groups
+            existing_rows = (
+                result_df_temp[merge_keys] if not result_df_temp.empty
+                else pd.DataFrame(columns=merge_keys)
+            )
+            existing_rows = existing_rows.dropna(subset=merge_keys)
+
+            missing = expected_rows.merge(existing_rows, how="left", on=merge_keys, indicator=True)
+            missing = missing[missing["_merge"] == "left_only"].drop(columns="_merge")
+
+            if not missing.empty:
+                result.extend(missing.to_dict("records"))
 
         result_df = pd.DataFrame(result)
-
-        return result_df[["time"] + groups + ["total_commission"]]
+        return result_df[["closed_at"] + groups + ["total_commission"]]
 
     def calculate(  # pylint: disable=too-many-arguments, too-many-positional-arguments
         self,
@@ -76,7 +111,7 @@ class CommissionOverTime(TradeMetricOverTime):
                 group_by_symbol=group_by_symbol,
             )
         else:
-            result_df = self._calculate_comission_in_period_windows(
+            result_df = self._calculate_commission_in_period_windows(
                 data_frame=commission_df,
                 group_by_account_id=group_by_account_id,
                 group_by_symbol=group_by_symbol,

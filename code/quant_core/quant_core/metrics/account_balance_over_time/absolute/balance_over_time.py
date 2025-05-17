@@ -1,6 +1,8 @@
 from typing import Optional
 
 import pandas as pd
+
+from quant_core.enums.trade_event_type import TradeEventType
 from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 from quant_core.services.core_logger import CoreLogger
 
@@ -32,14 +34,16 @@ class AccountBalanceOverTimeAbsolute(TradeMetricOverTime):
         groups = self._get_groups(group_by_account_id=group_by_account_id, group_by_symbol=group_by_symbol)
 
         if groups:
-            balance_df["initial_balance"] = balance_df.groupby(groups)["initial_balance"].transform("max")
             balance_df["cumulative_net"] = (
-                balance_df.where(balance_df["type"] != 2).groupby(groups)["net"].cumsum().fillna(0.0)
+                balance_df.where(balance_df["event"] != TradeEventType.DEPOSIT.value).groupby(groups)["net"].cumsum().fillna(0.0)
             )
             balance_df["absolute_balance"] = balance_df["initial_balance"] + balance_df["cumulative_net"]
         else:
+
             balance_df["absolute_balance"] = (
-                balance_df["initial_balance"] + balance_df.where(balance_df["type"] != 2)["net"].cumsum()
+                balance_df["initial_balance"] + balance_df.where(balance_df["event"] != TradeEventType.DEPOSIT.value)["net"].cumsum()
             )
 
-        return balance_df[["time"] + groups + ["initial_balance", "absolute_balance"]]
+        balance_df.sort_values("closed_at", inplace=True)
+
+        return balance_df[["closed_at"] + groups + ["initial_balance", "absolute_balance"]]

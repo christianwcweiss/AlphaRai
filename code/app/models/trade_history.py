@@ -25,7 +25,7 @@ class Trade(Base):  # type: ignore  # pylint: disable=too-few-public-methods
     closed_at = Column(DateTime, nullable=False)
 
     direction = Column(String, nullable=False)
-    event = Column(String, nullable=False)
+    event = Column(Integer, nullable=False)
 
     size = Column(Float, nullable=False)
     symbol = Column(String(32), nullable=False)
