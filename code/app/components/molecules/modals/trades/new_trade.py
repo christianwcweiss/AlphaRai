@@ -5,22 +5,31 @@ from dash import html, dcc, Input, Output, State, callback, dash
 from dash_bootstrap_components import Alert
 
 from components.atoms.buttons.general.button import AlphaButton
+from components.atoms.card.card import AlphaCard, AlphaCardHeader, AlphaCardBody
+from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.molecules.molecule import Molecule
 from constants import colors
 from constants.style import HIDDEN
+from entities import trade_details
 from entities.trade_details import TradeDetails
+from models.account_config import AccountConfig
+from quant_core.enums.stagger_method import StaggerMethod
 from quant_core.services.core_logger import CoreLogger
+from quant_core.utils.trade_utils import get_stagger_levels, calculate_position_size, calculate_risk_reward, \
+    calculate_weighted_risk_reward
+from services.db.account import get_all_accounts
+from services.db.account_config import get_config_by_account_and_symbol
 from services.trade_parser import TradeMessageParser
 from services.trade_router import TradeRouter
 
 
-def render_trade_input_text_area() -> html.Div:
+def _render_trade_input_text_area() -> html.Div:
     """Render the trade input text area."""
     return html.Div(
         [
             dcc.Textarea(
                 id="trade-input-text-area",
-                style={"width": "100%", "height": "500px", "display": "block"},
+                style={"width": "100%", "height": "350px", "display": "block"},
                 placeholder="Paste signal here...",
             ),
             html.Br(),
@@ -32,46 +41,138 @@ def render_trade_input_text_area() -> html.Div:
     )
 
 
-def render_trade_details_section() -> List[html.Div]:
+def _render_trade_preview(trade_details: TradeDetails) -> html.Div:
+    center_style = {"textAlign": "center"}
+    digits = len(str(trade_details.entry).split(".")[1]) if "." in str(trade_details.entry) else 0
+    stop_loss_distance = round(abs(round(trade_details.stop_loss, digits) - trade_details.entry), digits)
+    take_profit_1_distance = round(abs(round(trade_details.take_profit_1, digits) - trade_details.entry), digits)
+    take_profit_2_distance = round(abs(round(trade_details.take_profit_2, digits) - trade_details.entry), digits) if trade_details.take_profit_2 else "-"
+    take_profit_3_distance = round(abs(round(trade_details.take_profit_3, digits) - trade_details.entry), digits) if trade_details.take_profit_3 else "-"
+
+    return html.Div(
+        AlphaCard(
+            header=AlphaCardHeader(
+                children=[html.H5(f"{trade_details.symbol}@{trade_details.entry}", style=center_style)]
+            ).render(),
+            body=AlphaCardBody(
+                children=[
+                    AlphaRow(
+                        children=[
+                            AlphaCol(
+                                children=[
+                                    AlphaRow(html.H6("STOP LOSS", style=center_style)),
+                                    AlphaRow(
+                                        html.H6(
+                                            f"{round(trade_details.stop_loss, digits)} (-{stop_loss_distance})",
+                                            style={"color": colors.ERROR_COLOR, **center_style}
+                                        )
+                                    ),
+                                ],
+                                xs=6, sm=6, md=6, lg=6, xl=6, xxl=6,
+                            ),
+                            AlphaCol(
+                                children=[
+                                    AlphaRow(html.H6("TAKE PROFIT", style=center_style)),
+                                    AlphaRow(
+                                        html.H6(
+                                            f"{round(trade_details.take_profit_1, digits)} ({round(take_profit_1_distance, digits)})",
+                                            style={"color": colors.PRIMARY_COLOR, **center_style}
+                                        )
+                                    ),
+                                    AlphaRow(
+                                        html.H6(
+                                            f"{round(trade_details.take_profit_2, digits) if trade_details.take_profit_2 else 'n.a.'} ({take_profit_2_distance})",
+                                            style={"color": colors.PRIMARY_COLOR, **center_style}
+                                        )
+                                    ),
+                                    AlphaRow(
+                                        html.H6(
+                                            f"{round(trade_details.take_profit_3, digits) if trade_details.take_profit_3 else 'n.a.'} ({take_profit_3_distance})",
+                                            style={"color": colors.PRIMARY_COLOR, **center_style}
+                                        )
+                                    ),
+                                ],
+                                xs=6, sm=6, md=6, lg=6, xl=6, xxl=6,
+                            ),
+                        ]
+                    ),
+                ]
+            ).render(),
+            style={"backgroundColor": "#ffffff"},
+        ).render(),
+    )
+
+def _render_risk_preview(trade_details: TradeDetails) -> html.Div:
+    center_style = {"textAlign": "center"}
+    all_accounts = get_all_accounts()
+    configs: List[AccountConfig] = []
+    for account in all_accounts:
+        if config := get_config_by_account_and_symbol(account_id=account.uid, signal_asset_id=trade_details.symbol):
+            if config.enabled:
+                configs.append(config)
+
+    if not configs:
+        card_body = AlphaCardBody(
+            children=[
+                html.H6(
+                    f"No Accounts with Symbol={trade_details.symbol} found!",
+                    style=center_style | {"marginTop": "1em"},
+                )
+            ]
+        ).render()
+    else:
+        risk_results = []
+        for config in configs:
+            risk_per_trade = config.risk_percent / config.n_staggers
+            entries = get_stagger_levels(from_price=trade_details.entry, to_price=trade_details.stop_loss, stagger_method=StaggerMethod(config.entry_stagger_method), k=config.n_staggers)
+            sizes = [calculate_position_size(entry_price=entry, stop_loss_price=trade_details.stop_loss, lot_size=config.lot_size, percentage_risk=risk_per_trade, balance=10000.0) for entry in entries]
+            risk_rewards = [calculate_risk_reward(entry=entry, stop_loss=trade_details.stop_loss, take_profit=trade_details.take_profit_1) for entry in entries]
+            weighted_risk_reward = calculate_weighted_risk_reward(risk_rewards=risk_rewards, sizes=sizes)
+            risk_results.append((config.account_id, config.risk_percent, weighted_risk_reward))
+        card_body = AlphaCardBody(
+            children=[
+                html.H6(
+                    f"{account_id}, {risk_percent}, {weighted_risk_reward}",
+                ) for account_id, risk_percent, weighted_risk_reward in risk_results
+            ]
+        ).render()
+
+    return html.Div(
+        AlphaCard(
+            header=AlphaCardHeader(
+                html.H5("Risk Overview")
+            ).render(),
+            body=card_body,
+            style={"backgroundColor": "#ffffff"},
+        ).render()
+    )
+
+def _render_trade_details_section() -> List[html.Div]:
     """Render the trade details section."""
+
     return [
         html.Div(
             [
-                html.H6("📋 Trade Details", className="fw-bold mb-2"),
-                html.Div(
-                    id="parsed-trade-output",
-                    style={
-                        "backgroundColor": "#f8f9fa",
-                        "padding": "1rem",
-                        "borderRadius": "0.5rem",
-                        "boxShadow": "0 2px 6px rgba(0,0,0,0.05)",
-                    },
+                AlphaRow(
+                    children=[
+                        AlphaCol(html.Div(id="parsed-trade-output"), xs=12, sm=12, md=12, lg=6, xl=6, xxl=6),
+                        AlphaCol(html.Div(id="parsed-trade-risk-overview"), xs=12, sm=12, md=12, lg=6, xl=6, xxl=6),
+                        AlphaCol(html.Div(id="parsed-trade-confluences"), xs=12, sm=12, md=12, lg=6, xl=6, xxl=6),
+                    ]
+                ),
+                AlphaRow(
+                    children=[
+                        html.Div(
+                            [
+                                AlphaButton("Execute Trade", "submit-trade-btn", style={"display": "none"}).render(),
+                            ]
+                        ),
+                    ]
                 ),
             ],
             id="trade-details-section",
             style={"marginBottom": "1.5rem", "display": "none"},
-        ),
-        html.Div(
-            [
-                html.H6("🧠 Confluences", className="fw-bold mb-2"),
-                html.Div("(To be implemented...)", className="text-muted"),
-            ],
-            id="confluence-section",
-            style={"marginBottom": "1.5rem", "display": "none"},
-        ),
-        html.Div(
-            [
-                html.H6("⚖️ Risk Overview", className="fw-bold mb-2"),
-                html.Div("(To be implemented...)", className="text-muted"),
-            ],
-            id="risk-section",
-            style={"marginBottom": "1.5rem", "display": "none"},
-        ),
-        html.Div(
-            [
-                AlphaButton("Execute Trade", "submit-trade-btn", style={"display": "none"}).render(),
-            ]
-        ),
+        )
     ]
 
 
@@ -84,7 +185,7 @@ class NewTradeModal(Molecule):  # pylint: disable=too-few-public-methods
             [
                 dbc.ModalHeader(dbc.ModalTitle("New Trade")),
                 dbc.ModalBody(
-                    [render_trade_input_text_area(), *render_trade_details_section()],
+                    [_render_trade_input_text_area(), *_render_trade_details_section()],
                     style={"maxHeight": "60vh", "overflowY": "auto"},
                 ),
                 dbc.ModalFooter([AlphaButton("Close", "close-trade-modal-btn").render()]),
@@ -105,8 +206,6 @@ class NewTradeModal(Molecule):  # pylint: disable=too-few-public-methods
     Output("submit-trade-btn", "style", allow_duplicate=True),
     Output("trade-input-container", "style", allow_duplicate=True),
     Output("trade-details-section", "style", allow_duplicate=True),
-    Output("confluence-section", "style", allow_duplicate=True),
-    Output("risk-section", "style", allow_duplicate=True),
     [
         Input("open-trade-modal-btn", "n_clicks"),
         Input("close-trade-modal-btn", "n_clicks"),
@@ -126,19 +225,16 @@ def toggle_trade_modal(
         HIDDEN,
         {"marginBottom": "1rem", "display": "block"},
         {"marginBottom": "1.5rem", "display": "none"},
-        {"marginBottom": "1.5rem", "display": "none"},
-        {"marginBottom": "1.5rem", "display": "none"},
     )
 
 
 @callback(
     Output("parsed-trade-output", "children", allow_duplicate=True),
+    Output("parsed-trade-risk-overview", "children", allow_duplicate=True),
     Output("parsed-trade-store", "data", allow_duplicate=True),
     Output("submit-trade-btn", "style", allow_duplicate=True),
     Output("trade-input-container", "style", allow_duplicate=True),
     Output("trade-details-section", "style", allow_duplicate=True),
-    Output("confluence-section", "style", allow_duplicate=True),
-    Output("risk-section", "style", allow_duplicate=True),
     Input("parse-trade-btn", "n_clicks"),
     State("trade-input-text-area", "value"),
     prevent_initial_call=True,
@@ -149,12 +245,13 @@ def parse_trade_signal(_, signal_input: str) -> tuple[Alert, Any, Any, Any, Any,
         return (
             dbc.Alert("Please paste a signal...", color=colors.WARNING_COLOR),
             dash.no_update,
+            dash.no_update,
             HIDDEN,
             dash.no_update,
             dash.no_update,
             dash.no_update,
-            dash.no_update,
         )
+
     try:
         trade_details = TradeMessageParser.parse(signal_input)
     except Exception as error:  # pylint: disable=broad-exception-caught
@@ -162,35 +259,19 @@ def parse_trade_signal(_, signal_input: str) -> tuple[Alert, Any, Any, Any, Any,
         return (
             dbc.Alert(f"Error parsing signal: {error}", color=colors.ERROR_COLOR),
             dash.no_update,
-            HIDDEN,
             dash.no_update,
+            HIDDEN,
             dash.no_update,
             dash.no_update,
             dash.no_update,
         )
 
-    preview = html.Ul(
-        [
-            html.Li(f"🎯 Symbol: {trade_details.symbol}"),
-            html.Li(f"↕️ Direction: {trade_details.direction.normalize().value.capitalize()}"),
-            html.Li(f"⏱️ Timeframe: {trade_details.timeframe}"),
-            html.Li(f"💰 Entry: {trade_details.entry}"),
-            html.Li(f"🚩 SL: {trade_details.stop_loss}"),
-            html.Li(f"🎯 TP1: {trade_details.take_profit_1}"),
-            html.Li(f"🎯 TP2: {trade_details.take_profit_2 or '–'}"),
-            html.Li(f"🎯 TP3: {trade_details.take_profit_3 or '–'}"),
-            html.Li(f"🤖 Confidence: {trade_details.ai_confidence or '–'}%"),
-        ],
-        style={"paddingLeft": "1.2rem"},
-    )
-
     return (
-        preview,
+        _render_trade_preview(trade_details),
+        _render_risk_preview(trade_details),
         trade_details.to_dict(),
         AlphaButton.DEFAULT_STYLE,
         {"display": "none"},
-        {"marginBottom": "1.5rem", "display": "block"},
-        {"marginBottom": "1.5rem", "display": "block"},
         {"marginBottom": "1.5rem", "display": "block"},
     )
 

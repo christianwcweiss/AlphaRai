@@ -26,12 +26,12 @@ class CommissionOverTime(TradeMetricOverTime):
         return data_frame[["closed_at"] + groups + ["total_commission"]]
 
     def _calculate_commission_in_period_windows(
-            self,
-            data_frame: pd.DataFrame,
-            group_by_account_id: bool = False,
-            group_by_symbol: bool = False,
-            rolling_window: Optional[int] = 7,
-            aggregation_resolution: Literal["D", "H"] = "D",
+        self,
+        data_frame: pd.DataFrame,
+        group_by_account_id: bool = False,
+        group_by_symbol: bool = False,
+        rolling_window: Optional[int] = 7,
+        aggregation_resolution: Literal["D", "H"] = "D",
     ) -> pd.DataFrame:
         rolling_windows = self.get_rolling_windows(
             data_frame=data_frame,
@@ -43,10 +43,7 @@ class CommissionOverTime(TradeMetricOverTime):
         groups = self._get_groups(group_by_account_id=group_by_account_id, group_by_symbol=group_by_symbol)
         result = []
 
-        group_values = {
-            group: data_frame[group].dropna().unique()
-            for group in groups
-        }
+        group_values = {group: data_frame[group].dropna().unique() for group in groups}
 
         for window_time, window_df in rolling_windows.items():
             if not window_df.empty:
@@ -61,16 +58,16 @@ class CommissionOverTime(TradeMetricOverTime):
 
             if groups:
                 all_combos = list(product(*(group_values[g] for g in groups)))
-                expected_rows = pd.DataFrame([
-                    dict(zip(groups, combo)) | {"closed_at": window_time, "total_commission": 0.0}
-                    for combo in all_combos
-                ])
+                expected_rows = pd.DataFrame(
+                    [
+                        dict(zip(groups, combo)) | {"closed_at": window_time, "total_commission": 0.0}
+                        for combo in all_combos
+                    ]
+                )
             else:
-                expected_rows = pd.DataFrame([{
-                    "closed_at": window_time,
-                    "total_commission": 0.0,
-                    **{col: pd.NA for col in groups}
-                }])
+                expected_rows = pd.DataFrame(
+                    [{"closed_at": window_time, "total_commission": 0.0, **{col: pd.NA for col in groups}}]
+                )
 
             for group_col in groups:
                 expected_dtype = data_frame[group_col].dtype
@@ -78,10 +75,7 @@ class CommissionOverTime(TradeMetricOverTime):
 
             result_df_temp = pd.DataFrame(result)
             merge_keys = ["closed_at"] + groups
-            existing_rows = (
-                result_df_temp[merge_keys] if not result_df_temp.empty
-                else pd.DataFrame(columns=merge_keys)
-            )
+            existing_rows = result_df_temp[merge_keys] if not result_df_temp.empty else pd.DataFrame(columns=merge_keys)
             existing_rows = existing_rows.dropna(subset=merge_keys)
 
             missing = expected_rows.merge(existing_rows, how="left", on=merge_keys, indicator=True)

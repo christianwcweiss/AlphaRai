@@ -10,7 +10,12 @@ class TradeMetricOverTime(ABC):
     """Trade metric over time base class."""
 
     def _get_initial_balances(self, data_frame: pd.DataFrame) -> Dict[str, float]:
-        return data_frame[data_frame["event"] == TradeEventType.DEPOSIT.value].groupby("account_id")["profit"].sum().to_dict()
+        return (
+            data_frame[data_frame["event"] == TradeEventType.DEPOSIT.value]
+            .groupby("account_id")["profit"]
+            .sum()
+            .to_dict()
+        )
 
     @abstractmethod
     def calculate(

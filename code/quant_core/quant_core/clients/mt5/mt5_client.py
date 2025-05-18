@@ -1,12 +1,11 @@
 # pylint: disable=no-member
 import json
+import platform
 from collections import defaultdict
 from datetime import datetime, timedelta
 from random import randint
 from typing import Optional, Any, List
-from unittest.mock import Mock
 
-import MetaTrader5 as mt5  # type: ignore
 import boto3
 import pandas as pd
 
@@ -17,6 +16,13 @@ from quant_core.enums.order_type import OrderType
 from quant_core.enums.trade_direction import TradeDirection
 from quant_core.enums.trade_event_type import TradeEventType
 from quant_core.services.core_logger import CoreLogger
+
+if platform == "Windows":
+    import MetaTrader5 as mt5
+else:
+    from unittest.mock import Mock
+
+    mt5 = Mock()
 
 ORDER_TYPE_MAP = {
     0: "Buy",

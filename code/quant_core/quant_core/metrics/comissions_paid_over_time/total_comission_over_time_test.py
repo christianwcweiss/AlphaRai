@@ -57,9 +57,7 @@ class TestCommissionOverTime:
 
         assert len(commission_df) == len(data_frame)
 
-    @pytest.mark.parametrize(
-        "expected_result", [-83.08]
-    )
+    @pytest.mark.parametrize("expected_result", [-83.08])
     def test_ungrouped_result_cum_sum(self, expected_result: float) -> None:
         data_frame = Builder.get_trade_history()
 
@@ -101,11 +99,11 @@ class TestCommissionOverTime:
         data_frame = Builder.get_trade_history()
         # Verified manual calculation
         symbol_results = {
-                "EURUSD": -36.36,
-                "GBPUSD": -13.96,
-                "USDCHF": -16.15,
-                "USDJPY": -16.61,
-            }
+            "EURUSD": -36.36,
+            "GBPUSD": -13.96,
+            "USDCHF": -16.15,
+            "USDJPY": -16.61,
+        }
 
         commission_df = CommissionOverTime().calculate(
             data_frame, group_by_account_id=False, group_by_symbol=True, cum_sum=True
@@ -139,7 +137,7 @@ class TestCommissionOverTime:
                 "GBPUSD": -2.41,
                 "USDCHF": -2.92,
                 "USDJPY": -1.38,
-            }
+            },
         }
 
         commission_df = CommissionOverTime().calculate(
@@ -168,9 +166,7 @@ class TestCommissionOverTime:
                     f"but got {round(account_symbol_commission_df.iloc[-1]['total_commission'], 2)}"
                 )
 
-    @pytest.mark.parametrize(
-        "expected_result", [-8.65]
-    )
+    @pytest.mark.parametrize("expected_result", [-8.65])
     def test_ungrouped_result_no_cum_sum_days(self, expected_result: float) -> None:
         data_frame = Builder.get_trade_history()
         data_frame = CommissionOverTime()._normalize_time(data_frame)
@@ -178,11 +174,7 @@ class TestCommissionOverTime:
         max_date = data_frame["closed_at"].max().replace(hour=0, minute=0, second=0, microsecond=0)
 
         commission_df = CommissionOverTime().calculate(
-            data_frame,
-            group_by_account_id=False,
-            group_by_symbol=False,
-            cum_sum=False,
-            aggregation_resolution="D"
+            data_frame, group_by_account_id=False, group_by_symbol=False, cum_sum=False, aggregation_resolution="D"
         )
 
         assert commission_df["closed_at"].is_monotonic_increasing

@@ -35,13 +35,17 @@ class AccountBalanceOverTimeAbsolute(TradeMetricOverTime):
 
         if groups:
             balance_df["cumulative_net"] = (
-                balance_df.where(balance_df["event"] != TradeEventType.DEPOSIT.value).groupby(groups)["net"].cumsum().fillna(0.0)
+                balance_df.where(balance_df["event"] != TradeEventType.DEPOSIT.value)
+                .groupby(groups)["net"]
+                .cumsum()
+                .fillna(0.0)
             )
             balance_df["absolute_balance"] = balance_df["initial_balance"] + balance_df["cumulative_net"]
         else:
 
             balance_df["absolute_balance"] = (
-                balance_df["initial_balance"] + balance_df.where(balance_df["event"] != TradeEventType.DEPOSIT.value)["net"].cumsum()
+                balance_df["initial_balance"]
+                + balance_df.where(balance_df["event"] != TradeEventType.DEPOSIT.value)["net"].cumsum()
             )
 
         balance_df.sort_values("closed_at", inplace=True)

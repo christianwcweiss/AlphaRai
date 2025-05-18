@@ -42,9 +42,7 @@ class TestAccountBalanceOverTimeRelative:
         assert "relative_balance" in balance_df.columns
         assert len(balance_df) == len(data_frame)
 
-    @pytest.mark.parametrize(
-        "expected_result", [100.25]
-    )
+    @pytest.mark.parametrize("expected_result", [100.25])
     def test_ungrouped_result(self, expected_result: float) -> None:
         data_frame = Builder.get_trade_history()
 
@@ -132,7 +130,7 @@ class TestAccountBalanceOverTimeRelative:
                 "GBPUSD": 101.96,
                 "USDCHF": 101.16,
                 "USDJPY": 100.14,
-            }
+            },
         }
 
         balance_df = AccountBalanceOverTimeRelative().calculate(

@@ -10,7 +10,6 @@ python = ">=3.11, <3.12"
 requests = "2.32.3"
 quant-core = {path = "./code/quant_core", develop=true}
 quant-dev = {path = "./code/quant_dev", develop=true}
-quant-ui = {path = "./code/quant_ui", develop=true}
 boto3 = "1.37.1"
 pandas = "2.1.0"
 llvmlite = "0.41.0"
