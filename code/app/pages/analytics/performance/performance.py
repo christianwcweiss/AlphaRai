@@ -21,7 +21,7 @@ from models.account import Account
 from pages.analytics.analysis import TAB_LABELS
 from pages.base_page import BasePage
 from quant_core.enums.platform import Platform
-from quant_core.metrics.expectancy_over_time.absolute.expectancy import ExpectancyOverTimeAbsolute
+from quant_core.metrics.expectancy_over_time.absolute.expectancy_over_time import ExpectancyOverTimeAbsolute
 from quant_core.metrics.expectancy_over_time.relative.expectancy import ExpectancyOverTimeRelative
 from quant_core.metrics.kelly_criterion_over_time.kelly import KellyCriterionPerAccount
 from quant_core.metrics.profit_factor_over_time.profit_factor import ProfitFactorOverTime
@@ -133,63 +133,63 @@ def render_performance_tab(selected_account):
     if not trades:
         return dbc.Alert("⚠️ No trade data found.", color="warning")
 
-    df = pd.DataFrame([t.__dict__ for t in trades])
-    df = df[[col for col in df.columns if not col.startswith("_sa_")]]
+    data_frame = pd.DataFrame([t.__dict__ for t in trades])
+    data_frame = data_frame[[col for col in data_frame.columns if not col.startswith("_sa_")]]
 
     if selected_account != "ALL":
-        df = df[df["account_id"] == selected_account]
+        data_frame = data_frame[data_frame["account_id"] == selected_account]
 
-    if df.empty:
+    if data_frame.empty:
         return dbc.Alert("⚠️ No trade data available for the selected account.", color="warning")
 
-    abs_df = ExpectancyOverTimeAbsolute().calculate(df)
-    rel_df = ExpectancyOverTimeRelative().calculate(df)
-    pf_df = ProfitFactorOverTime().calculate(df)
-    rr_df = RiskRewardRatioOverTime().calculate(df)
-    sharpe_df = SharpeRatioOverTime().calculate(df)
-    sortino_df = SortinoRatioOverTime().calculate(df)
+    expectancy_absolute_data_frame = ExpectancyOverTimeAbsolute().calculate(data_frame)
+    # rel_df = ExpectancyOverTimeRelative().calculate(data_frame)
+    # pf_df = ProfitFactorOverTime().calculate(data_frame)
+    # rr_df = RiskRewardRatioOverTime().calculate(data_frame)
+    # sharpe_df = SharpeRatioOverTime().calculate(data_frame)
+    # sortino_df = SortinoRatioOverTime().calculate(data_frame)
 
     return AlphaRow(
         [
             AlphaCol(
-                ExpectancyOverTimeMolecule(abs_df, rel_df).render(),
+                ExpectancyOverTimeMolecule(expectancy_absolute_data_frame, expectancy_absolute_data_frame).render(),
                 xs=12,
                 sm=12,
                 md=12,
                 lg=6,
-                xl=4,
+                xl=6,
             ),
-            AlphaCol(
-                ProfitFactorOverTimeMolecule(pf_df).render(),
-                xs=12,
-                sm=12,
-                md=12,
-                lg=6,
-                xl=4,
-            ),
-            AlphaCol(
-                RiskRewardOverTimeMolecule(rr_df).render(),
-                xs=12,
-                sm=12,
-                md=12,
-                lg=6,
-                xl=4,
-            ),
-            AlphaCol(
-                SharpeRatioOverTimeMolecule(sharpe_df).render(),
-                xs=12,
-                sm=12,
-                md=12,
-                lg=6,
-                xl=4,
-            ),
-            AlphaCol(
-                SortinoRatioOverTimeMolecule(sortino_df).render(),
-                xs=12,
-                sm=12,
-                md=12,
-                lg=6,
-                xl=4,
-            ),
+            # AlphaCol(
+            #     ProfitFactorOverTimeMolecule(pf_df).render(),
+            #     xs=12,
+            #     sm=12,
+            #     md=12,
+            #     lg=6,
+            #     xl=4,
+            # ),
+            # AlphaCol(
+            #     RiskRewardOverTimeMolecule(rr_df).render(),
+            #     xs=12,
+            #     sm=12,
+            #     md=12,
+            #     lg=6,
+            #     xl=4,
+            # ),
+            # AlphaCol(
+            #     SharpeRatioOverTimeMolecule(sharpe_df).render(),
+            #     xs=12,
+            #     sm=12,
+            #     md=12,
+            #     lg=6,
+            #     xl=4,
+            # ),
+            # AlphaCol(
+            #     SortinoRatioOverTimeMolecule(sortino_df).render(),
+            #     xs=12,
+            #     sm=12,
+            #     md=12,
+            #     lg=6,
+            #     xl=4,
+            # ),
         ]
     )

@@ -117,7 +117,7 @@ class AccountSettingsCard:  # pylint: disable=too-few-public-methods
                 data_frame=self.data_frame,
                 line_layout_style=line_chart_layout_style,
             ).plot(
-                x_col="time",
+                x_col="closed_at",
                 y_col="relative_balance",
             )
         else:

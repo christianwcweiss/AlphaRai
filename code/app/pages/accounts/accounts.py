@@ -36,10 +36,11 @@ def generate_uid(length: int = 8) -> str:
 
 def render_account_card(account, rel_df):
     """Render the account card with the given account and relative DataFrame."""
-    configs = get_configs_by_account_id(account.id)
+    configs = get_configs_by_account_id(account.uid)
     total = len(configs)
     enabled = sum(1 for c in configs if c.enabled)
-    df = rel_df[rel_df["account_id"] == account.id] if not rel_df.empty else None
+    df = rel_df[rel_df["account_id"] == account.uid] if not rel_df.empty else None
+
     return AccountSettingsCard(account, enabled, total, df).render()
 
 

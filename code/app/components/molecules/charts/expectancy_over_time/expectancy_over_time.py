@@ -49,7 +49,7 @@ class ExpectancyOverTimeMolecule(Molecule):  # pylint: disable=too-few-public-me
             margin=ChartMargin(10, 10, 10, 10),
         )
 
-    def _render_card_header(self):
+    def _render_card_header(self) -> html.Div:
         return AlphaCardHeader(
             [
                 html.Div(
@@ -76,7 +76,7 @@ class ExpectancyOverTimeMolecule(Molecule):  # pylint: disable=too-few-public-me
             ]
         ).render()
 
-    def _render_absolute_chart(self):
+    def _render_absolute_chart(self) -> html.Div:
         return html.Div(
             id=EXPECTANCY_ABS_DIV_ID,
             children=[
@@ -91,7 +91,7 @@ class ExpectancyOverTimeMolecule(Molecule):  # pylint: disable=too-few-public-me
             style=VISIBLE_STYLE,
         )
 
-    def _render_relative_chart(self):
+    def _render_relative_chart(self) -> html.Div:
         return html.Div(
             id=EXPECTANCY_REL_DIV_ID,
             children=[
@@ -99,14 +99,14 @@ class ExpectancyOverTimeMolecule(Molecule):  # pylint: disable=too-few-public-me
                     figure=LineChart(
                         data_frame=self._relative_df,
                         line_layout_style=self._chart_layout_style,
-                    ).plot(x_col="time", y_col="expectancy_pct", group_by="account_id"),
+                    ).plot(x_col="time", y_col="expectancy", group_by="account_id"),
                     config={"displayModeBar": False},
                 )
             ],
             style=HIDDEN_STYLE,
         )
 
-    def _render_chart_body(self):
+    def _render_chart_body(self) -> html.Div:
         return AlphaCardBody(
             [
                 dcc.Store(id=EXPECTANCY_MODE_STORE_ID, data="absolute"),

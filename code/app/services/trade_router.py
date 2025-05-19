@@ -77,6 +77,7 @@ class TradeRouter:  # pylint: disable=too-few-public-methods
                     lot_size=config.lot_size,
                     percentage_risk=individual_risk_percent,
                     balance=balance,
+                    digits=config.decimal_points,
                 )
 
                 price = round(entry_price, config.decimal_points)

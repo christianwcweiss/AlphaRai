@@ -4,18 +4,7 @@ from typing import Any
 
 from quant_core.enums.order_type import OrderType
 
-if platform == "Windows":
-    import MetaTrader5 as mt5
-else:
-    from unittest.mock import Mock
-
-    mt5 = Mock()
-    mt5.ORDER_TYPE_BUY = 0
-    mt5.ORDER_TYPE_SELL = 1
-    mt5.ORDER_TYPE_BUY_LIMIT = 2
-    mt5.ORDER_TYPE_SELL_LIMIT = 3
-    mt5.ORDER_TYPE_BUY_STOP = 4
-    mt5.ORDER_TYPE_SELL_STOP = 5
+import MetaTrader5 as mt5
 
 
 class TradeDirection(Enum):

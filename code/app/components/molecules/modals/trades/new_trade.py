@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 
 import dash_bootstrap_components as dbc
 from dash import html, dcc, Input, Output, State, callback, dash
@@ -12,11 +12,18 @@ from constants import colors
 from constants.style import HIDDEN
 from entities import trade_details
 from entities.trade_details import TradeDetails
+from models.account import Account
 from models.account_config import AccountConfig
+from quant_core.clients.mt5 import mt5_client
+from quant_core.clients.mt5.mt5_client import Mt5Client
 from quant_core.enums.stagger_method import StaggerMethod
 from quant_core.services.core_logger import CoreLogger
-from quant_core.utils.trade_utils import get_stagger_levels, calculate_position_size, calculate_risk_reward, \
-    calculate_weighted_risk_reward
+from quant_core.utils.trade_utils import (
+    get_stagger_levels,
+    calculate_position_size,
+    calculate_risk_reward,
+    calculate_weighted_risk_reward,
+)
 from services.db.account import get_all_accounts
 from services.db.account_config import get_config_by_account_and_symbol
 from services.trade_parser import TradeMessageParser
@@ -46,8 +53,16 @@ def _render_trade_preview(trade_details: TradeDetails) -> html.Div:
     digits = len(str(trade_details.entry).split(".")[1]) if "." in str(trade_details.entry) else 0
     stop_loss_distance = round(abs(round(trade_details.stop_loss, digits) - trade_details.entry), digits)
     take_profit_1_distance = round(abs(round(trade_details.take_profit_1, digits) - trade_details.entry), digits)
-    take_profit_2_distance = round(abs(round(trade_details.take_profit_2, digits) - trade_details.entry), digits) if trade_details.take_profit_2 else "-"
-    take_profit_3_distance = round(abs(round(trade_details.take_profit_3, digits) - trade_details.entry), digits) if trade_details.take_profit_3 else "-"
+    take_profit_2_distance = (
+        round(abs(round(trade_details.take_profit_2, digits) - trade_details.entry), digits)
+        if trade_details.take_profit_2
+        else "-"
+    )
+    take_profit_3_distance = (
+        round(abs(round(trade_details.take_profit_3, digits) - trade_details.entry), digits)
+        if trade_details.take_profit_3
+        else "-"
+    )
 
     return html.Div(
         AlphaCard(
@@ -64,11 +79,16 @@ def _render_trade_preview(trade_details: TradeDetails) -> html.Div:
                                     AlphaRow(
                                         html.H6(
                                             f"{round(trade_details.stop_loss, digits)} (-{stop_loss_distance})",
-                                            style={"color": colors.ERROR_COLOR, **center_style}
+                                            style={"color": colors.ERROR_COLOR, **center_style},
                                         )
                                     ),
                                 ],
-                                xs=6, sm=6, md=6, lg=6, xl=6, xxl=6,
+                                xs=6,
+                                sm=6,
+                                md=6,
+                                lg=6,
+                                xl=6,
+                                xxl=6,
                             ),
                             AlphaCol(
                                 children=[
@@ -76,23 +96,28 @@ def _render_trade_preview(trade_details: TradeDetails) -> html.Div:
                                     AlphaRow(
                                         html.H6(
                                             f"{round(trade_details.take_profit_1, digits)} ({round(take_profit_1_distance, digits)})",
-                                            style={"color": colors.PRIMARY_COLOR, **center_style}
+                                            style={"color": colors.PRIMARY_COLOR, **center_style},
                                         )
                                     ),
                                     AlphaRow(
                                         html.H6(
                                             f"{round(trade_details.take_profit_2, digits) if trade_details.take_profit_2 else 'n.a.'} ({take_profit_2_distance})",
-                                            style={"color": colors.PRIMARY_COLOR, **center_style}
+                                            style={"color": colors.PRIMARY_COLOR, **center_style},
                                         )
                                     ),
                                     AlphaRow(
                                         html.H6(
                                             f"{round(trade_details.take_profit_3, digits) if trade_details.take_profit_3 else 'n.a.'} ({take_profit_3_distance})",
-                                            style={"color": colors.PRIMARY_COLOR, **center_style}
+                                            style={"color": colors.PRIMARY_COLOR, **center_style},
                                         )
                                     ),
                                 ],
-                                xs=6, sm=6, md=6, lg=6, xl=6, xxl=6,
+                                xs=6,
+                                sm=6,
+                                md=6,
+                                lg=6,
+                                xl=6,
+                                xxl=6,
                             ),
                         ]
                     ),
@@ -102,14 +127,15 @@ def _render_trade_preview(trade_details: TradeDetails) -> html.Div:
         ).render(),
     )
 
-def _render_risk_preview(trade_details: TradeDetails) -> html.Div:
+
+def _render_risk_preview(trade_details: TradeDetails, active_levels: int = None) -> html.Div:
     center_style = {"textAlign": "center"}
     all_accounts = get_all_accounts()
-    configs: List[AccountConfig] = []
+    configs: List[Tuple[Account, AccountConfig]] = []
     for account in all_accounts:
         if config := get_config_by_account_and_symbol(account_id=account.uid, signal_asset_id=trade_details.symbol):
             if config.enabled:
-                configs.append(config)
+                configs.append((account, config))
 
     if not configs:
         card_body = AlphaCardBody(
@@ -121,31 +147,59 @@ def _render_risk_preview(trade_details: TradeDetails) -> html.Div:
             ]
         ).render()
     else:
-        risk_results = []
-        for config in configs:
-            risk_per_trade = config.risk_percent / config.n_staggers
-            entries = get_stagger_levels(from_price=trade_details.entry, to_price=trade_details.stop_loss, stagger_method=StaggerMethod(config.entry_stagger_method), k=config.n_staggers)
-            sizes = [calculate_position_size(entry_price=entry, stop_loss_price=trade_details.stop_loss, lot_size=config.lot_size, percentage_risk=risk_per_trade, balance=10000.0) for entry in entries]
-            risk_rewards = [calculate_risk_reward(entry=entry, stop_loss=trade_details.stop_loss, take_profit=trade_details.take_profit_1) for entry in entries]
-            weighted_risk_reward = calculate_weighted_risk_reward(risk_rewards=risk_rewards, sizes=sizes)
-            risk_results.append((config.account_id, config.risk_percent, weighted_risk_reward))
-        card_body = AlphaCardBody(
-            children=[
-                html.H6(
-                    f"{account_id}, {risk_percent}, {weighted_risk_reward}",
-                ) for account_id, risk_percent, weighted_risk_reward in risk_results
+        risk_previews = []
+        for account, config in configs:
+            total = config.n_staggers
+            active = active_levels or total
+            active = min(active, total)
+
+            risk_per_trade = config.risk_percent / total
+            balance = Mt5Client(secret_id=account.secret_name).get_balance()
+            entries = get_stagger_levels(
+                trade_details.entry, trade_details.stop_loss, StaggerMethod(config.entry_stagger_method), total
+            )[:active]
+
+            sizes = [
+                calculate_position_size(
+                    entry,
+                    trade_details.stop_loss,
+                    config.lot_size,
+                    risk_per_trade,
+                    balance,
+                    digits=config.decimal_points,
+                )
+                for entry in entries
             ]
-        ).render()
+            risk_rewards = [
+                calculate_risk_reward(entry, trade_details.stop_loss, trade_details.take_profit_1) for entry in entries
+            ]
+            weighted = [
+                calculate_weighted_risk_reward(risk_rewards[: i + 1], sizes[: i + 1]) for i in range(len(entries))
+            ]
+
+            risk_previews.append(
+                html.Div(
+                    [
+                        html.H6(account.friendly_name, style={"fontWeight": "bold"}),
+                        html.Div(f"Risk %: {config.risk_percent}%"),
+                        html.Div(f"Absolute Risk: ${round(balance * config.risk_percent / 100)}"),
+                        html.Div(f"Weighted RR: {weighted[-1]:.2f}" if weighted else "Weighted RR: n.a."),
+                        html.Hr(),
+                    ],
+                    style={"marginBottom": "1rem"},
+                )
+            )
+
+        card_body = AlphaCardBody(children=risk_previews).render()
 
     return html.Div(
         AlphaCard(
-            header=AlphaCardHeader(
-                html.H5("Risk Overview")
-            ).render(),
+            header=AlphaCardHeader(html.H5("Risk Overview")).render(),
             body=card_body,
             style={"backgroundColor": "#ffffff"},
         ).render()
     )
+
 
 def _render_trade_details_section() -> List[html.Div]:
     """Render the trade details section."""

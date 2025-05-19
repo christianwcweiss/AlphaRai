@@ -109,19 +109,30 @@ def calculate_weighted_risk_reward(risk_rewards: List[float], sizes: List[float]
 
 
 def calculate_position_size(
-    entry_price: float, stop_loss_price: float, lot_size: float, percentage_risk: float, balance: float
+    entry_price: float, stop_loss_price: float, lot_size: float, percentage_risk: float, balance: float, digits: int
 ) -> float:
-    """Calculate the position size based on entry price, stop loss, lot size, risk percentage and account balance."""
+    """
+    Calculate the position size based on entry price, stop loss, lot size,
+    risk percentage, account balance, and instrument digits.
+    """
     if entry_price <= 0 or stop_loss_price <= 0 or lot_size <= 0 or percentage_risk <= 0 or balance <= 0:
         raise ValueError("All input values must be greater than zero.")
 
-    risk_amount = (percentage_risk / 100.0) * balance
+    # Calculate pip size from digits
+    pip_size = 10 ** (-digits + 1)
 
+    # Calculate pip distance
     stop_distance = abs(entry_price - stop_loss_price)
-    if stop_distance == 0:
+    pip_distance = stop_distance / pip_size
+
+    if pip_distance == 0:
         raise ValueError("Stop loss and entry cannot be the same.")
 
-    size = risk_amount / (stop_distance * lot_size)
+    pip_value_per_lot = 10
+
+    risk_amount = (percentage_risk / 100.0) * balance
+    size = risk_amount / (pip_distance * pip_value_per_lot)
+
     size = round(max(size, 0.01), 2)
 
     return size

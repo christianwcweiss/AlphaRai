@@ -32,6 +32,7 @@ class AccountBalanceOverTimeAbsolute(TradeMetricOverTime):
             balance_df["initial_balance"] = sum(initial_balances.values())
 
         groups = self._get_groups(group_by_account_id=group_by_account_id, group_by_symbol=group_by_symbol)
+        balance_df = balance_df.sort_values(by=["account_id", "closed_at"]).reset_index(drop=True)
 
         if groups:
             balance_df["cumulative_net"] = (
@@ -42,7 +43,6 @@ class AccountBalanceOverTimeAbsolute(TradeMetricOverTime):
             )
             balance_df["absolute_balance"] = balance_df["initial_balance"] + balance_df["cumulative_net"]
         else:
-
             balance_df["absolute_balance"] = (
                 balance_df["initial_balance"]
                 + balance_df.where(balance_df["event"] != TradeEventType.DEPOSIT.value)["net"].cumsum()

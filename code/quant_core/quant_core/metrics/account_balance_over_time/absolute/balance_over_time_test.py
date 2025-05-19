@@ -42,7 +42,7 @@ class TestAccountBalanceOverTimeAbsolute:
         assert "absolute_balance" in balance_df.columns
         assert len(balance_df) == len(data_frame)
 
-    @pytest.mark.parametrize("expected_result", [90302.48])
+    @pytest.mark.parametrize("expected_result", [90222.29])
     def test_ungrouped_result(self, expected_result: float) -> None:
         data_frame = Builder.get_trade_history()
 
@@ -62,8 +62,8 @@ class TestAccountBalanceOverTimeAbsolute:
         data_frame = Builder.get_trade_history()
         # Verified manual calculation
         account_results = {
-            "A2NRRYL4": 80148.94,
-            "0EUEV5SO": 10153.54,
+            "A2NRRYL4": 80079.81,
+            "0EUEV5SO": 10120.22,
         }
 
         balance_df = AccountBalanceOverTimeAbsolute().calculate(
@@ -89,7 +89,7 @@ class TestAccountBalanceOverTimeAbsolute:
             "EURUSD": 87577.09,
             "GBPUSD": 91022.27,
             "USDCHF": 90815.93,
-            "USDJPY": 90807.0,
+            "USDJPY": 90013.6,
         }
 
         balance_df = AccountBalanceOverTimeAbsolute().calculate(
@@ -125,9 +125,9 @@ class TestAccountBalanceOverTimeAbsolute:
                 "USDJPY": 80793.4,
             },
             "0EUEV5SO": {
-                "EURUSD": 9816.08,
+                "EURUSD": 9813.54,
                 "GBPUSD": 10196.35,
-                "USDCHF": 10116.45,
+                "USDCHF": 10094.19,
                 "USDJPY": 10013.6,
             },
         }

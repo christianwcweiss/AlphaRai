@@ -64,7 +64,7 @@ class TestAccountBalanceOverTimeRelative:
         # Verified manual calculation
         account_results = {
             "A2NRRYL4": 100.1,
-            "0EUEV5SO": 101.42,
+            "0EUEV5SO": 101.2,
         }
 
         balance_df = AccountBalanceOverTimeRelative().calculate(
@@ -90,7 +90,7 @@ class TestAccountBalanceOverTimeRelative:
             "EURUSD": 97.31,
             "GBPUSD": 101.14,
             "USDCHF": 100.91,
-            "USDJPY": 100.9,
+            "USDJPY": 100.02,
         }
 
         balance_df = AccountBalanceOverTimeRelative().calculate(
@@ -126,9 +126,9 @@ class TestAccountBalanceOverTimeRelative:
                 "USDJPY": 100.99,
             },
             "0EUEV5SO": {
-                "EURUSD": 98.16,
+                "EURUSD": 98.14,
                 "GBPUSD": 101.96,
-                "USDCHF": 101.16,
+                "USDCHF": 100.94,
                 "USDJPY": 100.14,
             },
         }

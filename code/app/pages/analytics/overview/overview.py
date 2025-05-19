@@ -2,6 +2,7 @@ import dash
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, dcc, Input, Output, callback
+from dateutil.relativedelta import relativedelta
 
 from components.atoms.content import MainContent
 from components.atoms.layout.layout import AlphaRow, AlphaCol
@@ -76,16 +77,17 @@ def render_overview_tab(selected_account):
     if df.empty:
         return dbc.Alert("⚠️ No trade data available for the selected account.", color="warning")
 
-    absolute_metric = AccountBalanceOverTimeAbsolute()
-    relative_metric = AccountBalanceOverTimeRelative()
-
-    abs_df = absolute_metric.calculate(df)
-    rel_df = relative_metric.calculate(df)
+    absolute_balance_over_time_data_frame = AccountBalanceOverTimeAbsolute().calculate(
+        df, group_by_account_id=True, group_by_symbol=False
+    )
+    relative_balance_over_time_data_frame = AccountBalanceOverTimeRelative().calculate(
+        df, group_by_account_id=True, group_by_symbol=False
+    )
 
     return AlphaRow(
         [
             AlphaCol(
-                BalanceOverTime(abs_df, rel_df).render(),
+                BalanceOverTime(absolute_balance_over_time_data_frame, relative_balance_over_time_data_frame).render(),
                 xs=12,
                 sm=12,
                 md=12,

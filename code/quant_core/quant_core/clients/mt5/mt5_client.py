@@ -1,10 +1,10 @@
 # pylint: disable=no-member
 import json
-import platform
 from collections import defaultdict
 from datetime import datetime, timedelta
 from random import randint
 from typing import Optional, Any, List
+from unittest.mock import Mock
 
 import boto3
 import pandas as pd
@@ -17,12 +17,8 @@ from quant_core.enums.trade_direction import TradeDirection
 from quant_core.enums.trade_event_type import TradeEventType
 from quant_core.services.core_logger import CoreLogger
 
-if platform == "Windows":
-    import MetaTrader5 as mt5
-else:
-    from unittest.mock import Mock
+import MetaTrader5 as mt5
 
-    mt5 = Mock()
 
 ORDER_TYPE_MAP = {
     0: "Buy",
@@ -140,7 +136,8 @@ class Mt5Client:
             raise ValueError("MT5 not initialized.")
 
         date_from = datetime.now() - timedelta(days=days)
-        raw_trades = mt5.history_deals_get(date_from, datetime.now())  # type: ignore
+        date_to = datetime.now() + timedelta(days=1)
+        raw_trades = mt5.history_deals_get(date_from, date_to)  # type: ignore
 
         if raw_trades is None:
             CoreLogger().error("Failed to retrieve trade history from MT5.")
@@ -203,7 +200,7 @@ class Mt5Client:
         result = []
 
         for trade in mt5_trades:
-            if trade.type_code == 2:
+            if trade.type_code == 2 and trade.entry_type == 0 and not trade.symbol:
                 result.append(
                     AlphaTradeDTO(
                         id=trade.position_id,
@@ -243,17 +240,17 @@ class Mt5Client:
                             symbol=opened_trade.symbol,
                             entry_price=opened_trade.price,
                             exit_price=closed_trade.price,
-                            profit=closed_trade.profit,
+                            profit=opened_trade.profit + closed_trade.profit,
                             swap=opened_trade.swap + closed_trade.swap,
                             commission=closed_trade.commission + opened_trade.commission,
                         )
                     )
                     del default_dict_dp[trade.position_id]
 
-        for trade in default_dict_dp.values():
-            # TODO: Market orders and partially closed is not supported yet, this is a workaround!
-            if len(trade) == 1:
-                opened_trade = trade[0]
+        for trades in default_dict_dp.values():
+            if len(trades) == 1:
+                opened_trade = trades[0]
+                direction = TradeDirection.LONG if opened_trade.type_code == 0 else TradeDirection.SHORT
                 result.append(
                     AlphaTradeDTO(
                         id=opened_trade.position_id,
@@ -262,8 +259,8 @@ class Mt5Client:
                         trade_group=f"{opened_trade.magic}",
                         opened_at=opened_trade.time,
                         closed_at=opened_trade.time,
-                        direction=TradeDirection.NEUTRAL,
-                        event=TradeEventType.DEPOSIT,
+                        direction=direction,
+                        event=TradeEventType.LONG if direction is TradeDirection.LONG else TradeEventType.SHORT,
                         size=opened_trade.size,
                         symbol=opened_trade.symbol,
                         entry_price=0.0,
