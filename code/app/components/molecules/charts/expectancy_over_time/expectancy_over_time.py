@@ -35,9 +35,8 @@ HIDDEN_STYLE = {
 class ExpectancyOverTimeMolecule(Molecule):  # pylint: disable=too-few-public-methods
     """Expectancy Over Time component."""
 
-    def __init__(self, absolute_df: pd.DataFrame, relative_df: pd.DataFrame):
-        self._absolute_df = absolute_df
-        self._relative_df = relative_df
+    def __init__(self, data_frame: pd.DataFrame) -> None:
+        self._data_frame = data_frame
         self._chart_layout_style = ChartLayoutStyle(
             title="",
             x_axis_title="",
@@ -82,7 +81,7 @@ class ExpectancyOverTimeMolecule(Molecule):  # pylint: disable=too-few-public-me
             children=[
                 dcc.Graph(
                     figure=LineChart(
-                        data_frame=self._absolute_df,
+                        data_frame=self._data_frame,
                         line_layout_style=self._chart_layout_style,
                     ).plot(x_col="time", y_col="expectancy", group_by="account_id"),
                     config={"displayModeBar": False},
@@ -97,9 +96,9 @@ class ExpectancyOverTimeMolecule(Molecule):  # pylint: disable=too-few-public-me
             children=[
                 dcc.Graph(
                     figure=LineChart(
-                        data_frame=self._relative_df,
+                        data_frame=self._data_frame,
                         line_layout_style=self._chart_layout_style,
-                    ).plot(x_col="time", y_col="expectancy", group_by="account_id"),
+                    ).plot(x_col="time", y_col="expectancy_pct", group_by="account_id"),
                     config={"displayModeBar": False},
                 )
             ],

@@ -5,7 +5,7 @@ import pandas as pd
 from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 
 
-class CommissionOverTime(TradeMetricOverTime):
+class FeesOverTime(TradeMetricOverTime):
     """Calculates the total commission over time."""
 
     def _calculate_comission_in_cum_sum(
@@ -18,12 +18,16 @@ class CommissionOverTime(TradeMetricOverTime):
 
         if groups:
             data_frame["total_commission"] = data_frame.groupby(groups)["commission"].cumsum()
+            data_frame["total_swap"] = data_frame.groupby(groups)["swap"].cumsum()
+            data_frame["total_fees"] = data_frame["total_commission"] + data_frame["total_swap"]
         else:
             data_frame["total_commission"] = data_frame["commission"].cumsum()
+            data_frame["total_swap"] = data_frame["swap"].cumsum()
+            data_frame["total_fees"] = data_frame["total_commission"] + data_frame["total_swap"]
 
         data_frame = data_frame.drop_duplicates(keep="last")
 
-        return data_frame[["closed_at"] + groups + ["total_commission"]]
+        return data_frame[["closed_at"] + groups + ["total_commission", "total_swap", "total_fees"]]
 
     def _calculate_commission_in_period_windows(
         self,
@@ -49,8 +53,12 @@ class CommissionOverTime(TradeMetricOverTime):
             if not window_df.empty:
                 if groups:
                     window_df["total_commission"] = window_df.groupby(groups)["commission"].transform("sum")
+                    window_df["total_swap"] = window_df.groupby(groups)["swap"].transform("sum")
+                    window_df["total_fees"] = window_df["total_commission"] + window_df["total_swap"]
                 else:
                     window_df["total_commission"] = window_df["commission"].sum()
+                    window_df["total_swap"] = window_df["swap"].sum()
+                    window_df["total_fees"] = window_df["total_commission"] + window_df["total_swap"]
 
                 window_df["closed_at"] = window_time
                 window_df = window_df.drop_duplicates(subset=groups + ["closed_at"], keep="last")
@@ -60,13 +68,18 @@ class CommissionOverTime(TradeMetricOverTime):
                 all_combos = list(product(*(group_values[g] for g in groups)))
                 expected_rows = pd.DataFrame(
                     [
-                        dict(zip(groups, combo)) | {"closed_at": window_time, "total_commission": 0.0}
+                        dict(zip(groups, combo)) | {"closed_at": window_time, "total_commission": 0.0, "total_swap": 0.0, "total_fees": 0.0}
                         for combo in all_combos
                     ]
                 )
             else:
                 expected_rows = pd.DataFrame(
-                    [{"closed_at": window_time, "total_commission": 0.0, **{col: pd.NA for col in groups}}]
+                    [{
+                        "closed_at": window_time,
+                        "total_commission": 0.0,
+                        "total_swap": 0.0,
+                        "total_fees": 0.0,
+                        **{col: pd.NA for col in groups}}]
                 )
 
             for group_col in groups:
@@ -85,7 +98,7 @@ class CommissionOverTime(TradeMetricOverTime):
                 result.extend(missing.to_dict("records"))
 
         result_df = pd.DataFrame(result)
-        return result_df[["closed_at"] + groups + ["total_commission"]]
+        return result_df[["closed_at"] + groups + ["total_commission", "total_swap", "total_fees"]]
 
     def calculate(  # pylint: disable=too-many-arguments, too-many-positional-arguments
         self,

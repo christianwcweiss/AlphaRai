@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -36,6 +37,10 @@ class TestTradeMetricOverTime:
         assert "closed_at" in normalized_df.columns
         assert len(normalized_df) == len(data_frame)
         assert normalized_df["opened_at"].is_monotonic_increasing
+        assert normalized_df["open_hour"].dtype == "datetime64[ns]"
+        assert normalized_df["open_weekday"].dtype == "int32"
+        assert normalized_df["close_hour"].dtype == "datetime64[ns]"
+        assert normalized_df["close_weekday"].dtype == "int32"
         assert normalized_df["opened_at"].dtype == "datetime64[ns]"
         assert normalized_df["closed_at"].dtype == "datetime64[ns]"
 

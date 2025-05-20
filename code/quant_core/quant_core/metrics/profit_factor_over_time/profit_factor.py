@@ -5,10 +5,18 @@ from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 class ProfitFactorOverTime(TradeMetricOverTime):
     """Calculates the profit factor over time."""
 
-    def calculate(self, data_frame: pd.DataFrame) -> pd.DataFrame:
+    def calculate(
+        self,
+        data_frame: pd.DataFrame,
+        group_by_account_id: bool = True,
+        group_by_symbol: bool = False,
+        group_by_hour: bool = False,
+        group_by_day: bool = False,
+        rolling_window: int = 30,
+    ) -> pd.DataFrame:
         data_frame = data_frame.copy()
         data_frame["time"] = pd.to_datetime(data_frame["time"])
-        data_frame = data_frame[data_frame["profit"].notna()]
+
         result = []
 
         for current_day, window_df in self.get_rolling_windows(data_frame, skip_head=True).items():

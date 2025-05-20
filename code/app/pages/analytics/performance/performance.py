@@ -7,27 +7,16 @@ from components.atoms.content import MainContent
 from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.atoms.tabbar.tabbar import AlphaTabToolbar
 from components.atoms.text.page import PageHeader
-from components.charts.bar.bar_chart import BarChart
 from components.charts.chart import ChartLayoutStyle, ChartMargin
 from components.charts.line.line_chart import LineChart
 from components.frame.body import PageBody
 from components.molecules.charts.expectancy_over_time.expectancy_over_time import ExpectancyOverTimeMolecule
-from components.molecules.charts.profit_factor_over_time.profit_factor_over_time import ProfitFactorOverTimeMolecule
-from components.molecules.charts.risk_reward_over_time.risk_reward_over_time import RiskRewardOverTimeMolecule
-from components.molecules.charts.sharpe_over_time.sharpe_over_time import SharpeRatioOverTimeMolecule
-from components.molecules.charts.sortino_over_time.sortino_over_time import SortinoRatioOverTimeMolecule
 from db.database import SessionLocal
 from models.account import Account
 from pages.analytics.analysis import TAB_LABELS
 from pages.base_page import BasePage
 from quant_core.enums.platform import Platform
-from quant_core.metrics.expectancy_over_time.absolute.expectancy_over_time import ExpectancyOverTimeAbsolute
-from quant_core.metrics.expectancy_over_time.relative.expectancy import ExpectancyOverTimeRelative
-from quant_core.metrics.kelly_criterion_over_time.kelly import KellyCriterionPerAccount
-from quant_core.metrics.profit_factor_over_time.profit_factor import ProfitFactorOverTime
-from quant_core.metrics.risk_reward_over_time.rr_ratio import RiskRewardRatioOverTime
-from quant_core.metrics.sharpe_over_time.sharpe import SharpeRatioOverTime
-from quant_core.metrics.sortino_over_time.sortino import SortinoRatioOverTime
+from quant_core.metrics.expectancy_over_time.expectancy_over_time import ExpectancyOverTime
 from services.db.trade_history import get_all_trades
 
 dash.register_page(__name__, path="/analytics/performance", name="Performance")
@@ -69,31 +58,6 @@ def _render_chart(  # pylint: disable=too-many-arguments, too-many-positional-ar
         md=12,
         lg=6,
         xl=6,
-    )
-
-
-def _render_kelly_chart(df: pd.DataFrame) -> AlphaCol:
-    metric = KellyCriterionPerAccount()
-    result = metric.calculate(df)
-    return AlphaCol(
-        dcc.Graph(
-            figure=BarChart(
-                data_frame=result,
-                bar_layout_style=ChartLayoutStyle(
-                    title="Kelly Criterion per Account",
-                    x_axis_title="Account",
-                    y_axis_title="Kelly (%)",
-                    margin=ChartMargin(30, 30, 30, 30),
-                    y_range=[0, 100],
-                    show_legend=False,
-                ),
-            ).plot(x_col="account_id", y_col="kelly_pct")
-        ),
-        xs=12,
-        sm=12,
-        md=12,
-        lg=12,
-        xl=12,
     )
 
 
@@ -142,7 +106,7 @@ def render_performance_tab(selected_account):
     if data_frame.empty:
         return dbc.Alert("⚠️ No trade data available for the selected account.", color="warning")
 
-    expectancy_absolute_data_frame = ExpectancyOverTimeAbsolute().calculate(data_frame)
+    expectancy_df = ExpectancyOverTime().calculate(data_frame)
     # rel_df = ExpectancyOverTimeRelative().calculate(data_frame)
     # pf_df = ProfitFactorOverTime().calculate(data_frame)
     # rr_df = RiskRewardRatioOverTime().calculate(data_frame)
@@ -152,7 +116,7 @@ def render_performance_tab(selected_account):
     return AlphaRow(
         [
             AlphaCol(
-                ExpectancyOverTimeMolecule(expectancy_absolute_data_frame, expectancy_absolute_data_frame).render(),
+                ExpectancyOverTimeMolecule(expectancy_df).render(),
                 xs=12,
                 sm=12,
                 md=12,

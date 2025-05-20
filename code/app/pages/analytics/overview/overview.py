@@ -2,7 +2,6 @@ import dash
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, dcc, Input, Output, callback
-from dateutil.relativedelta import relativedelta
 
 from components.atoms.content import MainContent
 from components.atoms.layout.layout import AlphaRow, AlphaCol
@@ -15,8 +14,7 @@ from models.account import Account
 from pages.analytics.analysis import TAB_LABELS
 from pages.base_page import BasePage
 from quant_core.enums.platform import Platform
-from quant_core.metrics.account_balance_over_time.absolute.balance_over_time import AccountBalanceOverTimeAbsolute
-from quant_core.metrics.account_balance_over_time.relative.balance_over_time import AccountBalanceOverTimeRelative
+from quant_core.metrics.account_balance_over_time.balance_over_time import AccountBalanceOverTime
 from services.db.trade_history import get_all_trades
 
 dash.register_page(__name__, path="/analytics/overview", name="Overview")
@@ -77,17 +75,14 @@ def render_overview_tab(selected_account):
     if df.empty:
         return dbc.Alert("⚠️ No trade data available for the selected account.", color="warning")
 
-    absolute_balance_over_time_data_frame = AccountBalanceOverTimeAbsolute().calculate(
-        df, group_by_account_id=True, group_by_symbol=False
-    )
-    relative_balance_over_time_data_frame = AccountBalanceOverTimeRelative().calculate(
+    balance_over_time_data_frame = AccountBalanceOverTime().calculate(
         df, group_by_account_id=True, group_by_symbol=False
     )
 
     return AlphaRow(
         [
             AlphaCol(
-                BalanceOverTime(absolute_balance_over_time_data_frame, relative_balance_over_time_data_frame).render(),
+                BalanceOverTime(balance_over_time_data_frame).render(),
                 xs=12,
                 sm=12,
                 md=12,

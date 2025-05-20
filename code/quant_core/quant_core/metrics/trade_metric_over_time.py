@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Optional, Literal
+from typing import Dict, Optional, Literal, List
 
 import pandas as pd
 
@@ -23,7 +23,9 @@ class TradeMetricOverTime(ABC):
         data_frame: pd.DataFrame,
         group_by_account_id: bool = True,
         group_by_symbol: bool = False,
-        rolling_window_days: Optional[int] = None,
+        group_by_hour: bool = False,
+        group_by_weekday: bool = False,
+        rolling_window: Optional[int] = None,
     ) -> pd.DataFrame:
         """Calculate the metric grouped by account_id."""
 
@@ -31,20 +33,31 @@ class TradeMetricOverTime(ABC):
     def _normalize_time(data_frame: pd.DataFrame) -> pd.DataFrame:
         """Normalize time to a specific resolution."""
         data_frame = data_frame.copy()
+
         data_frame["opened_at"] = pd.to_datetime(data_frame["opened_at"])
+        data_frame["open_hour"] = data_frame["opened_at"].dt.hour
+        data_frame["open_weekday"] = data_frame["opened_at"].dt.weekday  # 0 = Monday
+
         data_frame["closed_at"] = pd.to_datetime(data_frame["closed_at"])
+        data_frame["close_hour"] = data_frame["closed_at"].dt.hour
+        data_frame["close_weekday"] = data_frame["closed_at"].dt.weekday  # 0 = Monday
+
         data_frame = data_frame.sort_values("opened_at")
 
         return data_frame
 
     @staticmethod
-    def _get_groups(group_by_account_id: bool, group_by_symbol: bool) -> list:
+    def _get_groups(group_by_account_id: bool, group_by_symbol: bool, group_by_hour: bool, group_by_weekday: bool) -> List[str]:
         """Get the groups for grouping the DataFrame."""
         groups = []
         if group_by_account_id:
             groups.append("account_id")
         if group_by_symbol:
             groups.append("symbol")
+        if group_by_hour:
+            groups.append("open_hour")
+        if group_by_weekday:
+            groups.append("open_weekday")
 
         return groups
 

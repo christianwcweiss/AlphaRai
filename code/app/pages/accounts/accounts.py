@@ -17,7 +17,7 @@ from components.frame.body import PageBody
 from components.molecules.cards.settings.account_card import AccountSettingsCard
 from pages.base_page import BasePage
 from quant_core.enums.platform import Platform
-from quant_core.metrics.account_balance_over_time.relative.balance_over_time import AccountBalanceOverTimeRelative
+from quant_core.metrics.account_balance_over_time.balance_over_time import AccountBalanceOverTime
 from services.db.account import (
     get_all_accounts,
     upsert_account,
@@ -53,7 +53,7 @@ def reload_mt5_accounts():
 
     if not df.empty:
         df = df[[col for col in df.columns if not col.startswith("_sa_")]]
-        metric = AccountBalanceOverTimeRelative()
+        metric = AccountBalanceOverTime()
         rel_df = metric.calculate(df)
     else:
         rel_df = pd.DataFrame()

@@ -4,7 +4,7 @@ from quant_core.enums.trade_event_type import TradeEventType
 from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 
 
-class ExpectancyOverTimeAbsolute(TradeMetricOverTime):
+class ExpectancyOverTime(TradeMetricOverTime):
     """Calculates the expectancy over time for each account."""
 
     def calculate(
@@ -17,6 +17,12 @@ class ExpectancyOverTimeAbsolute(TradeMetricOverTime):
         data_frame = data_frame.copy()
         data_frame["closed_at"] = pd.to_datetime(data_frame["closed_at"])
         data_frame = data_frame[data_frame["profit"].notna()]
+        initial_balances = self._get_initial_balances(data_frame)
+        if not group_by_account_id and not group_by_symbol:
+            data_frame["initial_balance"] = sum(initial_balances.values())
+        else:
+            data_frame["initial_balance"] = data_frame["account_id"].map(initial_balances, na_action="ignore")
+
         window_results = []
 
         groups = self._get_groups(group_by_account_id=group_by_account_id, group_by_symbol=group_by_symbol)
@@ -58,18 +64,20 @@ class ExpectancyOverTimeAbsolute(TradeMetricOverTime):
         avg_loss = abs(losing_trades["profit"].mean()) if not losing_trades.empty else 0.0
 
         expectancy = (win_rate * avg_win) - ((1 - win_rate) * avg_loss)
+        initial_balance = group_df["initial_balance"].iloc[0] if not group_df.empty else None
 
         result = {
             "time": current_day,
             "expectancy": round(expectancy, 2),
+            "expectancy_pct": round(expectancy, 2) / initial_balance if initial_balance else 0.0,
         }
 
         if group_by_account_id and group_by_symbol:
             result["account_id"] = group_name[0]
             result["symbol"] = group_name[1]
         elif group_by_account_id:
-            result["account_id"] = group_name
+            result["account_id"] = group_name[0]
         elif group_by_symbol:
-            result["symbol"] = group_name
+            result["symbol"] = group_name[0]
 
         return result

@@ -37,9 +37,8 @@ HIDDEN_STYLE = {
 class BalanceOverTime(Molecule):  # pylint: disable=too-few-public-methods
     """A molecule that renders the Balance Over Time chart."""
 
-    def __init__(self, absolute_df: pd.DataFrame, relative_df: pd.DataFrame):
-        self._absolute_df = absolute_df
-        self._relative_df = relative_df
+    def __init__(self, data_frame: pd.DataFrame):
+        self._data_frame = data_frame
         self._chart_layout_style = ChartLayoutStyle(
             title="",
             x_axis_title="",
@@ -84,7 +83,7 @@ class BalanceOverTime(Molecule):  # pylint: disable=too-few-public-methods
             children=[
                 dcc.Graph(
                     figure=LineChart(
-                        data_frame=self._absolute_df,
+                        data_frame=self._data_frame,
                         line_layout_style=self._chart_layout_style,
                     ).plot(x_col="closed_at", y_col="absolute_balance", group_by="account_id"),
                     config={"displayModeBar": True},
@@ -99,7 +98,7 @@ class BalanceOverTime(Molecule):  # pylint: disable=too-few-public-methods
             children=[
                 dcc.Graph(
                     figure=LineChart(
-                        data_frame=self._relative_df,
+                        data_frame=self._data_frame,
                         line_layout_style=self._chart_layout_style,
                     ).plot(x_col="closed_at", y_col="relative_balance", group_by="account_id"),
                     config={"displayModeBar": True},

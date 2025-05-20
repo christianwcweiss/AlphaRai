@@ -5,12 +5,18 @@ from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 class RiskRewardRatioOverTime(TradeMetricOverTime):
     """Risk-Reward Ratio Over Time."""
 
-    def calculate(self, data_frame: pd.DataFrame) -> pd.DataFrame:
-        data_frame = data_frame.copy()
-        data_frame["time"] = pd.to_datetime(data_frame["time"])
-        data_frame = data_frame[data_frame["profit"].notna()]
-        result = []
+    def calculate(
+        self,
+        data_frame: pd.DataFrame,
+        group_by_account_id: bool = True,
+        group_by_symbol: bool = True,
+        period_window: int = 30
+    ) -> pd.DataFrame:
+        groups = self._get_groups(group_by_account_id=group_by_account_id, group_by_symbol=group_by_symbol)
 
+        data_frame = self._normalize_time(data_frame)
+
+        result = []
         for current_day, window_df in self.get_rolling_windows(data_frame, skip_head=True).items():
             for account, group in window_df.groupby("account_id"):
                 wins = group[group["profit"] > 0]
