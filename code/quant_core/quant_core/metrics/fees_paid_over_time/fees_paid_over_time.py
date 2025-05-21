@@ -68,18 +68,22 @@ class FeesOverTime(TradeMetricOverTime):
                 all_combos = list(product(*(group_values[g] for g in groups)))
                 expected_rows = pd.DataFrame(
                     [
-                        dict(zip(groups, combo)) | {"closed_at": window_time, "total_commission": 0.0, "total_swap": 0.0, "total_fees": 0.0}
+                        dict(zip(groups, combo))
+                        | {"closed_at": window_time, "total_commission": 0.0, "total_swap": 0.0, "total_fees": 0.0}
                         for combo in all_combos
                     ]
                 )
             else:
                 expected_rows = pd.DataFrame(
-                    [{
-                        "closed_at": window_time,
-                        "total_commission": 0.0,
-                        "total_swap": 0.0,
-                        "total_fees": 0.0,
-                        **{col: pd.NA for col in groups}}]
+                    [
+                        {
+                            "closed_at": window_time,
+                            "total_commission": 0.0,
+                            "total_swap": 0.0,
+                            "total_fees": 0.0,
+                            **{col: pd.NA for col in groups},
+                        }
+                    ]
                 )
 
             for group_col in groups:

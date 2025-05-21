@@ -7,7 +7,7 @@ from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
 from pages.base_page import BasePage
-from services.db.bots.grid_bot import get_all_grid_bots
+from services.db.main.grid_bot import get_all_grid_bots
 
 dash.register_page(__name__, path="/bots/grid-bots", name="Grid Bots")
 

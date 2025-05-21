@@ -11,7 +11,7 @@ Base = declarative_base()
 class Trade(Base):  # type: ignore  # pylint: disable=too-few-public-methods
     """Trade model for SQLAlchemy ORM."""
 
-    __tablename__ = "trades"
+    __tablename__ = "cache_trades"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 

@@ -1,20 +1,20 @@
 from typing import Optional
 
-from db.database import SessionLocal
-from models.bots.grid_bot import GridBot
+from db.database import MainSessionLocal
+from models.main.grid_bot import GridBot
 from quant_core.services.core_logger import CoreLogger
 
 
 def get_all_grid_bots() -> list[GridBot]:
     """Fetch all grid bots from the database."""
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         CoreLogger().info("Fetching all grid bots from the database.")
         return session.query(GridBot).all()
 
 
 def get_grid_bot_by_uid(uid: str) -> Optional[GridBot]:
     """Fetch a single grid bot by UID."""
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         CoreLogger().info(f"Fetching grid bot with uid: {uid}")
 
         return session.query(GridBot).filter_by(uid=uid).first()
@@ -31,7 +31,7 @@ def upsert_grid_bot(  # pylint: disable=too-many-arguments, too-many-positional-
     base_order_size_percent: float,
 ):
     """Upsert a grid bot in the database."""
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         CoreLogger().info(
             f"Upserting grid bot {uid} for account_uid={account_uid}, symbol={symbol}, "
             f"range=({lower_bound}-{upper_bound}), n_grids={n_grids}, size_pct={base_order_size_percent}"
@@ -65,7 +65,7 @@ def upsert_grid_bot(  # pylint: disable=too-many-arguments, too-many-positional-
 
 def delete_grid_bot(uid: str) -> None:
     """Delete a grid bot by UID."""
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         bot = session.query(GridBot).filter_by(uid=uid).first()
         if bot:
             session.delete(bot)
@@ -77,7 +77,7 @@ def delete_grid_bot(uid: str) -> None:
 
 def toggle_grid_bot_enabled(uid: str) -> Optional[GridBot]:
     """Toggle the enabled status of a grid bot by UID."""
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         bot = session.query(GridBot).filter_by(uid=uid).first()
         if bot:
             bot.enabled = not bot.enabled

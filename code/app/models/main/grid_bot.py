@@ -15,7 +15,7 @@ Base = declarative_base()
 class GridBot(Base):  # type: ignore  # pylint: disable=too-few-public-methods
     """Grid bot model for the application."""
 
-    __tablename__ = "grid_bots"
+    __tablename__ = "main_grid_bots"
 
     id = Column(Integer, primary_key=True)
     uid = Column(String(8), nullable=False, unique=True)  # Unique bot identifier

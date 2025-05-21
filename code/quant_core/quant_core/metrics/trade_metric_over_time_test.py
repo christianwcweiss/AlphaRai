@@ -1,4 +1,5 @@
-import numpy as np
+from itertools import combinations
+
 import pandas as pd
 import pytest
 
@@ -8,25 +9,59 @@ from quant_dev.builder import Builder
 
 class TestTradeMetricOverTime:
 
-    @pytest.mark.parametrize("group_by_account_id,group_by_symbol", [(True, False), (False, True), (True, True)])
-    def test_groups(self, group_by_account_id: bool, group_by_symbol: bool) -> None:
+    @pytest.mark.parametrize(
+        "group_by_account_id,group_by_symbol,group_by_asset_type,group_by_direction,group_by_hour,group_by_weekday",
+        [
+            tuple(i in combination for i in range(6))
+            for repetitions in range(7)
+            for combination in combinations(range(6), repetitions)
+        ],
+    )
+    def test_groups(
+        self,
+        group_by_account_id: bool,
+        group_by_symbol: bool,
+        group_by_asset_type: bool,
+        group_by_direction: bool,
+        group_by_hour: bool,
+        group_by_weekday: bool,
+    ) -> None:
         trade_metric_over_time = TradeMetricOverTime
 
         groups = trade_metric_over_time._get_groups(
-            group_by_account_id=group_by_account_id, group_by_symbol=group_by_symbol
+            group_by_account_id=group_by_account_id,
+            group_by_symbol=group_by_symbol,
+            group_by_asset_type=group_by_asset_type,
+            group_by_direction=group_by_direction,
+            group_by_hour=group_by_hour,
+            group_by_weekday=group_by_weekday,
         )
 
         assert isinstance(groups, list)
         if group_by_account_id:
             assert "account_id" in groups
+        else:
+            assert "account_id" not in groups
         if group_by_symbol:
             assert "symbol" in groups
-
-        if not group_by_account_id and not group_by_symbol:
-            assert len(groups) == 0
-
-        if group_by_account_id and group_by_symbol:
-            assert len(groups) == 2
+        else:
+            assert "symbol" not in groups
+        if group_by_asset_type:
+            assert "asset_type" in groups
+        else:
+            assert "asset_type" not in groups
+        if group_by_direction:
+            assert "direction" in groups
+        else:
+            assert "direction" not in groups
+        if group_by_hour:
+            assert "open_hour" in groups
+        else:
+            assert "open_hour" not in groups
+        if group_by_weekday:
+            assert "open_weekday" in groups
+        else:
+            assert "open_weekday" not in groups
 
     def test_normalize_time(self) -> None:
         trade_metric_over_time = TradeMetricOverTime
@@ -37,9 +72,9 @@ class TestTradeMetricOverTime:
         assert "closed_at" in normalized_df.columns
         assert len(normalized_df) == len(data_frame)
         assert normalized_df["opened_at"].is_monotonic_increasing
-        assert normalized_df["open_hour"].dtype == "datetime64[ns]"
+        assert normalized_df["open_hour"].dtype == "int32"
         assert normalized_df["open_weekday"].dtype == "int32"
-        assert normalized_df["close_hour"].dtype == "datetime64[ns]"
+        assert normalized_df["close_hour"].dtype == "int32"
         assert normalized_df["close_weekday"].dtype == "int32"
         assert normalized_df["opened_at"].dtype == "datetime64[ns]"
         assert normalized_df["closed_at"].dtype == "datetime64[ns]"

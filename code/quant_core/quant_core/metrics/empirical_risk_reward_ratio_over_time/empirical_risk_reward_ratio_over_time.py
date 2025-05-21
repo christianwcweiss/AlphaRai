@@ -10,7 +10,7 @@ class RiskRewardRatioOverTime(TradeMetricOverTime):
         data_frame: pd.DataFrame,
         group_by_account_id: bool = True,
         group_by_symbol: bool = True,
-        period_window: int = 30
+        period_window: int = 30,
     ) -> pd.DataFrame:
         groups = self._get_groups(group_by_account_id=group_by_account_id, group_by_symbol=group_by_symbol)
 

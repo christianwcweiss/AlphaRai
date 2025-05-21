@@ -10,8 +10,8 @@ from components.frame.body import PageBody
 from pages.base_page import BasePage
 from quant_core.enums.asset_type import AssetType
 from quant_core.enums.stagger_method import StaggerMethod
-from services.db.account import get_account_by_uid
-from services.db.account_config import get_configs_by_account_id, upsert_config
+from services.db.main.account import get_account_by_uid
+from services.db.main.account_config import get_configs_by_account_id, upsert_config
 
 dash.register_page(__name__, path_template="/settings/symbol/<uid>/<asset_id>", name="Symbol Settings Detail")
 

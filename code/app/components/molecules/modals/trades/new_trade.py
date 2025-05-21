@@ -10,11 +10,9 @@ from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.molecules.molecule import Molecule
 from constants import colors
 from constants.style import HIDDEN
-from entities import trade_details
 from entities.trade_details import TradeDetails
-from models.account import Account
-from models.account_config import AccountConfig
-from quant_core.clients.mt5 import mt5_client
+from models.main.account import Account
+from models.main.account_config import AccountConfig
 from quant_core.clients.mt5.mt5_client import Mt5Client
 from quant_core.enums.stagger_method import StaggerMethod
 from quant_core.services.core_logger import CoreLogger
@@ -24,8 +22,8 @@ from quant_core.utils.trade_utils import (
     calculate_risk_reward,
     calculate_weighted_risk_reward,
 )
-from services.db.account import get_all_accounts
-from services.db.account_config import get_config_by_account_and_symbol
+from services.db.main.account import get_all_accounts
+from services.db.main.account_config import get_config_by_account_and_symbol
 from services.trade_parser import TradeMessageParser
 from services.trade_router import TradeRouter
 

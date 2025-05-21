@@ -10,20 +10,20 @@ from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
 from components.molecules.charts.trades_per_day_over_time.trades_per_day_over_time import TradesPerDayOverTimeMolecule
 from components.molecules.charts.win_rate_over_time.win_rate_over_time import WinRateOverTimeMolecule
-from db.database import SessionLocal
-from models.account import Account
+from db.database import MainSessionLocal
+from models.main.account import Account
 from pages.analytics.analysis import TAB_LABELS
 from pages.base_page import BasePage
 from quant_core.enums.platform import Platform
 from quant_core.metrics.trades_per_day_over_time.trades_per_day import TradesPerDayOverTime
 from quant_core.metrics.win_rate_over_time.win_rate_over_time import WinRateOverTime
-from services.db.trade_history import get_all_trades
+from services.db.cache.trade_history import get_all_trades
 
 dash.register_page(__name__, path="/analytics/behavior", name="Behavior")
 
 
 def _render_account_dropdown() -> dcc.Dropdown:
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         accounts = session.query(Account).filter_by(platform=Platform.METATRADER.value, enabled=True).all()
 
     return dcc.Dropdown(

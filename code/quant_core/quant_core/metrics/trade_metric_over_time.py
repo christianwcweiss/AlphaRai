@@ -23,6 +23,8 @@ class TradeMetricOverTime(ABC):
         data_frame: pd.DataFrame,
         group_by_account_id: bool = True,
         group_by_symbol: bool = False,
+        group_by_asset_type: bool = False,
+        group_by_direction: bool = False,
         group_by_hour: bool = False,
         group_by_weekday: bool = False,
         rolling_window: Optional[int] = None,
@@ -47,11 +49,22 @@ class TradeMetricOverTime(ABC):
         return data_frame
 
     @staticmethod
-    def _get_groups(group_by_account_id: bool, group_by_symbol: bool, group_by_hour: bool, group_by_weekday: bool) -> List[str]:
+    def _get_groups(
+        group_by_account_id: bool,
+        group_by_symbol: bool,
+        group_by_asset_type: bool,
+        group_by_direction: bool,
+        group_by_hour: bool,
+        group_by_weekday: bool,
+    ) -> List[str]:
         """Get the groups for grouping the DataFrame."""
         groups = []
         if group_by_account_id:
             groups.append("account_id")
+        if group_by_asset_type:
+            groups.append("asset_type")
+        if group_by_direction:
+            groups.append("direction")
         if group_by_symbol:
             groups.append("symbol")
         if group_by_hour:

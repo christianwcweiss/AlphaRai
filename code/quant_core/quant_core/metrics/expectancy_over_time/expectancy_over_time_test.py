@@ -62,9 +62,7 @@ class TestExpectancyOverTimeAbsolute:
             "0EUEV5SO": -6e-05,
         }
 
-        expectancy_df = ExpectancyOverTime().calculate(
-            data_frame, group_by_account_id=True, group_by_symbol=False
-        )
+        expectancy_df = ExpectancyOverTime().calculate(data_frame, group_by_account_id=True, group_by_symbol=False)
 
         assert "account_id" in expectancy_df.columns
         assert "symbol" not in expectancy_df.columns
@@ -93,9 +91,7 @@ class TestExpectancyOverTimeAbsolute:
             "USDJPY": -1e-05,
         }
 
-        expectancy_df = ExpectancyOverTime().calculate(
-            data_frame, group_by_account_id=False, group_by_symbol=True
-        )
+        expectancy_df = ExpectancyOverTime().calculate(data_frame, group_by_account_id=False, group_by_symbol=True)
 
         assert "account_id" not in expectancy_df.columns
         assert "symbol" in expectancy_df.columns
@@ -143,9 +139,7 @@ class TestExpectancyOverTimeAbsolute:
             },
         }
 
-        expectancy_df = ExpectancyOverTime().calculate(
-            data_frame, group_by_account_id=True, group_by_symbol=True
-        )
+        expectancy_df = ExpectancyOverTime().calculate(data_frame, group_by_account_id=True, group_by_symbol=True)
 
         assert "account_id" in expectancy_df.columns
         assert "symbol" in expectancy_df.columns

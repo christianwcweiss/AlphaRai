@@ -88,9 +88,7 @@ class TestFeesOverTime:
             "0EUEV5SO": -4.68,
         }
 
-        fee_df = FeesOverTime().calculate(
-            data_frame, group_by_account_id=True, group_by_symbol=False, cum_sum=True
-        )
+        fee_df = FeesOverTime().calculate(data_frame, group_by_account_id=True, group_by_symbol=False, cum_sum=True)
 
         assert "account_id" in fee_df.columns
         assert "symbol" not in fee_df.columns
@@ -104,7 +102,9 @@ class TestFeesOverTime:
             assert len(account_fee_df) > 0
             assert round(account_fee_df.iloc[-1]["total_commission"], 2) == account_results_commission[account_id]
             assert round(account_fee_df.iloc[-1]["total_swap"], 2) == account_results_swap[account_id]
-            assert round(account_fee_df.iloc[-1]["total_fees"], 2) == round(account_results_commission[account_id] + account_results_swap[account_id], 2)
+            assert round(account_fee_df.iloc[-1]["total_fees"], 2) == round(
+                account_results_commission[account_id] + account_results_swap[account_id], 2
+            )
 
     def test_grouped_by_symbol_result_cum_sum(self) -> None:
         data_frame = Builder.get_trade_history()
@@ -122,9 +122,7 @@ class TestFeesOverTime:
             "USDJPY": -33.22,
         }
 
-        fee_df = FeesOverTime().calculate(
-            data_frame, group_by_account_id=False, group_by_symbol=True, cum_sum=True
-        )
+        fee_df = FeesOverTime().calculate(data_frame, group_by_account_id=False, group_by_symbol=True, cum_sum=True)
 
         assert "account_id" not in fee_df.columns
         assert "symbol" in fee_df.columns
@@ -141,7 +139,9 @@ class TestFeesOverTime:
             assert len(symbol_fee_df) > 0
             assert round(symbol_fee_df.iloc[-1]["total_commission"], 2) == symbol_results_commission[symbol]
             assert round(symbol_fee_df.iloc[-1]["total_swap"], 2) == symbol_results_swap[symbol]
-            assert round(symbol_fee_df.iloc[-1]["total_fees"], 2) == round(symbol_results_commission[symbol] + symbol_results_swap[symbol], 2)
+            assert round(symbol_fee_df.iloc[-1]["total_fees"], 2) == round(
+                symbol_results_commission[symbol] + symbol_results_swap[symbol], 2
+            )
 
     def test_grouped_by_account_and_symbol_result_cum_sum(self) -> None:
         data_frame = Builder.get_trade_history()
@@ -175,9 +175,7 @@ class TestFeesOverTime:
             },
         }
 
-        fee_df = FeesOverTime().calculate(
-            data_frame, group_by_account_id=True, group_by_symbol=True, cum_sum=True
-        )
+        fee_df = FeesOverTime().calculate(data_frame, group_by_account_id=True, group_by_symbol=True, cum_sum=True)
 
         assert "account_id" in fee_df.columns
         assert "symbol" in fee_df.columns
@@ -190,9 +188,7 @@ class TestFeesOverTime:
                 if symbol is np.nan:
                     continue
 
-                account_symbol_fee_df = fee_df[
-                    (fee_df["account_id"] == account_id) & (fee_df["symbol"] == symbol)
-                ]
+                account_symbol_fee_df = fee_df[(fee_df["account_id"] == account_id) & (fee_df["symbol"] == symbol)]
                 assert len(account_symbol_fee_df) > 0
                 assert (
                     round(account_symbol_fee_df.iloc[-1]["total_commission"], 2)
@@ -204,24 +200,23 @@ class TestFeesOverTime:
                 )
                 assert (
                     round(account_symbol_fee_df.iloc[-1]["total_swap"], 2)
-                    == account_symbol_results_swap[account_id][symbol], (
+                    == account_symbol_results_swap[account_id][symbol],
+                    (
                         f"Expected {account_symbol_results_swap[account_id][symbol]} "
                         f"for account {account_id} and symbol {symbol}, "
                         f"but got {round(account_symbol_fee_df.iloc[-1]['total_swap'], 2)}"
-                    )
+                    ),
                 )
-                assert (
-                    round(account_symbol_fee_df.iloc[-1]["total_fees"], 2)
-                    == round(
-                        account_symbol_results_commission[account_id][symbol]
-                        + account_symbol_results_swap[account_id][symbol],
-                        2,
-                    )
+                assert round(account_symbol_fee_df.iloc[-1]["total_fees"], 2) == round(
+                    account_symbol_results_commission[account_id][symbol]
+                    + account_symbol_results_swap[account_id][symbol],
+                    2,
                 )
-
 
     @pytest.mark.parametrize("expected_result_commission,expected_result_swap", [(-16.94, -0.26)])
-    def test_ungrouped_result_no_cum_sum_days(self, expected_result_commission: float, expected_result_swap: float) -> None:
+    def test_ungrouped_result_no_cum_sum_days(
+        self, expected_result_commission: float, expected_result_swap: float
+    ) -> None:
         data_frame = Builder.get_trade_history()
         data_frame = FeesOverTime()._normalize_time(data_frame)
         min_date = data_frame["opened_at"].min().replace(hour=0, minute=0, second=0, microsecond=0)

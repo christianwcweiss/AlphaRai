@@ -11,11 +11,11 @@ from components.atoms.modal.modal import AlphaModal
 from components.atoms.table.table import AlphaTable
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
-from models.general_setting import GeneralSetting
+from models.main.general_setting import GeneralSetting
 from pages.base_page import BasePage
 from quant_core.services.core_logger import CoreLogger
-from services.db.general_setting import get_all_settings, upsert_setting, delete_setting
-from services.db.trade_history import sync_trades_from_all_accounts
+from services.db.main.general_setting import get_all_settings, upsert_setting, delete_setting
+from services.db.cache.trade_history import sync_trades_from_all_accounts
 
 dash.register_page(__name__, path="/settings", name="Settings")
 

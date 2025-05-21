@@ -10,7 +10,7 @@ Base = declarative_base()
 class Account(Base):  # type: ignore  # pylint: disable=too-few-public-methods
     """Represents an account in the database."""
 
-    __tablename__ = "accounts"
+    __tablename__ = "main_accounts"
 
     id = Column(Integer, primary_key=True)
     uid = Column(String(8), nullable=False, unique=True)

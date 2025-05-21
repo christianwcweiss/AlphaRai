@@ -9,3 +9,5 @@ class AssetType(Enum):
     CRYPTO = "CRYPTO"
     FOREX = "FOREX"
     INDICES = "INDICES"
+    FUNDS = "FUNDS"
+    COMMODITIES = "COMMODITIES"

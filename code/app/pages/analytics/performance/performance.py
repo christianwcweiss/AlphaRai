@@ -11,19 +11,19 @@ from components.charts.chart import ChartLayoutStyle, ChartMargin
 from components.charts.line.line_chart import LineChart
 from components.frame.body import PageBody
 from components.molecules.charts.expectancy_over_time.expectancy_over_time import ExpectancyOverTimeMolecule
-from db.database import SessionLocal
-from models.account import Account
+from db.database import MainSessionLocal
+from models.main.account import Account
 from pages.analytics.analysis import TAB_LABELS
 from pages.base_page import BasePage
 from quant_core.enums.platform import Platform
 from quant_core.metrics.expectancy_over_time.expectancy_over_time import ExpectancyOverTime
-from services.db.trade_history import get_all_trades
+from services.db.cache.trade_history import get_all_trades
 
 dash.register_page(__name__, path="/analytics/performance", name="Performance")
 
 
 def _render_account_dropdown() -> dcc.Dropdown:
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         accounts = session.query(Account).filter_by(platform=Platform.METATRADER.value, enabled=True).all()
 
     return dcc.Dropdown(

@@ -1,26 +1,26 @@
-from db.database import SessionLocal
-from models.confluence import ConfluenceConfig
+from db.database import MainSessionLocal
+from models.main.confluence import ConfluenceConfig
 from quant_core.services.core_logger import CoreLogger
 from quant_core.enums.time_period import TimePeriod
 
 
 def get_all_confluences() -> list[ConfluenceConfig]:
     """Fetch all confluence configs from the database."""
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         CoreLogger().info("Fetching all confluence configs from the database.")
         return session.query(ConfluenceConfig).all()
 
 
 def get_confluence_by_id(confluence_id: str) -> ConfluenceConfig | None:
     """Fetch a single confluence config by ID."""
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         CoreLogger().info(f"Fetching confluence with ID: {confluence_id}")
         return session.query(ConfluenceConfig).filter_by(confluence_id=confluence_id).first()
 
 
 def upsert_confluence(confluence_id: str, period: TimePeriod, weight: int = 100, enabled: bool = True):
     """Insert or update a confluence config."""
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         CoreLogger().info(f"Upserting confluence: {confluence_id} ({period.name}) with weight={weight}")
         con = session.query(ConfluenceConfig).filter_by(confluence_id=confluence_id).first()
 
@@ -38,7 +38,7 @@ def upsert_confluence(confluence_id: str, period: TimePeriod, weight: int = 100,
 
 def delete_confluence(confluence_id: str):
     """Delete a confluence config by ID."""
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         CoreLogger().info(f"Deleting confluence: {confluence_id}")
         session.query(ConfluenceConfig).filter_by(confluence_id=confluence_id).delete()
         session.commit()
@@ -46,7 +46,7 @@ def delete_confluence(confluence_id: str):
 
 def toggle_confluence_enabled(confluence_id: str) -> ConfluenceConfig | None:
     """Toggle enabled status of a confluence."""
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         con = session.query(ConfluenceConfig).filter_by(confluence_id=confluence_id).first()
         if con:
             con.enabled = not con.enabled

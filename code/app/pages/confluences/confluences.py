@@ -14,7 +14,7 @@ from components.frame.body import PageBody
 from pages.base_page import BasePage
 from quant_core.confluences.confluences import CONFLUENCE_LIST
 from quant_core.enums.time_period import TimePeriod
-from services.db.confluence import get_all_confluences, get_confluence_by_id, upsert_confluence, delete_confluence
+from services.db.main.confluence import get_all_confluences, get_confluence_by_id, upsert_confluence, delete_confluence
 
 dash.register_page(__name__, path="/confluences", name="Confluences")
 

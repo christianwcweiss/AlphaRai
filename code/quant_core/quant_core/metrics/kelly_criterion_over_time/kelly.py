@@ -7,11 +7,11 @@ class KellyCriterionPerAccountOverTime(TradeMetricOverTime):  # pylint: disable=
     """Calculate Kelly Criterion per account."""
 
     def calculate(
-            self,
-            data_frame: pd.DataFrame,
-            group_by_account_id: bool = True,
-            group_by_symbol: bool = False,
-            rolling_window: int = 30,
+        self,
+        data_frame: pd.DataFrame,
+        group_by_account_id: bool = True,
+        group_by_symbol: bool = False,
+        rolling_window: int = 30,
     ) -> pd.DataFrame:
         """Calculate Kelly Criterion per account."""
         raise NotImplementedError("Kelly Criterion calculation is not implemented yet.")

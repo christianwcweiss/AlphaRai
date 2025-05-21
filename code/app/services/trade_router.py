@@ -1,7 +1,7 @@
 from random import randint
 
 from entities.trade_details import TradeDetails
-from models.account_config import AccountConfig
+from models.main.account_config import AccountConfig
 from quant_core.enums.order_type import OrderType
 from quant_core.enums.platform import Platform
 from quant_core.enums.stagger_method import StaggerMethod
@@ -9,8 +9,8 @@ from quant_core.enums.trade_direction import TradeDirection
 from quant_core.services.core_logger import CoreLogger
 from quant_core.trader.platforms.metatrader import Mt5Trader
 from quant_core.utils.trade_utils import get_stagger_levels, calculate_position_size
-from services.db.account import get_all_accounts
-from services.db.account_config import get_configs_by_account_id
+from services.db.main.account import get_all_accounts
+from services.db.main.account_config import get_configs_by_account_id
 
 
 class TradeRouter:  # pylint: disable=too-few-public-methods

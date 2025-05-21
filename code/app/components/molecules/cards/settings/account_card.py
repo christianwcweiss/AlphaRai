@@ -8,7 +8,7 @@ import plotly.graph_objs as go
 from components.atoms.card.card import AlphaCard, AlphaCardHeader, AlphaCardBody
 from components.charts.chart import ChartLayoutStyle, ChartMargin
 from components.charts.line.line_chart import LineChart
-from models.account import Account
+from models.main.account import Account
 import pandas as pd
 
 

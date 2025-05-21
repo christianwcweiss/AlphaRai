@@ -10,8 +10,8 @@ from components.atoms.table.table import AlphaTable
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
 from pages.base_page import BasePage
-from services.db.account import get_account_by_uid
-from services.db.account_config import get_configs_by_account_id, sync_with_mt5
+from services.db.main.account import get_account_by_uid
+from services.db.main.account_config import get_configs_by_account_id, sync_with_mt5
 
 dash.register_page(__name__, path_template="/settings/accounts/<uid>", name="Account Settings Details")
 

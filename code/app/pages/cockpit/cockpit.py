@@ -8,9 +8,9 @@ from components.atoms.text.page import PageHeader
 from components.atoms.text.section import SectionHeader
 from components.frame.body import PageBody
 from constants import colors
-from models.account import Account
+from models.main.account import Account
 from pages.base_page import BasePage
-from services.db.account import get_all_accounts, toggle_account_enabled
+from services.db.main.account import get_all_accounts, toggle_account_enabled
 
 COCKPIT_PATH = "/"
 dash.register_page(__name__, path=COCKPIT_PATH, name="Cockpit")

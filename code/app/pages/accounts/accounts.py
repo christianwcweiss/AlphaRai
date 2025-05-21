@@ -18,13 +18,13 @@ from components.molecules.cards.settings.account_card import AccountSettingsCard
 from pages.base_page import BasePage
 from quant_core.enums.platform import Platform
 from quant_core.metrics.account_balance_over_time.balance_over_time import AccountBalanceOverTime
-from services.db.account import (
+from services.db.main.account import (
     get_all_accounts,
     upsert_account,
     delete_account,
 )
-from services.db.account_config import get_configs_by_account_id
-from services.db.trade_history import get_all_trades
+from services.db.main.account_config import get_configs_by_account_id
+from services.db.cache.trade_history import get_all_trades
 
 dash.register_page(__name__, path="/accounts", name="Accounts")
 

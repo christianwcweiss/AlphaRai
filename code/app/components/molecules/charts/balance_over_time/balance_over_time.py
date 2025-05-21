@@ -85,7 +85,7 @@ class BalanceOverTime(Molecule):  # pylint: disable=too-few-public-methods
                     figure=LineChart(
                         data_frame=self._data_frame,
                         line_layout_style=self._chart_layout_style,
-                    ).plot(x_col="closed_at", y_col="absolute_balance", group_by="account_id"),
+                    ).plot(x_col="closed_at", y_col="absolute_balance"),
                     config={"displayModeBar": True},
                 )
             ],
@@ -100,7 +100,7 @@ class BalanceOverTime(Molecule):  # pylint: disable=too-few-public-methods
                     figure=LineChart(
                         data_frame=self._data_frame,
                         line_layout_style=self._chart_layout_style,
-                    ).plot(x_col="closed_at", y_col="relative_balance", group_by="account_id"),
+                    ).plot(x_col="closed_at", y_col="relative_balance"),
                     config={"displayModeBar": True},
                 )
             ],

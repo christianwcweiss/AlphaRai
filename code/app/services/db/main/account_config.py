@@ -1,26 +1,33 @@
 from typing import List, Dict, Any, Optional
 
-from db.database import SessionLocal
-from models.account_config import AccountConfig
+from db.database import MainSessionLocal
+from models.main.account_config import AccountConfig
 from quant_core.clients.mt5.mt5_client import Mt5Client
 from quant_core.enums.stagger_method import StaggerMethod
+from services.symbol_lookup import FTMO_SYMBOLS
+
+
+def get_all_configs() -> List[AccountConfig]:
+    """Get all account configurations."""
+    with MainSessionLocal() as session:
+        return session.query(AccountConfig).all()
 
 
 def get_configs_by_account_id(account_id: str) -> List[AccountConfig]:
     """Get all configurations for a given account ID."""
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         return session.query(AccountConfig).filter_by(account_id=account_id).all()
 
 
 def get_config_by_account_and_symbol(account_id: str, signal_asset_id: str) -> Optional[AccountConfig]:
     """Get a configuration for a given account ID and signal asset ID."""
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         return session.query(AccountConfig).filter_by(account_id=account_id, signal_asset_id=signal_asset_id).first()
 
 
 def upsert_config(account_id: str, config: Dict[str, Any]) -> None:
     """Insert or update a configuration for a given account ID."""
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         existing = (
             session.query(AccountConfig)
             .filter_by(account_id=account_id, signal_asset_id=config["signal_asset_id"])
@@ -39,7 +46,7 @@ def upsert_config(account_id: str, config: Dict[str, Any]) -> None:
 
 def upsert_multiple_configs(account_id: str, configs: List[Dict[str, Any]]):
     """Insert or update multiple configurations for a given account ID."""
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         for config in configs:
             if not config.get("signal_asset_id") or not config.get("platform_asset_id"):
                 continue
@@ -62,14 +69,14 @@ def upsert_multiple_configs(account_id: str, configs: List[Dict[str, Any]]):
 
 def delete_config(account_id: str, signal_asset_id: str) -> None:
     """Delete a configuration for a given account ID and signal asset ID."""
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         session.query(AccountConfig).filter_by(account_id=account_id, signal_asset_id=signal_asset_id).delete()
         session.commit()
 
 
 def delete_all_configs(account_id: str) -> None:
     """Delete all configurations for a given account ID."""
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         session.query(AccountConfig).filter_by(account_id=account_id).delete()
         session.commit()
 
@@ -91,6 +98,6 @@ def sync_with_mt5(account_id: str, secret_id: str) -> None:
                 "decimal_points": symbol.digits,
                 "lot_size": symbol.trade_contract_size,
                 "enabled": False,
-                "asset_type": None,
+                "asset_type": FTMO_SYMBOLS.get(symbol.name, None),
             },
         )

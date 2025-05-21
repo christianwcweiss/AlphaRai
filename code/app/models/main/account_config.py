@@ -8,7 +8,7 @@ Base = declarative_base()
 class AccountConfig(Base):  # type: ignore  # pylint: disable=too-few-public-methods
     """Account configuration for trading assets."""
 
-    __tablename__ = "account_config"
+    __tablename__ = "main_account_config"
 
     id = Column(Integer, primary_key=True, index=True)
     account_id = Column(String, index=True)  # Renamed from uid
