@@ -1,6 +1,7 @@
 from typing import List, Optional
 from dash import html, dcc
 from components.atoms.atom import Atom
+from components.atoms.card.card import AlphaCard
 from constants import colors
 
 
@@ -55,11 +56,19 @@ class AlphaTabToolbar(Atom):  # pylint: disable=too-few-public-methods
             )
 
         return html.Div(
-            buttons,
-            style={
-                "display": "flex",
-                "gap": "0.5rem",
-                "marginBottom": "1rem",
-                "flexWrap": "wrap",
-            },
+            AlphaCard(
+                children=[
+                    html.Div(
+                        buttons,
+                        style={
+                            "display": "flex",
+                            "flexWrap": "wrap",
+                        },
+                    )
+                ],
+                show_divider=False,
+                style={
+                    "backgroundColor": "FFFFFF",
+                },
+            ).render()
         )

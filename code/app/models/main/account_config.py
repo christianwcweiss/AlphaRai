@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, Float, Integer, Enum, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from quant_core.enums.asset_type import AssetType
+from quant_core.enums.trade_mode import TradeMode
 
 Base = declarative_base()
 
@@ -15,7 +16,8 @@ class AccountConfig(Base):  # type: ignore  # pylint: disable=too-few-public-met
     signal_asset_id = Column(String, nullable=False)
     entry_stagger_method = Column(String, default="linear")
     n_staggers = Column(Integer, default=1)
-    risk_percent = Column(Float, nullable=False, default=0.5)
+    risk_percent = Column(Float, nullable=False, default=1)
+    mode = Column(Enum(TradeMode), nullable=False, default=TradeMode.DEFAULT.value)
     enabled = Column(Boolean, default=False)
 
     # symbols

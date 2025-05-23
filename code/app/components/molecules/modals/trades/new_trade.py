@@ -159,12 +159,11 @@ def _render_risk_preview(trade_details: TradeDetails, active_levels: int = None)
 
             sizes = [
                 calculate_position_size(
-                    entry,
-                    trade_details.stop_loss,
-                    config.lot_size,
-                    risk_per_trade,
-                    balance,
-                    digits=config.decimal_points,
+                    entry_price=entry,
+                    stop_loss_price=trade_details.stop_loss,
+                    percentage_risk=risk_per_trade,
+                    balance=balance,
+                    account_config=config,
                 )
                 for entry in entries
             ]
@@ -339,7 +338,7 @@ def execute_trade(_, trade_data: Dict[str, Any]) -> dbc.Alert:
     try:
         CoreLogger().info(f"Routing Trade: {trade_data}")
         trade = TradeDetails(**trade_data)
-        TradeRouter(trade).route_trade()
+        TradeRouter(trade).route()
 
         return dbc.Alert("✅ Trade successfully routed!", color=colors.SUCCESS_COLOR, dismissable=True)
     except Exception as error:  # pylint: disable=broad-exception-caught

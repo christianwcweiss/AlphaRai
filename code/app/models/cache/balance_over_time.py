@@ -12,24 +12,21 @@ class BalanceOverTimeCache(Base):  # type: ignore
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
-    # Optional group-by columns (nullable)
     account_id = Column(String, nullable=True)
     symbol = Column(String, nullable=True)
+    direction = Column(String, nullable=True)
     asset_type = Column(String, nullable=True)
     hour = Column(Integer, nullable=True)
     weekday = Column(Integer, nullable=True)
 
-    # Timestamp of data point
     closed_at = Column(DateTime, nullable=False)
 
-    # Key balance metrics
     initial_balance = Column(Float, nullable=False)
     absolute_balance = Column(Float, nullable=False)
     initial_balance_pct = Column(Float, nullable=False)
     relative_balance = Column(Float, nullable=False)
 
-    # Optional: timestamp of cache creation
-    cached_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
+    cached_at = Column(DateTime, default=datetime.datetime.now(datetime.UTC), nullable=False)
 
     __table_args__ = (
         Index("ix_balance_cache_group", "account_id", "symbol", "asset_type", "hour", "weekday"),
@@ -39,7 +36,7 @@ class BalanceOverTimeCache(Base):  # type: ignore
     def __repr__(self) -> str:
         parts = [
             f"{f}={getattr(self, f)}"
-            for f in ["account_id", "symbol", "asset_type", "hour", "weekday"]
+            for f in ["account_id", "symbol", "asset_type", "direction", "hour", "weekday"]
             if getattr(self, f) is not None
         ]
         return f"<BalanceOverTimeCache({', '.join(parts)}, closed_at={self.closed_at})>"

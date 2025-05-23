@@ -1,5 +1,5 @@
 import abc
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from dash.development.base_component import Component
 
@@ -10,5 +10,5 @@ class Molecule(abc.ABC):  # pylint: disable=too-few-public-methods
     STYLE: Dict[str, Any]
 
     @abc.abstractmethod
-    def render(self) -> Component:
+    def render(self, *args, **kwargs) -> Component:
         """Render and return the Dash layout component."""

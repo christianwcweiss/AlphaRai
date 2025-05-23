@@ -25,7 +25,7 @@ class ExpectancyOverTime(TradeMetricOverTime):
 
         window_results = []
 
-        groups = self._get_groups(group_by_account_id=group_by_account_id, group_by_symbol=group_by_symbol)
+        groups = self.groups(group_by_account_id=group_by_account_id, group_by_symbol=group_by_symbol)
 
         for current_day, window_df in self.get_rolling_windows(
             data_frame, skip_head=True, rolling_window=rolling_window

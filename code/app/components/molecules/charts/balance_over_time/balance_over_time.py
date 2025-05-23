@@ -1,9 +1,8 @@
-from typing import Tuple, Dict
+from typing import List
 
 import pandas as pd
-from dash import html, dcc, callback, Input, Output, ctx
+from dash import html, dcc
 
-from components.atoms.buttons.general.button_group import AlphaButtonGroup
 from components.atoms.card.card import AlphaCard, AlphaCardHeader, AlphaCardBody
 from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.charts.chart import ChartLayoutStyle, ChartMargin
@@ -11,30 +10,14 @@ from components.charts.line.line_chart import LineChart
 from components.molecules.molecule import Molecule
 from quant_core.enums.chart_mode import ChartMode
 
-# IDs
 BALANCE_OVER_TIME_MODE_STORE_ID = "balance-over-time_mode-store"
 BALANCE_OVER_TIME_ABS_BTN_ID = "balance-over-time_absolute-btn"
 BALANCE_OVER_TIME_REL_BTN_ID = "balance-over-time_relative-btn"
 BALANCE_OVER_TIME_ABS_DIV_ID = "balance-over-time-abs-div"
 BALANCE_OVER_TIME_REL_DIV_ID = "balance-over-time-rel-div"
 
-# Chart wrapper transition styles
-VISIBLE_STYLE = {
-    "opacity": 1,
-    "height": "auto",
-    "pointerEvents": "auto",
-    "transition": "opacity 0.3s ease-in-out",
-}
-HIDDEN_STYLE = {
-    "opacity": 0,
-    "height": 0,
-    "overflow": "hidden",
-    "pointerEvents": "none",
-    "transition": "opacity 0.3s ease-in-out",
-}
 
-
-class BalanceOverTime(Molecule):  # pylint: disable=too-few-public-methods
+class BalanceOverTimeMolecule(Molecule):  # pylint: disable=too-few-public-methods
     """A molecule that renders the Balance Over Time chart."""
 
     def __init__(self, data_frame: pd.DataFrame):
@@ -56,14 +39,6 @@ class BalanceOverTime(Molecule):  # pylint: disable=too-few-public-methods
                 html.Div(
                     children=[
                         html.H5("BALANCE OVER TIME"),
-                        AlphaButtonGroup(
-                            group_id="balance-over-time-toggle",
-                            buttons=[
-                                {"label": "Absolute", "id": BALANCE_OVER_TIME_ABS_BTN_ID, "active": True},
-                                {"label": "Relative", "id": BALANCE_OVER_TIME_REL_BTN_ID},
-                            ],
-                            size="sm",
-                        ).render(),
                     ],
                     style={
                         "display": "flex",
@@ -77,7 +52,7 @@ class BalanceOverTime(Molecule):  # pylint: disable=too-few-public-methods
             ]
         ).render()
 
-    def _render_absolute_chart(self) -> html.Div:
+    def _render_absolute_chart(self, groups: List[str]) -> html.Div:
         return html.Div(
             id=BALANCE_OVER_TIME_ABS_DIV_ID,
             children=[
@@ -85,14 +60,13 @@ class BalanceOverTime(Molecule):  # pylint: disable=too-few-public-methods
                     figure=LineChart(
                         data_frame=self._data_frame,
                         line_layout_style=self._chart_layout_style,
-                    ).plot(x_col="closed_at", y_col="absolute_balance"),
+                    ).plot(x_col="closed_at", y_col="absolute_balance", group_by=groups),
                     config={"displayModeBar": True},
                 )
             ],
-            style=VISIBLE_STYLE,
         )
 
-    def _render_relative_chart(self) -> html.Div:
+    def _render_relative_chart(self, groups: List[str]) -> html.Div:
         return html.Div(
             id=BALANCE_OVER_TIME_REL_DIV_ID,
             children=[
@@ -100,14 +74,13 @@ class BalanceOverTime(Molecule):  # pylint: disable=too-few-public-methods
                     figure=LineChart(
                         data_frame=self._data_frame,
                         line_layout_style=self._chart_layout_style,
-                    ).plot(x_col="closed_at", y_col="relative_balance"),
+                    ).plot(x_col="closed_at", y_col="relative_balance", group_by=groups),
                     config={"displayModeBar": True},
                 )
             ],
-            style=HIDDEN_STYLE,
         )
 
-    def _render_chart_body(self) -> html.Div:
+    def _render_chart_body(self, groups: List[str], chart_mode: ChartMode) -> html.Div:
         return AlphaCardBody(
             children=[
                 dcc.Store(id=BALANCE_OVER_TIME_MODE_STORE_ID, data=ChartMode.ABSOLUTE.value),
@@ -115,8 +88,11 @@ class BalanceOverTime(Molecule):  # pylint: disable=too-few-public-methods
                     children=[
                         AlphaCol(
                             children=[
-                                self._render_absolute_chart(),
-                                self._render_relative_chart(),
+                                (
+                                    self._render_absolute_chart(groups=groups)
+                                    if chart_mode is ChartMode.ABSOLUTE
+                                    else self._render_relative_chart(groups=groups)
+                                ),
                             ]
                         )
                     ]
@@ -124,52 +100,10 @@ class BalanceOverTime(Molecule):  # pylint: disable=too-few-public-methods
             ]
         ).render()
 
-    def render(self) -> html.Div:
+    def render(self, groups: List[str], chart_mode: ChartMode) -> html.Div:
         """Render the molecule."""
         return AlphaCard(
             header=self._render_card_header(),
-            body=self._render_chart_body(),
+            body=self._render_chart_body(groups=groups, chart_mode=chart_mode),
             style={"backgroundColor": "#FFFFFF"},
         ).render()
-
-
-@callback(
-    Output(BALANCE_OVER_TIME_ABS_DIV_ID, "style"),
-    Output(BALANCE_OVER_TIME_REL_DIV_ID, "style"),
-    Output(BALANCE_OVER_TIME_ABS_BTN_ID, "active"),
-    Output(BALANCE_OVER_TIME_ABS_BTN_ID, "style"),
-    Output(BALANCE_OVER_TIME_REL_BTN_ID, "active"),
-    Output(BALANCE_OVER_TIME_REL_BTN_ID, "style"),
-    Input(BALANCE_OVER_TIME_ABS_BTN_ID, "n_clicks"),
-    Input(BALANCE_OVER_TIME_REL_BTN_ID, "n_clicks"),
-    prevent_initial_call=True,
-)
-def toggle_mode(_, __) -> Tuple[
-    Dict[str, str],
-    Dict[str, str],
-    bool,
-    Dict[str, str],
-    bool,
-    Dict[str, str],
-]:
-    """Toggle between absolute and relative balance charts."""
-    triggered = ctx.triggered_id
-
-    if triggered == BALANCE_OVER_TIME_REL_BTN_ID:
-        return (  # type: ignore[return-value]
-            HIDDEN_STYLE,
-            VISIBLE_STYLE,
-            False,
-            AlphaButtonGroup.DEFAULT_BUTTON_STYLE,
-            True,
-            AlphaButtonGroup.ACTIVE_BUTTON_STYLE,
-        )
-
-    return (  # type: ignore[return-value]
-        VISIBLE_STYLE,
-        HIDDEN_STYLE,
-        True,
-        AlphaButtonGroup.ACTIVE_BUTTON_STYLE,
-        False,
-        AlphaButtonGroup.DEFAULT_BUTTON_STYLE,
-    )

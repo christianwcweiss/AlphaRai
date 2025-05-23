@@ -1,52 +1,167 @@
+from typing import Tuple, List, Dict, Any
+
 import dash_bootstrap_components as dbc
-from dash import html, dcc
+import pandas as pd
+from dash import html, dcc, ctx
 from dash.development.base_component import Component
 
+from components.atoms.card.card import AlphaCard
+from components.atoms.layout.layout import AlphaCol, AlphaRow
+from components.atoms.text.subsubsection import SubSubsectionHeader
 from components.molecules.molecule import Molecule
+from services.db.cache.trade_history import get_all_trades_df
 
-FILTERS = [
-    ("Account ID", "filter-by-account_id"),
-    ("Symbol", "filter-by-symbol"),
-    ("Asset Type", "filter-by-asset-type"),
-]
-GROUPS = [
-    ("Account ID", "group-by-account_id"),
-    ("Symbol", "group-by-symbol"),
-    ("Asset Type", "group-by-asset-type"),
-    ("Hour of Day", "group-by-hour"),
-    ("Day of Week", "group-by-weekday"),
-]
+
+def analytics_bar_get_active_states(
+    group_by_account_id_clicks: int,
+    group_by_symbol_clicks: int,
+    group_by_asset_type_clicks: int,
+    group_by_direction_clicks: int,
+    group_by_hour_clicks: int,
+    group_by_weekday_clicks: int,
+    abs_active: bool,
+    rel_active: bool,
+    trigger_id: str,
+) -> List[bool]:
+    group_by_account_id = group_by_account_id_clicks % 2 == 0
+    group_by_symbol = group_by_symbol_clicks % 2 == 1
+    group_by_asset_type = group_by_asset_type_clicks % 2 == 1
+    group_by_direction = group_by_direction_clicks % 2 == 1
+    group_by_hour = group_by_hour_clicks % 2 == 1
+    group_by_weekday = group_by_weekday_clicks % 2 == 1
+
+    if trigger_id in ("show-abs-values", "show-rel-values"):
+        show_abs = trigger_id == "show-abs-values"
+        show_rel = trigger_id == "show-rel-values"
+    elif not abs_active and not rel_active:
+        show_abs = True
+        show_rel = False
+    else:
+        show_abs = abs_active
+        show_rel = rel_active
+
+    return [
+        group_by_account_id,
+        group_by_symbol,
+        group_by_asset_type,
+        group_by_direction,
+        group_by_hour,
+        group_by_weekday,
+        show_abs,
+        show_rel,
+    ]
+
+
+def analytics_bar_filter_trades(
+    trades_df: pd.DataFrame,
+    account_ids: List[str],
+    symbols: List[str],
+    asset_types: List[str],
+) -> pd.DataFrame:
+    """Filter trades based on the selected account IDs, symbols, and asset types."""
+    if account_ids:
+        trades_df = trades_df[trades_df["account_id"].isin(account_ids)]
+    if symbols:
+        trades_df = trades_df[trades_df["symbol"].isin(symbols)]
+    if asset_types:
+        trades_df = trades_df[trades_df["asset_type"].isin(asset_types)]
+
+    return trades_df
 
 
 class AnalyticsToolbarMolecule(Molecule):
+    FILTERS = [
+        ("Account ID", "filter-by-account-id"),
+        ("Symbol", "filter-by-symbol"),
+        ("Asset Type", "filter-by-asset-type"),
+    ]
+    GROUPS = [
+        ("Account ID", "group-by-account-id"),
+        ("Symbol", "group-by-symbol"),
+        ("Asset Type", "group-by-asset-type"),
+        ("Direction", "group-by-direction"),
+        ("Hour of Day", "group-by-hour"),
+        ("Day of Week", "group-by-weekday"),
+    ]
+    VIEW_MODES = [
+        ("Absolute", "show-abs-values"),
+        ("Relative", "show-rel-values"),
+    ]
+
     STYLE = {"marginBottom": "20px"}
 
-    def render(self) -> Component:
+    def _load_filter_options(self) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], List[Dict[str, Any]]]:
+        """Load filter options for the dropdowns."""
+        trades_df = get_all_trades_df()
+        if trades_df.empty:
+            return [], [], []
+
+        account_ids = [account_id for account_id in trades_df["account_id"].unique() if isinstance(account_id, str)]
+        symbols = [symbol for symbol in trades_df["symbol"].unique() if isinstance(symbol, str)]
+        asset_types = [asset_type for asset_type in trades_df["asset_type"].unique() if isinstance(asset_type, str)]
+
+        return (
+            [{"label": val, "value": val} for val in sorted(account_ids)],
+            [{"label": val, "value": val} for val in sorted(symbols)],
+            [{"label": val, "value": val} for val in sorted(asset_types)],
+        )
+
+    def _render_filter_dropdowns(self) -> html.Div:
+        """Render the filter dropdowns."""
+        account_options, symbol_options, asset_type_options = self._load_filter_options()
+        dropdown_options = {
+            "filter-by-account_id": account_options,
+            "filter-by-symbol": symbol_options,
+            "filter-by-asset-type": asset_type_options,
+        }
+
         return html.Div(
             [
-                html.Div(
-                    [
-                        html.Div(
-                            [
-                                html.Label(label, htmlFor=dropdown_id, style={"marginRight": "8px"}),
+                AlphaRow(
+                    children=[
+                        SubSubsectionHeader(
+                            "FILTERS",
+                            style={"marginTop": "0px", "paddingTop": "0px"},
+                        ).render()
+                    ]
+                ),
+                AlphaRow(
+                    children=[
+                        AlphaCol(
+                            children=[
+                                html.Label(label, htmlFor=dropdown_id),
                                 dcc.Dropdown(
                                     id=dropdown_id,
-                                    options=[],  # To be filled via callback
+                                    options=dropdown_options.get(dropdown_id, []),
                                     multi=True,
                                     placeholder=f"Select {label}",
-                                    style={"minWidth": "200px", "marginRight": "16px"},
                                 ),
                             ],
-                            style={"display": "inline-block", "verticalAlign": "top"},
+                            sm=12,
+                            md=6,
+                            lg=4,
+                            xl=4,
                         )
-                        for label, dropdown_id in FILTERS
+                        for label, dropdown_id in self.FILTERS
                     ],
-                    style={"display": "flex", "flexWrap": "wrap", "alignItems": "center", "gap": "16px"},
+                    style={"alignItems": "center"},
                 ),
-                html.Br(),
-                html.Div(
-                    [
-                        html.Span("Group by: ", style={"marginRight": "10px", "fontWeight": "bold"}),
+            ]
+        )
+
+    def _render_group_by_buttons(self) -> html.Div:
+        return html.Div(
+            [
+                AlphaRow(
+                    children=[
+                        SubSubsectionHeader(
+                            "GROUP BY",
+                            style={"marginTop": "0px", "paddingTop": "0px"},
+                        ).render()
+                    ],
+                ),
+                AlphaRow(
+                    children=[
                         dbc.ButtonGroup(
                             [
                                 dbc.Button(
@@ -57,13 +172,69 @@ class AnalyticsToolbarMolecule(Molecule):
                                     active=False,
                                     n_clicks=0,
                                 )
-                                for label, button_id in GROUPS
+                                for label, button_id in self.GROUPS
                             ],
                             size="sm",
-                        ),
-                    ],
-                    style={"marginTop": "10px"},
+                        )
+                    ]
                 ),
             ],
+        )
+
+    def _render_view_mode_buttons(self) -> html.Div:
+        return html.Div(
+            [
+                AlphaRow(
+                    children=[
+                        SubSubsectionHeader(
+                            "VIEW MODE",
+                            style={"marginTop": "0px", "paddingTop": "0px"},
+                        ).render()
+                    ],
+                ),
+                AlphaRow(
+                    children=[
+                        dbc.ButtonGroup(
+                            [
+                                dbc.Button(
+                                    label,
+                                    id=button_id,
+                                    color="secondary",
+                                    outline=True,
+                                    active=False,
+                                    n_clicks=0,
+                                )
+                                for label, button_id in self.VIEW_MODES
+                            ],
+                            size="sm",
+                        )
+                    ]
+                ),
+            ],
+        )
+
+    def render(self) -> Component:
+        divider = html.Hr(
+            style={
+                "width": "100%",
+                "border": "none",
+                "height": "2px",
+                "backgroundColor": "#E0E0E0",
+                "margin": "0.5rem 0",
+            }
+        )
+
+        return html.Div(
+            AlphaCard(
+                children=[
+                    self._render_filter_dropdowns(),
+                    divider,
+                    self._render_group_by_buttons(),
+                    divider,
+                    self._render_view_mode_buttons(),
+                ],
+                show_divider=False,
+                style={"backgroundColor": "#ffffff"},
+            ).render(),
             style=self.STYLE,
         )

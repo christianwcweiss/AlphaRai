@@ -29,7 +29,7 @@ class TestAccountBalanceOverTimeAbsolute:
         group_by_weekday: bool,
     ) -> None:
         data_frame = Builder.get_trade_history()
-        groups = TradeMetricOverTime._get_groups(
+        groups = TradeMetricOverTime.groups(
             group_by_account_id=group_by_account_id,
             group_by_symbol=group_by_symbol,
             group_by_asset_type=group_by_asset_type,
@@ -291,7 +291,7 @@ class TestAccountBalanceOverTimeAbsolute:
         expected_relative_result: Dict[Union[str, int], float],
     ) -> None:
         data_frame = Builder.get_trade_history()
-        groups = TradeMetricOverTime._get_groups(
+        groups = TradeMetricOverTime.groups(
             group_by_account_id=group_by_account_id,
             group_by_symbol=group_by_symbol,
             group_by_asset_type=group_by_asset_type,
@@ -1240,7 +1240,7 @@ class TestAccountBalanceOverTimeAbsolute:
         expected_relative_result: Dict[Union[str, int], float],
     ) -> None:
         data_frame = Builder.get_trade_history()
-        groups = TradeMetricOverTime._get_groups(
+        groups = TradeMetricOverTime.groups(
             group_by_account_id=group_by_account_id,
             group_by_symbol=group_by_symbol,
             group_by_asset_type=group_by_asset_type,
@@ -3626,7 +3626,7 @@ class TestAccountBalanceOverTimeAbsolute:
         expected_relative_result: Dict[Union[str, int], float],
     ) -> None:
         data_frame = Builder.get_trade_history()
-        groups = TradeMetricOverTime._get_groups(
+        groups = TradeMetricOverTime.groups(
             group_by_account_id=group_by_account_id,
             group_by_symbol=group_by_symbol,
             group_by_asset_type=group_by_asset_type,
@@ -5664,7 +5664,7 @@ class TestAccountBalanceOverTimeAbsolute:
         expected_relative_result: Dict[Union[str, int], float],
     ) -> None:
         data_frame = Builder.get_trade_history()
-        groups = TradeMetricOverTime._get_groups(
+        groups = TradeMetricOverTime.groups(
             group_by_account_id=group_by_account_id,
             group_by_symbol=group_by_symbol,
             group_by_asset_type=group_by_asset_type,
@@ -7257,7 +7257,7 @@ class TestAccountBalanceOverTimeAbsolute:
         expected_relative_result: Dict[Union[str, int], float],
     ) -> None:
         data_frame = Builder.get_trade_history()
-        groups = TradeMetricOverTime._get_groups(
+        groups = TradeMetricOverTime.groups(
             group_by_account_id=group_by_account_id,
             group_by_symbol=group_by_symbol,
             group_by_asset_type=group_by_asset_type,
@@ -7641,7 +7641,7 @@ class TestAccountBalanceOverTimeAbsolute:
         expected_relative_result: Dict[Union[str, int], float],
     ) -> None:
         data_frame = Builder.get_trade_history()
-        groups = TradeMetricOverTime._get_groups(
+        groups = TradeMetricOverTime.groups(
             group_by_account_id=group_by_account_id,
             group_by_symbol=group_by_symbol,
             group_by_asset_type=group_by_asset_type,

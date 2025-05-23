@@ -14,7 +14,7 @@ class FeesOverTime(TradeMetricOverTime):
         group_by_account_id: bool = False,
         group_by_symbol: bool = False,
     ) -> pd.DataFrame:
-        groups = self._get_groups(group_by_account_id=group_by_account_id, group_by_symbol=group_by_symbol)
+        groups = self.groups(group_by_account_id=group_by_account_id, group_by_symbol=group_by_symbol)
 
         if groups:
             data_frame["total_commission"] = data_frame.groupby(groups)["commission"].cumsum()
@@ -44,7 +44,7 @@ class FeesOverTime(TradeMetricOverTime):
             rolling_window=rolling_window if rolling_window else None,
         )
 
-        groups = self._get_groups(group_by_account_id=group_by_account_id, group_by_symbol=group_by_symbol)
+        groups = self.groups(group_by_account_id=group_by_account_id, group_by_symbol=group_by_symbol)
         result = []
 
         group_values = {group: data_frame[group].dropna().unique() for group in groups}

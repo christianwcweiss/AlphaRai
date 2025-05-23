@@ -2,8 +2,10 @@ from typing import List
 
 import pytest
 
+from models.main.account_config import AccountConfig
+from quant_core.enums.asset_type import AssetType
 from quant_core.enums.stagger_method import StaggerMethod
-from quant_core.utils.trade_utils import get_stagger_levels
+from quant_core.utils.trade_utils import get_stagger_levels, calculate_position_size
 
 
 class TestTradeUtils:
@@ -91,3 +93,84 @@ class TestTradeUtils:
 
         assert len(levels) == len(expected_levels)
         assert [round(level, 2) for level in levels] == [round(level, 2) for level in expected_levels]
+
+    @pytest.mark.parametrize(
+        "entry_price,stop_loss_price,percentage_risk,balance,account_config,expected_size",
+        [
+            # LONG
+            [
+                3224,
+                3182,
+                1.0,
+                30000.0,
+                AccountConfig(
+                    id=1,
+                    platform_asset_id="XAUUSD",
+                    asset_type=AssetType.COMMODITIES,
+                    lot_size=100,
+                    decimal_points=2,
+                ),
+                0.07,
+            ],
+            [
+                2390,
+                2490,
+                1,
+                1000.0,
+                AccountConfig(
+                    id=1,
+                    platform_asset_id="ETHUSD",
+                    asset_type=AssetType.CRYPTO,
+                    lot_size=1,
+                    decimal_points=2,
+                ),
+                0.1,
+            ],
+            [
+                1.133,
+                1.129,
+                0.5,
+                1000.0,
+                AccountConfig(
+                    id=1,
+                    platform_asset_id="EURUSD",
+                    asset_type=AssetType.FOREX,
+                    lot_size=100000,
+                    decimal_points=5,
+                ),
+                0.01,
+            ],
+            [
+                8331,
+                8278,
+                0.5,
+                80000,
+                AccountConfig(
+                    id=2,
+                    platform_asset_id="AUS200.cash",
+                    asset_type=AssetType.INDICES,
+                    lot_size=1.0,
+                    decimal_points=2,
+                ),
+                7.55,
+            ],
+        ],
+    )
+    def test_calculate_position_size(
+        self,
+        entry_price: float,
+        stop_loss_price: float,
+        percentage_risk: float,
+        balance: float,
+        account_config: AccountConfig,
+        expected_size: float,
+    ) -> None:
+        actual_size = calculate_position_size(
+            entry_price=entry_price,
+            stop_loss_price=stop_loss_price,
+            percentage_risk=percentage_risk,
+            balance=balance,
+            account_config=account_config,
+        )
+
+        assert actual_size == expected_size

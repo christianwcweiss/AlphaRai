@@ -47,8 +47,6 @@ def get_all_trades_df(enrich: bool = True) -> pd.DataFrame:
         accounts_config_df["symbol"] = accounts_config_df["platform_asset_id"]
         trades_df = trades_df.merge(accounts_config_df, on=["account_id", "symbol"], how="left")
 
-    breakpoint()
-
     return trades_df
 
 

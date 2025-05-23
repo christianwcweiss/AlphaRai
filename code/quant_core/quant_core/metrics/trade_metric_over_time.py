@@ -49,7 +49,7 @@ class TradeMetricOverTime(ABC):
         return data_frame
 
     @staticmethod
-    def _get_groups(
+    def groups(
         group_by_account_id: bool,
         group_by_symbol: bool,
         group_by_asset_type: bool,

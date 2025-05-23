@@ -6,8 +6,6 @@ APP_BAR_ITEMS = [
     {"name": "Cockpit", "path": "/"},
     {"name": "Analytics", "path": "/analytics/overview"},
     {"name": "Accounts", "path": "/accounts"},
-    {"name": "Bots", "path": "/bots"},
-    {"name": "Confluences", "path": "/confluences"},
     {"name": "Settings", "path": "/settings"},
 ]
 

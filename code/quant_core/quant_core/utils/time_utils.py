@@ -7,13 +7,6 @@ import pytz
 from croniter import croniter
 
 
-def get_tomorrow_formatted() -> str:
-    """Get tomorrow's date formatted as 'DD-MMM-YY' in uppercase."""
-    tomorrow = datetime.now(UTC) + timedelta(days=1)
-
-    return tomorrow.strftime("%d-%b-%y").upper()
-
-
 def is_valid_cron(cron_expr: str) -> bool:
     """
     Returns True if the cron expression is valid, False otherwise.
@@ -31,7 +24,6 @@ def describe_cron(cron: str, tz: str = "UTC") -> str:
         now = datetime.now(pytz.timezone(tz))
         itr = croniter(cron, now)
 
-        # Explicitly cast to Union to satisfy mypy
         next_time_raw: Union[float, datetime] = itr.get_next()  # no type arg, just get raw
         if isinstance(next_time_raw, float):
             next_time = datetime.fromtimestamp(next_time_raw, tz=pytz.timezone(tz))
