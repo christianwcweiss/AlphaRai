@@ -1,1 +1,3 @@
-TAB_LABELS = ["overview", "performance", "behavior"]
+TAB_LABELS = ["overview"]  # , "performance", "behavior"]
+
+ANALYSIS_TOOLBAR = {}

@@ -6,13 +6,13 @@ APP_BAR_ITEMS = [
     {"name": "Cockpit", "path": "/"},
     {"name": "Analytics", "path": "/analytics/overview"},
     {"name": "Accounts", "path": "/accounts"},
-    {"name": "Bots", "path": "/bots"},
-    {"name": "Confluences", "path": "/confluences"},
     {"name": "Settings", "path": "/settings"},
 ]
 
 
-class TopBar(dbc.NavbarSimple):
+class TopBar(dbc.NavbarSimple):  # pylint: disable=too-few-public-methods
+    """A top bar component for Dash applications."""
+
     def __init__(self):
         super().__init__(
             brand="AlphaRai",

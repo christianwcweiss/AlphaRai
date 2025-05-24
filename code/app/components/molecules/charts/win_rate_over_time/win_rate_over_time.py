@@ -1,5 +1,3 @@
-from functools import cache
-
 import pandas as pd
 from dash import html, dcc
 
@@ -10,7 +8,9 @@ from components.charts.line.line_chart import LineChart
 from components.molecules.molecule import Molecule
 
 
-class WinRateOverTimeMolecule(Molecule):
+class WinRateOverTimeMolecule(Molecule):  # pylint: disable=too-few-public-methods
+    """A molecule that renders the Win Rate Over Time chart."""
+
     def __init__(self, relative_df: pd.DataFrame):
         self._df = relative_df
         self._chart_layout_style = ChartLayoutStyle(
@@ -25,7 +25,7 @@ class WinRateOverTimeMolecule(Molecule):
             y_range=[0, 100],
         )
 
-    def _render_chart(self) ->dcc.Graph:
+    def _render_chart(self) -> dcc.Graph:
         return dcc.Graph(
             figure=LineChart(
                 data_frame=self._df,
@@ -34,8 +34,8 @@ class WinRateOverTimeMolecule(Molecule):
             config={"displayModeBar": False},
         )
 
-    @cache
     def render(self) -> html.Div:
+        """Renders the molecule."""
         return AlphaCard(
             header=AlphaCardHeader([html.H5("WIN RATE OVER TIME")]).render(),
             body=AlphaCardBody([AlphaRow([AlphaCol([self._render_chart()])])]).render(),

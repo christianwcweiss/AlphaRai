@@ -1,4 +1,4 @@
-from functools import cache
+from functools import lru_cache
 
 import pandas as pd
 from dash import html, dcc, callback, Input, Output, ctx
@@ -32,10 +32,11 @@ HIDDEN_STYLE = {
 }
 
 
-class ExpectancyOverTime(Molecule):
-    def __init__(self, absolute_df: pd.DataFrame, relative_df: pd.DataFrame):
-        self._absolute_df = absolute_df
-        self._relative_df = relative_df
+class ExpectancyOverTimeMolecule(Molecule):  # pylint: disable=too-few-public-methods
+    """Expectancy Over Time component."""
+
+    def __init__(self, data_frame: pd.DataFrame) -> None:
+        self._data_frame = data_frame
         self._chart_layout_style = ChartLayoutStyle(
             title="",
             x_axis_title="",
@@ -47,7 +48,7 @@ class ExpectancyOverTime(Molecule):
             margin=ChartMargin(10, 10, 10, 10),
         )
 
-    def _render_card_header(self):
+    def _render_card_header(self) -> html.Div:
         return AlphaCardHeader(
             [
                 html.Div(
@@ -74,13 +75,13 @@ class ExpectancyOverTime(Molecule):
             ]
         ).render()
 
-    def _render_absolute_chart(self):
+    def _render_absolute_chart(self) -> html.Div:
         return html.Div(
             id=EXPECTANCY_ABS_DIV_ID,
             children=[
                 dcc.Graph(
                     figure=LineChart(
-                        data_frame=self._absolute_df,
+                        data_frame=self._data_frame,
                         line_layout_style=self._chart_layout_style,
                     ).plot(x_col="time", y_col="expectancy", group_by="account_id"),
                     config={"displayModeBar": False},
@@ -89,13 +90,13 @@ class ExpectancyOverTime(Molecule):
             style=VISIBLE_STYLE,
         )
 
-    def _render_relative_chart(self):
+    def _render_relative_chart(self) -> html.Div:
         return html.Div(
             id=EXPECTANCY_REL_DIV_ID,
             children=[
                 dcc.Graph(
                     figure=LineChart(
-                        data_frame=self._relative_df,
+                        data_frame=self._data_frame,
                         line_layout_style=self._chart_layout_style,
                     ).plot(x_col="time", y_col="expectancy_pct", group_by="account_id"),
                     config={"displayModeBar": False},
@@ -104,7 +105,7 @@ class ExpectancyOverTime(Molecule):
             style=HIDDEN_STYLE,
         )
 
-    def _render_chart_body(self):
+    def _render_chart_body(self) -> html.Div:
         return AlphaCardBody(
             [
                 dcc.Store(id=EXPECTANCY_MODE_STORE_ID, data="absolute"),
@@ -112,8 +113,9 @@ class ExpectancyOverTime(Molecule):
             ]
         ).render()
 
-    @cache
+    @lru_cache(maxsize=2)
     def render(self) -> html.Div:
+        """Render the ExpectancyOverTime component."""
         return AlphaCard(
             header=self._render_card_header(),
             body=self._render_chart_body(),
@@ -133,8 +135,8 @@ class ExpectancyOverTime(Molecule):
     prevent_initial_call=True,
 )
 def toggle_expectancy_mode(_, __):
+    """Toggle between absolute and relative expectancy charts."""
     triggered = ctx.triggered_id
-    from components.atoms.buttons.general.button_group import AlphaButtonGroup
 
     if triggered == EXPECTANCY_REL_BTN_ID:
         return (
@@ -145,12 +147,12 @@ def toggle_expectancy_mode(_, __):
             True,
             AlphaButtonGroup.ACTIVE_BUTTON_STYLE,
         )
-    else:
-        return (
-            VISIBLE_STYLE,
-            HIDDEN_STYLE,
-            True,
-            AlphaButtonGroup.ACTIVE_BUTTON_STYLE,
-            False,
-            AlphaButtonGroup.DEFAULT_BUTTON_STYLE,
-        )
+
+    return (
+        VISIBLE_STYLE,
+        HIDDEN_STYLE,
+        True,
+        AlphaButtonGroup.ACTIVE_BUTTON_STYLE,
+        False,
+        AlphaButtonGroup.DEFAULT_BUTTON_STYLE,
+    )

@@ -50,13 +50,14 @@ app.layout = dbc.Container(
 
 
 @callback(Output("log-preview", "children"), Input("log-refresh", "n_intervals"))
-def update_log_preview(_):
+def update_log_preview(_) -> str:
+    """Update the log preview with the latest log entry."""
     try:
         with open(CoreLogger().log_file_path, "r", encoding="utf-8") as f:
             lines = f.readlines()
         return " • ".join(line.strip() for line in lines[-1:])
-    except Exception as e:
-        return f"Log preview error: {e}"
+    except Exception as error:  # pylint: disable=broad-exception-caught
+        return f"Log preview error: {error}"
 
 
 @callback(
@@ -66,13 +67,14 @@ def update_log_preview(_):
     State("log-modal", "is_open"),
     prevent_initial_call=True,
 )
-def toggle_log_modal(_, is_open):
+def toggle_log_modal(_, is_open: bool) -> tuple[bool, str]:
+    """Toggle the log modal and display the full logs."""
     if not is_open:
         try:
             with open(CoreLogger().log_file_path, "r", encoding="utf-8") as f:
                 full_logs = f.read()
-        except Exception as e:
-            full_logs = f"Error loading logs: {e}"
+        except Exception as error:  # pylint: disable=broad-exception-caught
+            full_logs = f"Error loading logs: {error}"
         return True, full_logs
     return False, dash.no_update
 

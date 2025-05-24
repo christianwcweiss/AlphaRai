@@ -26,7 +26,6 @@ class Confluence(ABC):
         """
         Evaluate how strongly the confluence supports a trade in the given direction.
         """
-        pass
 
     def explain(self) -> str:
         """

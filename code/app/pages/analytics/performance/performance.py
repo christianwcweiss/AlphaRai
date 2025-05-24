@@ -7,34 +7,23 @@ from components.atoms.content import MainContent
 from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.atoms.tabbar.tabbar import AlphaTabToolbar
 from components.atoms.text.page import PageHeader
-from components.charts.bar.bar_chart import BarChart
 from components.charts.chart import ChartLayoutStyle, ChartMargin
 from components.charts.line.line_chart import LineChart
 from components.frame.body import PageBody
-from components.molecules.charts.expectancy_over_time.expectancy_over_time import ExpectancyOverTime
-from components.molecules.charts.profit_factor_over_time.profit_factor_over_time import ProfitFactorOverTimeMolecule
-from components.molecules.charts.risk_reward_over_time.risk_reward_over_time import RiskRewardOverTimeMolecule
-from components.molecules.charts.sharpe_over_time.sharpe_over_time import SharpeRatioOverTimeMolecule
-from components.molecules.charts.sortino_over_time.sortino_over_time import SortinoRatioOverTimeMolecule
-from db.database import SessionLocal
-from models.account import Account
+from components.molecules.charts.expectancy_over_time.expectancy_over_time import ExpectancyOverTimeMolecule
+from db.database import MainSessionLocal
+from models.main.account import Account
 from pages.analytics.analysis import TAB_LABELS
 from pages.base_page import BasePage
 from quant_core.enums.platform import Platform
-from quant_core.metrics.expectancy_over_time.absolute.expectancy import ExpectancyOverTimeAbsolute
-from quant_core.metrics.expectancy_over_time.relative.expectancy import ExpectancyOverTimeRelative
-from quant_core.metrics.kelly_criterion_over_time.kelly import KellyCriterionPerAccount
-from quant_core.metrics.profit_factor_over_time.profit_factor import ProfitFactorOverTime
-from quant_core.metrics.risk_reward_over_time.rr_ratio import RiskRewardRatioOverTime
-from quant_core.metrics.sharpe_over_time.sharpe import SharpeRatioOverTime
-from quant_core.metrics.sortino_over_time.sortino import SortinoRatioOverTime
-from services.db.trade_history import get_all_trades
+from quant_core.metrics.expectancy_over_time.expectancy_over_time import ExpectancyOverTime
+from services.db.cache.trade_history import get_all_trades
 
 dash.register_page(__name__, path="/analytics/performance", name="Performance")
 
 
 def _render_account_dropdown() -> dcc.Dropdown:
-    with SessionLocal() as session:
+    with MainSessionLocal() as session:
         accounts = session.query(Account).filter_by(platform=Platform.METATRADER.value, enabled=True).all()
 
     return dcc.Dropdown(
@@ -46,10 +35,10 @@ def _render_account_dropdown() -> dcc.Dropdown:
     )
 
 
-def _render_chart(
+def _render_chart(  # pylint: disable=too-many-arguments, too-many-positional-arguments
     metric, df: pd.DataFrame, y_col: str, title: str, y_axis_title: str, y_range=None, split_by_account=True
 ) -> AlphaCol:
-    result = metric.calculate_grouped(df) if split_by_account else metric.calculate_ungrouped(df)
+    result = metric.calculate(df)
     return AlphaCol(
         dcc.Graph(
             figure=LineChart(
@@ -72,32 +61,9 @@ def _render_chart(
     )
 
 
-def _render_kelly_chart(df: pd.DataFrame) -> AlphaCol:
-    metric = KellyCriterionPerAccount()
-    result = metric.calculate(df)
-    return AlphaCol(
-        dcc.Graph(
-            figure=BarChart(
-                data_frame=result,
-                bar_layout_style=ChartLayoutStyle(
-                    title="Kelly Criterion per Account",
-                    x_axis_title="Account",
-                    y_axis_title="Kelly (%)",
-                    margin=ChartMargin(30, 30, 30, 30),
-                    y_range=[0, 100],
-                    show_legend=False,
-                ),
-            ).plot(x_col="account_id", y_col="kelly_pct")
-        ),
-        xs=12,
-        sm=12,
-        md=12,
-        lg=12,
-        xl=12,
-    )
-
-
 class PerformancePage(BasePage):
+    """Performance Page."""
+
     def render(self):
         return PageBody(
             [
@@ -126,67 +92,68 @@ layout = PerformancePage("Performance").layout
     Input("account-dropdown", "value"),
 )
 def render_performance_tab(selected_account):
+    """Render the performance tab."""
     trades = get_all_trades()
     if not trades:
         return dbc.Alert("⚠️ No trade data found.", color="warning")
 
-    df = pd.DataFrame([t.__dict__ for t in trades])
-    df = df[[col for col in df.columns if not col.startswith("_sa_")]]
+    data_frame = pd.DataFrame([t.__dict__ for t in trades])
+    data_frame = data_frame[[col for col in data_frame.columns if not col.startswith("_sa_")]]
 
     if selected_account != "ALL":
-        df = df[df["account_id"] == selected_account]
+        data_frame = data_frame[data_frame["account_id"] == selected_account]
 
-    if df.empty:
+    if data_frame.empty:
         return dbc.Alert("⚠️ No trade data available for the selected account.", color="warning")
 
-    abs_df = ExpectancyOverTimeAbsolute().calculate_grouped(df)
-    rel_df = ExpectancyOverTimeRelative().calculate_grouped(df)
-    pf_df = ProfitFactorOverTime().calculate_grouped(df)
-    rr_df = RiskRewardRatioOverTime().calculate_grouped(df)
-    sharpe_df = SharpeRatioOverTime().calculate_grouped(df)
-    sortino_df = SortinoRatioOverTime().calculate_grouped(df)
+    expectancy_df = ExpectancyOverTime().calculate(data_frame)
+    # rel_df = ExpectancyOverTimeRelative().calculate(data_frame)
+    # pf_df = ProfitFactorOverTime().calculate(data_frame)
+    # rr_df = RiskRewardRatioOverTime().calculate(data_frame)
+    # sharpe_df = SharpeRatioOverTime().calculate(data_frame)
+    # sortino_df = SortinoRatioOverTime().calculate(data_frame)
 
     return AlphaRow(
         [
             AlphaCol(
-                ExpectancyOverTime(abs_df, rel_df).render(),
+                ExpectancyOverTimeMolecule(expectancy_df).render(),
                 xs=12,
                 sm=12,
                 md=12,
                 lg=6,
-                xl=4,
+                xl=6,
             ),
-            AlphaCol(
-                ProfitFactorOverTimeMolecule(pf_df).render(),
-                xs=12,
-                sm=12,
-                md=12,
-                lg=6,
-                xl=4,
-            ),
-            AlphaCol(
-                RiskRewardOverTimeMolecule(rr_df).render(),
-                xs=12,
-                sm=12,
-                md=12,
-                lg=6,
-                xl=4,
-            ),
-            AlphaCol(
-                SharpeRatioOverTimeMolecule(sharpe_df).render(),
-                xs=12,
-                sm=12,
-                md=12,
-                lg=6,
-                xl=4,
-            ),
-            AlphaCol(
-                SortinoRatioOverTimeMolecule(sortino_df).render(),
-                xs=12,
-                sm=12,
-                md=12,
-                lg=6,
-                xl=4,
-            ),
+            # AlphaCol(
+            #     ProfitFactorOverTimeMolecule(pf_df).render(),
+            #     xs=12,
+            #     sm=12,
+            #     md=12,
+            #     lg=6,
+            #     xl=4,
+            # ),
+            # AlphaCol(
+            #     RiskRewardOverTimeMolecule(rr_df).render(),
+            #     xs=12,
+            #     sm=12,
+            #     md=12,
+            #     lg=6,
+            #     xl=4,
+            # ),
+            # AlphaCol(
+            #     SharpeRatioOverTimeMolecule(sharpe_df).render(),
+            #     xs=12,
+            #     sm=12,
+            #     md=12,
+            #     lg=6,
+            #     xl=4,
+            # ),
+            # AlphaCol(
+            #     SortinoRatioOverTimeMolecule(sortino_df).render(),
+            #     xs=12,
+            #     sm=12,
+            #     md=12,
+            #     lg=6,
+            #     xl=4,
+            # ),
         ]
     )

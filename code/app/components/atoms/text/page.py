@@ -8,6 +8,8 @@ from exceptions.ui import ComponentPropertyError
 
 
 class PageHeader(Atom):
+    """A page header component for Dash applications, typically used to display the title and subtitle of a page."""
+
     DEFAULT_STYLE = {
         "paddingBottom": "1.5rem",
         "marginBottom": "1rem",

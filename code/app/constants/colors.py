@@ -28,6 +28,7 @@ CHART_PALETTE = [
 
 
 def get_text_color(background_color: str) -> str:
+    """Get the appropriate text color based on the background color."""
     hex_color = background_color.lstrip("#")
     red, green, blue = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
 

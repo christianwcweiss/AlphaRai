@@ -7,7 +7,9 @@ from components.charts.chart import Chart, ChartLayoutStyle
 from constants.colors import CHART_PALETTE
 
 
-class StackedAreaChart(Chart):
+class StackedAreaChart(Chart):  # pylint: disable=too-few-public-methods
+    """Stacked area chart component."""
+
     def __init__(
         self,
         data_frame: pd.DataFrame,
@@ -35,9 +37,9 @@ class StackedAreaChart(Chart):
                     y=group_data[y_col],
                     mode="lines",
                     name=str(group_name) if group_name else y_col,
-                    stackgroup="one",  # Enables stacking
-                    line=dict(width=0.5, color=color),
-                    groupnorm="",  # Use "" for raw values; can be "percent" if needed
+                    stackgroup="one",
+                    line={"width": 0.5, "color": color},
+                    groupnorm="",
                 )
             )
 
