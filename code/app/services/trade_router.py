@@ -1,5 +1,11 @@
+from typing import List
+
+from typing_extensions import Tuple
+
 from entities.trade_details import TradeDetails
-from models.account_config import AccountConfig
+from models.main.account import Account
+from models.main.account_config import AccountConfig
+from quant_core.clients.mt5.mt5_client import Mt5Client
 from quant_core.enums.order_type import OrderType
 from quant_core.enums.platform import Platform
 from quant_core.enums.stagger_method import StaggerMethod
@@ -7,18 +13,27 @@ from quant_core.enums.trade_direction import TradeDirection
 from quant_core.services.core_logger import CoreLogger
 from quant_core.trader.platforms.metatrader import Mt5Trader
 from quant_core.utils.trade_utils import get_stagger_levels, calculate_position_size
-from services.db.account import get_all_accounts
-from services.db.account_config import get_configs_by_account_id
+from services.db.main.account import get_all_accounts
+from services.db.main.account_config import get_config_by_account_and_symbol
+from services.magician import Magician
 
 
-class TradeRouter:
-    def __init__(self, trade: TradeDetails):
+class TradeRouter:  # pylint: disable=too-few-public-methods
+    """Routes trades to the appropriate accounts based on the provided trade signal."""
+
+    def __init__(self, trade: TradeDetails) -> None:
         self.trade = trade
 
-    def route_trade(self):
+    def _validate_trade(self) -> None:
+        """Validates the trade signal."""
         if not self.trade.symbol or not self.trade.direction:
             raise ValueError("Invalid trade signal. Missing symbol or direction.")
 
+        if self.trade.direction is TradeDirection.NEUTRAL:
+            raise ValueError(f"Invalid trade direction: {self.trade.direction}. Neutral trades are not allowed.")
+
+    def _get_enabled_accounts(self, trade: TradeDetails) -> List[Tuple[Account, AccountConfig]]:
+        """Gets enabled accounts based on trade signal."""
         accounts = get_all_accounts()
         matched_accounts = []
 
@@ -27,77 +42,93 @@ class TradeRouter:
                 CoreLogger().info(f"Account {account.uid} is disabled. Skipping...")
                 continue
 
-            configs = get_configs_by_account_id(account.uid)
-            config = next((c for c in configs if c.signal_asset_id.upper() == self.trade.symbol.upper()), None)
+            if config := get_config_by_account_and_symbol(account.uid, trade.symbol):
+                if config.enabled:
+                    CoreLogger().info(f"Found config for {account.uid}: {config}")
+                    matched_accounts.append((account, config))
+                else:
+                    CoreLogger().info(f"Config for {account.uid} is disabled. Skipping...")
 
-            if config and config.enabled:
-                CoreLogger().info(f"Successfully matched Account {account.uid} with enabled config")
-                matched_accounts.append((account, config))
-            else:
-                CoreLogger().info(f"Skipping config for {account.uid} (no match or not enabled)")
-                continue
+        return matched_accounts
 
-        if not matched_accounts:
-            CoreLogger().warning(f"No matching configuration found for {self.trade.symbol}")
-            return
-
-        for account, config in matched_accounts:
-            CoreLogger().info(f"Route Trade to {account.uid}")
-            self._place_trades(Platform(account.platform), account.secret_name, config)
-
-    def _place_trades(self, platform: Platform, secret_name: str, config: AccountConfig) -> None:
-        CoreLogger().info(f"Placing trade on platform={platform.value}, with config={config}")
-
-        entry_prices = get_stagger_levels(
+    def _get_trade_entry_prices_details(self, config: AccountConfig) -> List[float]:
+        """Get trade entry details."""
+        return get_stagger_levels(
             self.trade.entry,
             self.trade.stop_loss,
             k=config.n_staggers,
             stagger_method=StaggerMethod(config.entry_stagger_method),
         )
 
-        if platform is Platform.METATRADER:
-            CoreLogger().debug("Creating MT5 Trader...")
-            trader = Mt5Trader(secret_id=secret_name)
-            balance = trader.get_balance()
+    def _get_trade_entry_sizes_details(
+        self,
+        entry_prices: List[float],
+        account: Account,
+        config: AccountConfig,
+    ) -> List[float]:
+        """Get trade entry sizes."""
+        single_trade_risk = config.risk_percent / config.n_staggers
+        if account.platform is Platform.METATRADER:
+            balance = Mt5Client(secret_id=account.secret_name).get_balance()
+        else:
+            raise NotImplementedError("Only MT5 platform is supported for now.")
 
-            CoreLogger().debug("Successfully created MT5 Trader!")
+        sizes = []
 
-            for i, entry_price in enumerate(entry_prices):
-                # Divide total risk across all entries
-                individual_risk_percent = config.risk_percent / config.n_staggers
-
-                size = calculate_position_size(
+        for entry_price in entry_prices:
+            sizes.append(
+                calculate_position_size(
                     entry_price=entry_price,
                     stop_loss_price=self.trade.stop_loss,
-                    lot_size=config.lot_size,
-                    percentage_risk=individual_risk_percent,
+                    percentage_risk=single_trade_risk,
                     balance=balance,
+                    account_config=config,
+                )
+            )
+
+        return sizes
+
+    def _place_mt5_trade(  # pylint: disable=too-many-arguments, too-many-positional-arguments
+        self, entry_price: float, size: float, magic: int, trader: Mt5Trader, account_config: AccountConfig
+    ) -> None:
+        digits = account_config.decimal_points
+
+        trader.open_position(
+            symbol=account_config.platform_asset_id,
+            order_type=OrderType.LIMIT,
+            limit_level=round(entry_price, digits),
+            trade_direction=self.trade.direction,
+            size=size,
+            stop_loss=round(self.trade.stop_loss, digits),
+            take_profit=round(self.trade.take_profit_1, digits),
+            magic=magic,
+        )
+
+    def _place_trades(self, account: Account, account_config: AccountConfig) -> None:
+        CoreLogger().info(f"Placing trade in account {account.uid} for {self.trade.symbol}")
+
+        entry_prices = self._get_trade_entry_prices_details(account_config)
+        sizes = self._get_trade_entry_sizes_details(
+            entry_prices=entry_prices,
+            account=account,
+            config=account_config,
+        )
+        trader = Mt5Trader(secret_id=account.secret_name)
+        group_magic = Magician().cast(account_config=account_config)
+
+        for entry_price, size in zip(entry_prices, sizes):
+            CoreLogger().info(f"Entry price: {entry_price}, Size: {size}, Magic: {group_magic}")
+            if account.platform is Platform.METATRADER:
+                self._place_mt5_trade(
+                    entry_price=entry_price, size=size, magic=group_magic, trader=trader, account_config=account_config
                 )
 
-                price = round(entry_price, config.decimal_points)
-                stop_loss = round(self.trade.stop_loss, config.decimal_points)
-                take_profit = round(self.trade.take_profit_1, config.decimal_points)
+    def route(self) -> None:
+        """Routes the trade to the appropriate accounts."""
+        self._validate_trade()
 
-                CoreLogger().info(f"Placing entry {i + 1} for {self.trade.symbol} at {price} with size {size}")
-                CoreLogger().info(
-                    f"Risk-Reward Ratio: "
-                    f"{abs(self.trade.take_profit_1 - entry_price) / abs(self.trade.stop_loss - entry_price)}"
-                )
-                CoreLogger().debug(
-                    f"Trade {i + 1}: {OrderType.LIMIT} {config.platform_asset_id} at {price}, "
-                    f"SL={stop_loss}, TP={take_profit}"
-                )
-
-                trader.open_position(
-                    symbol=config.platform_asset_id,
-                    trade_direction=TradeDirection(self.trade.direction),
-                    order_type=OrderType.LIMIT,
-                    size=size,
-                    stop_loss=stop_loss,
-                    take_profit=take_profit,
-                    limit_level=price,
-                    comment=f"Algopro{self.trade.timeframe.value}",
-                )
+        if matched_accounts := self._get_enabled_accounts(self.trade):
+            for account, config in matched_accounts:
+                self._place_trades(account, config)
         else:
-            CoreLogger().error(f"Unsupported platform: {platform}")
-            return
+            CoreLogger().info(f"No matching configurations found for {self.trade.symbol}")

@@ -20,4 +20,45 @@ repos:
     rev: 6.1.0
     hooks:
       - id: flake8
-        args: ["--max-line-length", "120", "--ignore", "E203,W503"]
+        args: ["--max-line-length", "120", "--ignore", "E203,W503,E266"]
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.9.0
+    hooks:
+      - id: mypy
+        args: ["--ignore-missing-imports"]
+        additional_dependencies:
+          [
+            types-pytz,
+            types-croniter
+          ]
+
+  - repo: local
+    hooks:
+      - id: pylint-app
+        name: pylint (app)
+        entry: python ./bin/pre_commit/pylint_wrapper.py
+        language: system
+        types: [python]
+        files: ^code/app/.*\.py$
+
+      - id: pylint-quant-core
+        name: pylint (quant_core)
+        entry: python ./bin/pre_commit/pylint_wrapper.py
+        language: system
+        types: [python]
+        files: ^code/quant_core/.*\.py$
+
+      - id: pylint-functional-tests
+        name: pylint (functional_tests)
+        entry: python ./bin/pre_commit/pylint_wrapper.py
+        language: system
+        types: [python]
+        files: ^code/functional_tests/.*\.py$
+
+      - id: pylint-lambdas
+        name: pylint (lambdas)
+        entry: python ./bin/pre_commit/pylint_wrapper.py
+        language: system
+        types: [python]
+        files: ^code/lambdas/.*\.py$

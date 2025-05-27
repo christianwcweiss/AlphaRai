@@ -8,6 +8,8 @@ from exceptions.ui import ComponentPropertyError
 
 
 class SubSubsectionHeader(Atom):
+    """Sub-subsection header component for Dash applications."""
+
     DEFAULT_STYLE = {
         "paddingTop": "1rem",
         "marginTop": "1rem",
@@ -29,10 +31,12 @@ class SubSubsectionHeader(Atom):
         self.validate()
 
     def validate(self) -> None:
+        """Validates the properties of the component."""
         if not self._title:
             raise ComponentPropertyError("Sub-subsection title cannot be empty. Please provide a valid title.")
 
     def render(self) -> html.Div:
+        """Returns the HTML representation of the component."""
         return html.Div(
             children=[html.H4(self._title, style=self.TITLE_STYLE)],
             style=self._style,

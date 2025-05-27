@@ -2,8 +2,10 @@ import plotly.graph_objects as go
 from components.charts.chart import Chart, ChartLayoutStyle
 
 
-class GaugeChart(Chart):
-    def __init__(
+class GaugeChart(Chart):  # pylint: disable=too-few-public-methods
+    """Gauge chart component."""
+
+    def __init__(  # pylint: disable=too-many-arguments, too-many-positional-arguments
         self,
         value: float,
         title: str,
@@ -18,6 +20,7 @@ class GaugeChart(Chart):
         self._max_val = max_val
 
     def plot(self) -> go.Figure:
+        """Plots a gauge chart."""
         fig = go.Figure(
             go.Indicator(
                 mode="gauge+number",

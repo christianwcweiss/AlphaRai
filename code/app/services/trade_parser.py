@@ -1,11 +1,16 @@
 import re
+from contextlib import suppress
+
 from entities.trade_details import TradeDetails
 from quant_core.services.core_logger import CoreLogger
 
 
 class TradeMessageParser:
+    """Parser for trade messages from Algopro and Alpharai chat."""
+
     @staticmethod
     def parse_algopro_chat(message: str) -> TradeDetails:
+        """Parse a trade message from Algopro chat."""
         lines = message.strip().splitlines()
         symbol = lines[0].strip()
 
@@ -22,7 +27,7 @@ class TradeMessageParser:
                 continue
             key, value = map(str.strip, line.split(":", 1))
             try:
-                value = float(value.replace("%", ""))
+                value = float(value.replace("%", ""))  # type: ignore
             except ValueError:
                 continue
             data[key] = value
@@ -44,23 +49,23 @@ class TradeMessageParser:
 
     @staticmethod
     def parse_alpharai_chat(message: str) -> TradeDetails:
+        """Parse a trade message from Alpharai chat."""
+        CoreLogger().info(f"Received Alpharai chat message: {message}")
         lines = message.strip().splitlines()
+        lines.pop(0)
 
-        # Extract symbol and direction (no change here)
-        symbol = lines[0].split("=")[1].strip()  # Extract symbol from 'Symbol = EURUSD'
-        direction = lines[1].split("=")[1].strip()  # Extract direction from 'Direction = TradeDirection.SELL'
+        symbol = lines[0].split("=")[1].strip()
+        direction = lines[1].split("=")[1].strip()
 
-        # Extract timeframe (no change here)
-        timeframe = lines[2].split("=")[1].strip()  # Extract time from 'Timeframe = 2025-05-01T20:10:19Z'
+        timeframe = lines[2].split("=")[1].strip()
 
-        # Extract entry, stop loss, and take profit values
         data = {}
         for line in lines[3:]:
             if "=" not in line:
                 continue
             key, value = map(str.strip, line.split("=", 1))
             try:
-                value = float(value)
+                value = float(value)  # type: ignore
             except ValueError:
                 continue
             data[key] = value
@@ -84,12 +89,17 @@ class TradeMessageParser:
 
     @staticmethod
     def parse(message: str) -> TradeDetails:
-        try:
-            return TradeMessageParser.parse_algopro_chat(message)
-        except ValueError as algopro_value_error:
-            CoreLogger().error(f"Error parsing Algopro chat: {algopro_value_error}")
-            try:
-                return TradeMessageParser.parse_alpharai_chat(message)
-            except ValueError as alpharai_value_error:
-                CoreLogger().error(f"Error parsing Alpharai chat: {alpharai_value_error}")
-                raise ValueError("Invalid message format for both Algopro and Alpharai chat.")
+        """Parse a trade message from Algopro or Alpharai chat."""
+        parsed_trade = None
+
+        with suppress(ValueError):
+            parsed_trade = TradeMessageParser.parse_algopro_chat(message)
+
+        with suppress(ValueError):
+            parsed_trade = TradeMessageParser.parse_alpharai_chat(message)
+
+        if parsed_trade is None:
+            raise ValueError("Failed to parse trade message from Algopro or Alpharai chat")
+
+        CoreLogger().info(f"Parsed trade: {parsed_trade}")
+        return parsed_trade

@@ -1,5 +1,3 @@
-from functools import cache
-
 import pandas as pd
 from dash import html, dcc
 
@@ -28,8 +26,10 @@ HIDDEN_STYLE = {
 }
 
 
-class ProfitFactorOverTimeMolecule(Molecule):
-    def __init__(self, absolute_df: pd.DataFrame, relative_df: pd.DataFrame = None):
+class ProfitFactorOverTimeMolecule(Molecule):  # pylint: disable=too-few-public-methods
+    """A molecule that renders the Profit Factor Over Time chart."""
+
+    def __init__(self, absolute_df: pd.DataFrame) -> None:
         self._data_frame = absolute_df
         self._chart_layout_style = ChartLayoutStyle(
             title="",
@@ -76,7 +76,6 @@ class ProfitFactorOverTimeMolecule(Molecule):
             style=VISIBLE_STYLE,
         )
 
-
     def _render_chart_body(self):
         return AlphaCardBody(
             [
@@ -85,7 +84,6 @@ class ProfitFactorOverTimeMolecule(Molecule):
             ]
         ).render()
 
-    @cache
     def render(self) -> html.Div:
         return AlphaCard(
             header=self._render_card_header(),

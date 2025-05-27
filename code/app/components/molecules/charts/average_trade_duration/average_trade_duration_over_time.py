@@ -1,5 +1,3 @@
-from functools import cache
-
 import pandas as pd
 from dash import html, dcc
 
@@ -10,7 +8,9 @@ from components.charts.line.line_chart import LineChart
 from components.molecules.molecule import Molecule
 
 
-class AvgTradeDurationOverTimeMolecule(Molecule):
+class AvgTradeDurationOverTimeMolecule(Molecule):  # pylint: disable=too-few-public-methods
+    """A molecule that renders the Average Trade Duration Over Time chart."""
+
     def __init__(self, duration_df: pd.DataFrame):
         self._df = duration_df
         self._chart_layout_style = ChartLayoutStyle(
@@ -33,8 +33,8 @@ class AvgTradeDurationOverTimeMolecule(Molecule):
             config={"displayModeBar": False},
         )
 
-    @cache
     def render(self) -> html.Div:
+        """Renders the molecule."""
         return AlphaCard(
             header=AlphaCardHeader([html.H5("AVG TRADE DURATION OVER TIME")]).render(),
             body=AlphaCardBody([AlphaRow([AlphaCol([self._render_chart()])])]).render(),

@@ -8,9 +8,11 @@ from quant_core.enums.trade_direction import TradeDirection
 
 
 class AlertBody(abc.ABC):
+    """Abstract base class for alert bodies."""
+
     ALERT_SOURCE: str
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments, too-many-positional-arguments
         self,
         symbol: str,
         period: TimePeriod,
@@ -28,31 +30,38 @@ class AlertBody(abc.ABC):
 
     @property
     def symbol(self) -> str:
+        """Symbol of the alert."""
         return self._symbol
 
     @property
     def period(self) -> TimePeriod:
+        """Period of the alert."""
         return self._period
 
     @property
     def direction(self) -> TradeDirection:
+        """Direction of the alert."""
         return self._direction
 
     @property
     def asset_type(self) -> AssetType:
+        """Asset type of the alert."""
         return self._asset_type
 
     @property
     def time(self) -> str:
+        """Time of the alert."""
         return self._time
 
     @property
     def powered_by(self) -> Optional[str]:
+        """Source of the alert."""
         return self._powered_by
 
     @abc.abstractmethod
     def to_dict(self) -> Dict[str, Any]:
-        pass
+        """Convert the alert body to a dictionary."""
 
     def to_sns_body(self) -> str:
+        """Convert the alert body to a JSON string for SNS."""
         return json.dumps(self.to_dict())

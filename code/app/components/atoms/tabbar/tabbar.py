@@ -1,10 +1,13 @@
 from typing import List, Optional
 from dash import html, dcc
 from components.atoms.atom import Atom
+from components.atoms.card.card import AlphaCard
 from constants import colors
 
 
-class AlphaTabToolbar(Atom):
+class AlphaTabToolbar(Atom):  # pylint: disable=too-few-public-methods
+    """A toolbar for tab navigation."""
+
     def __init__(
         self,
         tab_labels: List[str],
@@ -12,11 +15,6 @@ class AlphaTabToolbar(Atom):
         current_tab: Optional[str] = None,
         link_with_hash: bool = True,
     ):
-        """
-        :param tab_labels: List of tab names like ["overview", "performance"]
-        :param base_href: Base page path (default: "/analysis")
-        :param current_tab: Currently active tab (e.g. "overview")
-        """
         self.tab_labels = tab_labels
         self.base_href = base_href
         self.current_tab = current_tab or tab_labels[0]
@@ -37,8 +35,8 @@ class AlphaTabToolbar(Atom):
         for tab in self.tab_labels:
             is_active = tab == self.current_tab
             style = {
-                "backgroundColor": colors.PRIMARY_COLOR if is_active else colors.LIGHT_GREY,
-                "color": colors.LIGHT_TEXT_COLOR if is_active else colors.DARK_TEXT_COLOR,
+                "backgroundColor": colors.PRIMARY_COLOR if is_active else colors.GREY_100,
+                "color": colors.TEXT_ON_PRIMARY if is_active else colors.TEXT_ON_SECONDARY,
                 "padding": "0.5rem 1.2rem",
                 "border": "none",
                 "borderRadius": "0.4rem",
@@ -58,11 +56,19 @@ class AlphaTabToolbar(Atom):
             )
 
         return html.Div(
-            buttons,
-            style={
-                "display": "flex",
-                "gap": "0.5rem",
-                "marginBottom": "1rem",
-                "flexWrap": "wrap",
-            },
+            AlphaCard(
+                children=[
+                    html.Div(
+                        buttons,
+                        style={
+                            "display": "flex",
+                            "flexWrap": "wrap",
+                        },
+                    )
+                ],
+                show_divider=False,
+                style={
+                    "backgroundColor": "FFFFFF",
+                },
+            ).render()
         )

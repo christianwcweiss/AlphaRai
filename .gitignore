@@ -20,3 +20,4 @@ strategies/*
 /code/app/logs/app.log
 **__pycache__**
 logs/**
+cache.db

@@ -4,7 +4,9 @@ import plotly.graph_objects as go
 from components.charts.chart import Chart, ChartLayoutStyle
 
 
-class HistogramChart(Chart):
+class HistogramChart(Chart):  # pylint: disable=too-few-public-methods
+    """Histogram chart component for visualizing distributions."""
+
     def __init__(self, data_frame: pd.DataFrame, layout_style: ChartLayoutStyle):
         self._data_frame = data_frame
         self._layout_style = layout_style
@@ -15,7 +17,7 @@ class HistogramChart(Chart):
                 go.Histogram(
                     x=self._data_frame[x_col],
                     nbinsx=nbins,
-                    marker=dict(color="rgba(0, 123, 255, 0.6)"),
+                    marker={"color": "rgba(0, 123, 255, 0.6)"},
                 )
             ]
         )

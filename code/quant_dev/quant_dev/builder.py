@@ -92,7 +92,7 @@ class Builder:
     @staticmethod
     def get_trade_history() -> pd.DataFrame:
         data_frame = pd.read_csv(
-            os.path.join(os.path.dirname(__file__), "data", "mocked_trade_history.csv"),
+            os.path.join(os.path.dirname(__file__), "data", "test_trades.csv"),
         )
 
         return data_frame

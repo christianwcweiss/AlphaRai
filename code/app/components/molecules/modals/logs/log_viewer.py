@@ -18,7 +18,9 @@ _LOG_MODAL_STYLE = {
 }
 
 
-class LogViewer(Molecule):
+class LogViewer(Molecule):  # pylint: disable=too-few-public-methods
+    """Log viewer component."""
+
     def render(self) -> html.Div:
         return html.Div(
             [

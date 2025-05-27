@@ -9,9 +9,11 @@ from exceptions.ui import ComponentPropertyError
 
 
 class AlphaButton(Atom):
+    """A button component for Dash applications."""
+
     DEFAULT_STYLE = {
         "backgroundColor": colors.PRIMARY_COLOR,
-        "color": colors.LIGHT_TEXT_COLOR,
+        "color": colors.TEXT_ON_ACCENT,
         "padding": "0.75rem 1.5rem",
         "border": "none",
         "borderRadius": "0.5rem",
@@ -55,5 +57,5 @@ class AlphaButton(Atom):
                     style={"textDecoration": "none", "color": "inherit", "display": "inline-block"},
                 )
             )
-        else:
-            return html.Div(html.Button(self._label, id=self._id, style=self._style))
+
+        return html.Div(html.Button(self._label, id=self._id, style=self._style))

@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import dash
 import dash_bootstrap_components as dbc
 from dash import html, dcc, Input, Output, State, callback
@@ -8,14 +10,15 @@ from components.atoms.table.table import AlphaTable
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
 from pages.base_page import BasePage
-from services.db.account import get_account_by_uid
-from services.db.account_config import get_configs_by_account_id, sync_with_mt5
+from services.db.main.account import get_account_by_uid
+from services.db.main.account_config import get_configs_by_account_id, sync_with_mt5
 
 dash.register_page(__name__, path_template="/settings/accounts/<uid>", name="Account Settings Details")
 
 
 # Build the configurations table for enabled or disabled configs
 def build_table(account_id: str, enabled: bool) -> html.Div:
+    """Build the configurations table for enabled or disabled configs."""
     configs = get_configs_by_account_id(account_id)
     filtered = [c for c in configs if c.enabled == enabled]
 
@@ -53,6 +56,8 @@ def build_table(account_id: str, enabled: bool) -> html.Div:
 
 # Settings Details Page class
 class SettingsDetailsPage(BasePage):
+    """Settings Details Page."""
+
     def render(self):
         return PageBody(
             [
@@ -87,11 +92,13 @@ layout = SettingsDetailsPage("Settings Details").layout
     Input("settings-url", "pathname"),
     prevent_initial_call=True,
 )
-def extract_uid_from_url(pathname: str):
+def extract_uid_from_url(pathname: str) -> Tuple[str, html.Div]:
+    """Extract the UID from the URL and display the dynamic header."""
     uid = pathname.split("/")[-1]
     account = get_account_by_uid(uid)
     if not account:
         raise dash.exceptions.PreventUpdate
+
     return uid, PageHeader(f'Trade Settings for "{account.friendly_name}"').render()
 
 
@@ -101,12 +108,15 @@ def extract_uid_from_url(pathname: str):
     Input("settings-uid", "children"),
     prevent_initial_call=True,
 )
-def render_table(uid):
-    return html.Div([
-        build_table(uid, enabled=True),
-        html.Hr(),
-        build_table(uid, enabled=False),
-    ])
+def render_table(uid: str) -> html.Div:
+    """Render the tables for enabled and disabled configurations."""
+    return html.Div(
+        [
+            build_table(uid, enabled=True),
+            html.Hr(),
+            build_table(uid, enabled=False),
+        ]
+    )
 
 
 # Sync with MT5 callback
@@ -116,7 +126,8 @@ def render_table(uid):
     State("settings-uid", "children"),
     prevent_initial_call=True,
 )
-def sync_symbols_callback(_, uid):
+def sync_symbols_callback(_, uid: str) -> html.Div:
+    """Sync symbols with MT5."""
     account = get_account_by_uid(uid)
     if not account:
         raise dash.exceptions.PreventUpdate

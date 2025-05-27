@@ -9,6 +9,8 @@ from exceptions.ui import ComponentPropertyError
 
 
 class AlphaButtonGroup(Atom):
+    """A button group component for Dash, allowing for multiple buttons with various styles and states."""
+
     DEFAULT_BUTTON_STYLE = {
         "backgroundColor": "transparent",
         "color": colors.PRIMARY_COLOR,
@@ -20,7 +22,7 @@ class AlphaButtonGroup(Atom):
 
     ACTIVE_BUTTON_STYLE = {
         "backgroundColor": colors.PRIMARY_COLOR,
-        "color": colors.LIGHT_TEXT_COLOR,
+        "color": colors.TEXT_SECONDARY,
         "fontWeight": "600",
         "fontSize": "0.9rem",
         "borderRadius": "0.5rem",
