@@ -1,4 +1,6 @@
 import re
+from contextlib import suppress
+
 from entities.trade_details import TradeDetails
 from quant_core.services.core_logger import CoreLogger
 
@@ -48,7 +50,9 @@ class TradeMessageParser:
     @staticmethod
     def parse_alpharai_chat(message: str) -> TradeDetails:
         """Parse a trade message from Alpharai chat."""
+        CoreLogger().info(f"Received Alpharai chat message: {message}")
         lines = message.strip().splitlines()
+        lines.pop(0)
 
         symbol = lines[0].split("=")[1].strip()
         direction = lines[1].split("=")[1].strip()
@@ -86,12 +90,16 @@ class TradeMessageParser:
     @staticmethod
     def parse(message: str) -> TradeDetails:
         """Parse a trade message from Algopro or Alpharai chat."""
-        try:
-            return TradeMessageParser.parse_algopro_chat(message)
-        except ValueError as algopro_value_error:
-            CoreLogger().error(f"Error parsing Algopro chat: {algopro_value_error}")
-            try:
-                return TradeMessageParser.parse_alpharai_chat(message)
-            except ValueError as alpharai_value_error:
-                CoreLogger().error(f"Error parsing Alpharai chat: {alpharai_value_error}")
-                raise ValueError("Invalid message format for both Algopro and Alpharai chat.") from alpharai_value_error
+        parsed_trade = None
+
+        with suppress(ValueError):
+            parsed_trade = TradeMessageParser.parse_algopro_chat(message)
+
+        with suppress(ValueError):
+            parsed_trade = TradeMessageParser.parse_alpharai_chat(message)
+
+        if parsed_trade is None:
+            raise ValueError("Failed to parse trade message from Algopro or Alpharai chat")
+
+        CoreLogger().info(f"Parsed trade: {parsed_trade}")
+        return parsed_trade

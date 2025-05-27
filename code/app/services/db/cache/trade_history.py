@@ -16,7 +16,7 @@ from services.db.main.account_config import get_all_configs
 def get_all_trades() -> list[Trade]:
     """Fetch all trades from the database."""
     with CacheSessionLocal() as session:
-        CoreLogger().info("Fetching all trades from the database.")
+        CoreLogger().debug("Fetching all trades from the database.")
 
         return session.query(Trade).all()
 

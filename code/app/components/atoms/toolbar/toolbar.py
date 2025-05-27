@@ -13,10 +13,10 @@ class AlphaToolbarButton(Atom):
     """A button component for Dash, allowing for various styles and states."""
 
     DEFAULT_STYLE = {
-        "backgroundColor": colors.LIGHT_GREY,
-        "color": colors.DARK_TEXT_COLOR,
+        "backgroundColor": colors.GREY_100,
+        "color": colors.PRIMARY_COLOR,
         "padding": "0.5rem 1rem",
-        "border": f"1px solid {colors.GREY_BORDER}",
+        "border": f"1px solid {colors.GREY_300}",
         "borderRadius": "0.4rem",
         "textAlign": "center",
         "cursor": "pointer",

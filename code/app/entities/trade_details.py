@@ -1,3 +1,4 @@
+import json
 from typing import Optional, Dict, Any
 
 from quant_core.enums.time_period import TimePeriod
@@ -87,3 +88,6 @@ class TradeDetails:  # pylint: disable=too-many-instance-attributes
             "take_profit_3": self.take_profit_3,
             "ai_confidence": self.ai_confidence,
         }
+
+    def __repr__(self) -> str:
+        return json.dumps(self.to_dict())

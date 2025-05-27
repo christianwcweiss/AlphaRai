@@ -74,6 +74,19 @@ def _build_message(parsed_body: TradingViewAlertBody) -> Tuple[str, str]:
 
 def handle(event: Dict[str, Any], _: Dict[str, Any]) -> Dict[str, Any]:
     """Forward request to the correct lambda function based on the event."""
+
+    # Example Payload:
+    # {
+    #     "body": "{
+    #         \"symbol\":\"LINKUSD\",
+    #         \"period\":\"15\",
+    #         \"direction\":\"BUY\",
+    #         \"assetType\":\"CRYPTO\",
+    #         \"time\":\"2025-05-01T14:30:00Z\",
+    #         \"poweredBy\":\"TradingView\"
+    #     }"
+    # }
+
     event_body = json.loads(event.get("body", "{}"))
     CoreLogger().info(f"Received event body: {json.dumps(event_body, indent=2)}")
 

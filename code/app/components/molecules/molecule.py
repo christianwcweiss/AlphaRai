@@ -1,5 +1,5 @@
 import abc
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from dash.development.base_component import Component
 

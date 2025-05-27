@@ -1,13 +1,12 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 from quant_core.enums.trade_direction import TradeDirection
 from quant_core.enums.trade_event_type import TradeEventType
 
 
 @dataclass
-class AlphaTradeDTO:
+class AlphaTradeDTO:  # pylint: disable=too-many-instance-attributes
     """DTO for Trade entity."""
 
     id: int

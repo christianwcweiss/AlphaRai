@@ -24,7 +24,6 @@ class TestTradeRouter:  # pylint: disable=too-few-public-methods
         direction: str,
     ) -> None:
         """Test invalid trade signal."""
-        kwargs = {}
         trade = TradeDetails(
             symbol=symbol,
             direction=direction,

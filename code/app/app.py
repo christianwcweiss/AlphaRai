@@ -8,9 +8,13 @@ from components.molecules.modals.trades.new_trade import NewTradeModal
 from constants import colors
 from db.database import init_db
 from quant_core.services.core_logger import CoreLogger
-
+from services.relay_bot import DiscordRelayBot
 
 init_db()
+
+bot_instance = DiscordRelayBot()
+bot_instance.run()
+
 app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.COSMO], suppress_callback_exceptions=True)
 server = app.server
 

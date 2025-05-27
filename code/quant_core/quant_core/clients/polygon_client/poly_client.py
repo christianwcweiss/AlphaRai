@@ -1,3 +1,4 @@
+import json
 import os
 
 import boto3
@@ -15,7 +16,7 @@ class PolygonClient:
     def __init__(self) -> None:
         self._api_key = os.environ.get("POLYGON_API_KEY")
         if not self._api_key:
-            self._api_key = self._load_from_secret_manager(secret_name="POLYGON_API_KEY")
+            self._api_key = json.loads(self._load_from_secret_manager(secret_name="POLYGON_API_KEY"))["POLYGON_API_KEY"]
             if not self._api_key:
                 CoreLogger().warning("No API key found. Full functionality will not be available.")
 
@@ -101,6 +102,7 @@ class PolygonClient:
             timespan="minute",
             full_range=True,
             warnings=False,
+            adjusted=True,
         )
 
         polygon_data_frame = pd.DataFrame(polygon_data)
@@ -108,6 +110,7 @@ class PolygonClient:
         polygon_data_frame.rename(
             columns={"t": "date", "o": "open", "h": "high", "l": "low", "c": "close", "v": "volume"}, inplace=True
         )
+
         polygon_data_frame = polygon_data_frame[["date", "open", "high", "low", "close", "volume"]]
         polygon_data_frame["date"] = pd.to_datetime(polygon_data_frame["date"], unit="ms")
         polygon_data_frame.set_index("date", inplace=True)

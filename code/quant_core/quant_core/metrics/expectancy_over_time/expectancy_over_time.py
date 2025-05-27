@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pandas as pd
 
 from quant_core.enums.trade_event_type import TradeEventType
@@ -16,9 +18,12 @@ class ExpectancyOverTime(TradeMetricOverTime):
         group_by_direction: bool = False,
         group_by_hour: bool = False,
         group_by_weekday: bool = False,
-        rolling_window: int = 30,
+        rolling_window: Optional[int] = 30,
     ) -> pd.DataFrame:
         data_frame = data_frame.copy()
+
+        if not rolling_window:
+            rolling_window = 30
 
         groups = self.groups(
             group_by_account_id=group_by_account_id,

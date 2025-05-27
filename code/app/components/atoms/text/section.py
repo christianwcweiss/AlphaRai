@@ -28,7 +28,7 @@ class SectionHeader(Atom):  # pylint: disable=too-few-public-methods
             children=[
                 html.H2(self._title, style=self.DEFAULT_STYLE),
                 (
-                    html.P(self._subtitle, style={"marginTop": "0", "color": colors.TEXT_COLOR, "fontSize": "1rem"})
+                    html.P(self._subtitle, style={"marginTop": "0", "color": colors.TEXT_PRIMARY, "fontSize": "1rem"})
                     if self._subtitle
                     else None
                 ),

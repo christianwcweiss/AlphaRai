@@ -106,7 +106,7 @@ class AlphaCard(Atom):  # pylint: disable=too-many-instance-attributes
             header_items.append(
                 html.H4(
                     children=self._title,
-                    style={"textAlign": "center", "marginTop": "0px", "color": colors.LIGHT_TEXT_COLOR},
+                    style={"textAlign": "center", "marginTop": "0px", "color": colors.TEXT_ON_SECONDARY},
                 )
             )
         if self._subtitle:

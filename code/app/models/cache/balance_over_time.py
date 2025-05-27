@@ -5,7 +5,7 @@ import datetime
 Base = declarative_base()
 
 
-class BalanceOverTimeCache(Base):  # type: ignore
+class BalanceOverTimeCache(Base):  # type: ignore  # pylint: disable=too-few-public-methods
     """Cached result of balance over time."""
 
     __tablename__ = "cache_balance_over_time"

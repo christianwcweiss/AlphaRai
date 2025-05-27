@@ -1,5 +1,3 @@
-from datetime import timedelta, UTC
-
 from datetime import datetime
 from typing import Union
 

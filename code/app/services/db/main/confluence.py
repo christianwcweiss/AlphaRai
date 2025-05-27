@@ -7,14 +7,14 @@ from quant_core.enums.time_period import TimePeriod
 def get_all_confluences() -> list[ConfluenceConfig]:
     """Fetch all confluence configs from the database."""
     with MainSessionLocal() as session:
-        CoreLogger().info("Fetching all confluence configs from the database.")
+        CoreLogger().debug("Fetching all confluence configs from the database.")
         return session.query(ConfluenceConfig).all()
 
 
 def get_confluence_by_id(confluence_id: str) -> ConfluenceConfig | None:
     """Fetch a single confluence config by ID."""
     with MainSessionLocal() as session:
-        CoreLogger().info(f"Fetching confluence with ID: {confluence_id}")
+        CoreLogger().debug(f"Fetching confluence with ID: {confluence_id}")
         return session.query(ConfluenceConfig).filter_by(confluence_id=confluence_id).first()
 
 

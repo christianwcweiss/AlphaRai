@@ -1,19 +1,11 @@
-from typing import Optional, Set
-
 import pandas as pd
-from sqlalchemy import text
 
 from db.database import CacheSessionLocal
 from models.cache.balance_over_time import BalanceOverTimeCache
-from models.cache.trade_history import Trade
-from quant_core.clients.mt5.mt5_client import Mt5Client
-from quant_core.enums.asset_type import AssetType
-from quant_core.services.core_logger import CoreLogger
-from services.db.main.account import get_all_accounts
-from services.db.main.account_config import get_all_configs
 
 
 def store_balance_over_time_cache(session: CacheSessionLocal, df: pd.DataFrame):
+    """Store balance over time cache in the database."""
     records = [
         BalanceOverTimeCache(
             account_id=row.get("account_id"),

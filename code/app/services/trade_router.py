@@ -88,7 +88,7 @@ class TradeRouter:  # pylint: disable=too-few-public-methods
 
         return sizes
 
-    def _place_mt5_trade(
+    def _place_mt5_trade(  # pylint: disable=too-many-arguments, too-many-positional-arguments
         self, entry_price: float, size: float, magic: int, trader: Mt5Trader, account_config: AccountConfig
     ) -> None:
         digits = account_config.decimal_points

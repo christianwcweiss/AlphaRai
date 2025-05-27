@@ -1,5 +1,3 @@
-from random import randint
-
 import pytest
 
 from models.main.account_config import AccountConfig

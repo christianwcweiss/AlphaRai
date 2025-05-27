@@ -21,6 +21,8 @@ class Trader(ABC):
         size: float,
         stop_loss: float,
         take_profit: float,
+        magic: Optional[int] = None,
         limit_level: Optional[float] = None,
+        comment: Optional[str] = None,
     ) -> Any:
         """Open a position with the specified parameters."""

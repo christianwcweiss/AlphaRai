@@ -111,6 +111,7 @@ def calculate_weighted_risk_reward(risk_rewards: List[float], sizes: List[float]
 
 
 def lookup_tick_and_contract_details(account_config: AccountConfig) -> Tuple[float, float, float]:
+    """Tick and contract size lookup based on account configuration."""
     if account_config.asset_type is AssetType.FOREX:
         tick_value = 10.0
         tick_size = 10 ** (-account_config.decimal_points + 1)
@@ -150,7 +151,7 @@ def calculate_position_size(
     if stop_distance == 0:
         raise ValueError("Stop loss and entry price cannot be the same.")
 
-    tick_value, tick_size, contract_size = lookup_tick_and_contract_details(account_config)
+    tick_value, tick_size, _ = lookup_tick_and_contract_details(account_config)
 
     pip_value_per_lot = tick_value / tick_size
 

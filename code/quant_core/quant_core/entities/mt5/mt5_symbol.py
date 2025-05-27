@@ -1,7 +1,7 @@
-class MT5Symbol:
+class MT5Symbol:  # pylint: disable=too-many-instance-attributes, too-many-public-methods
     """MT5 Symbol class."""
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals, too-many-statements  # noqa: E501
         self,
         is_custom: bool,
         chart_mode: int,

@@ -8,14 +8,14 @@ from quant_core.services.core_logger import CoreLogger
 def get_all_accounts() -> List[Account]:
     """Fetch all credential settings from the database."""
     with MainSessionLocal() as session:
-        CoreLogger().info("Fetching all accounts from the database.")
+        CoreLogger().debug("Fetching all accounts from the database.")
         return session.query(Account).all()
 
 
 def get_account_by_uid(uid: str) -> Optional[Account]:
     """Fetch a single account by UID."""
     with MainSessionLocal() as session:
-        CoreLogger().info(f"Fetching account with uid: {uid}")
+        CoreLogger().debug(f"Fetching account with uid: {uid}")
         return session.query(Account).filter_by(uid=uid).first()
 
 

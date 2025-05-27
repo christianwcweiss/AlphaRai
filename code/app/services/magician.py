@@ -5,7 +5,7 @@ from models.main.account_config import AccountConfig
 from quant_core.enums.trade_mode import TradeMode
 
 
-class Magician:
+class Magician:  # pylint: disable=too-few-public-methods
     """
     A class defining the magic of a trade to be placed and looked up later.
     """

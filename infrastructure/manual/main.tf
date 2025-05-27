@@ -65,11 +65,6 @@ module "orchestrator_lambda" {
   ]
   environment_vars = {
     ENVIRONMENT = upper(var.environment)
-    DISCORD_USERNAME = "Alpha Rai 🤖"
-    DISCORD_WEBHOOK_URL_FOREX_SIGNALS = jsondecode(data.aws_secretsmanager_secret_version.discord_webhook_secrets_version.secret_string)["DISCORD_WEBHOOK_URL_FOREX_SIGNALS"]
-    DISCORD_WEBHOOK_URL_CRYPTO_SIGNALS = jsondecode(data.aws_secretsmanager_secret_version.discord_webhook_secrets_version.secret_string)["DISCORD_WEBHOOK_URL_CRYPTO_SIGNALS"]
-    DISCORD_WEBHOOK_URL_STOCK_SIGNALS = jsondecode(data.aws_secretsmanager_secret_version.discord_webhook_secrets_version.secret_string)["DISCORD_WEBHOOK_URL_STOCK_SIGNALS"]
-    DISCORD_WEBHOOK_URL_INDICES_SIGNALS = jsondecode(data.aws_secretsmanager_secret_version.discord_webhook_secrets_version.secret_string)["DISCORD_WEBHOOK_URL_INDICES_SIGNALS"]
     SNS_TOPIC_ARN = "arn:aws:sns:eu-west-1:${data.aws_caller_identity.current.account_id}:${aws_sns_topic.orchestrator_lambda_signals_topic.name}"
     POLYGON_API_KEY = jsondecode(data.aws_secretsmanager_secret_version.polygon_secrets_version.secret_string)["POLYGON_API_KEY"]
   }
@@ -101,6 +96,13 @@ resource "aws_iam_role_policy" "orchestrator_lambda_iam_policy" {
           "sns:Publish"
         ],
         Resource = aws_sns_topic.orchestrator_lambda_signals_topic.arn
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ],
+        Resource = "*"
       }
     ]
   })

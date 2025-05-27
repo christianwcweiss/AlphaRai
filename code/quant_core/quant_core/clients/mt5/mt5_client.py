@@ -17,7 +17,12 @@ from quant_core.enums.trade_direction import TradeDirection
 from quant_core.enums.trade_event_type import TradeEventType
 from quant_core.services.core_logger import CoreLogger
 
-import MetaTrader5 as mt5
+try:
+    import MetaTrader5 as mt5
+except ImportError:
+
+    class mt5:  # type: ignore  # pylint: disable=invalid-name, too-few-public-methods
+        """Mock class for MetaTrader5 to avoid import errors when not available."""
 
 
 ORDER_TYPE_MAP = {

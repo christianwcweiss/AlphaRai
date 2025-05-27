@@ -164,5 +164,5 @@ class TestTradeMetricOverTime:
                 data_frame=data_frame,
                 rolling_window=30,
                 skip_head=False,
-                aggregation_resolution="unknown",
+                aggregation_resolution="unknown",  # type: ignore
             )

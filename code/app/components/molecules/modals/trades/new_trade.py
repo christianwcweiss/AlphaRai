@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 
 import dash_bootstrap_components as dbc
 from dash import html, dcc, Input, Output, State, callback, dash
@@ -93,19 +93,19 @@ def _render_trade_preview(trade_details: TradeDetails) -> html.Div:
                                     AlphaRow(html.H6("TAKE PROFIT", style=center_style)),
                                     AlphaRow(
                                         html.H6(
-                                            f"{round(trade_details.take_profit_1, digits)} ({round(take_profit_1_distance, digits)})",
+                                            f"{round(trade_details.take_profit_1, digits)} ({round(take_profit_1_distance, digits)})",  # noqa: E501
                                             style={"color": colors.PRIMARY_COLOR, **center_style},
                                         )
                                     ),
                                     AlphaRow(
                                         html.H6(
-                                            f"{round(trade_details.take_profit_2, digits) if trade_details.take_profit_2 else 'n.a.'} ({take_profit_2_distance})",
+                                            f"{round(trade_details.take_profit_2, digits) if trade_details.take_profit_2 else 'n.a.'} ({take_profit_2_distance})",  # noqa: E501
                                             style={"color": colors.PRIMARY_COLOR, **center_style},
                                         )
                                     ),
                                     AlphaRow(
                                         html.H6(
-                                            f"{round(trade_details.take_profit_3, digits) if trade_details.take_profit_3 else 'n.a.'} ({take_profit_3_distance})",
+                                            f"{round(trade_details.take_profit_3, digits) if trade_details.take_profit_3 else 'n.a.'} ({take_profit_3_distance})",  # noqa: E501
                                             style={"color": colors.PRIMARY_COLOR, **center_style},
                                         )
                                     ),
@@ -126,7 +126,9 @@ def _render_trade_preview(trade_details: TradeDetails) -> html.Div:
     )
 
 
-def _render_risk_preview(trade_details: TradeDetails, active_levels: int = None) -> html.Div:
+def _render_risk_preview(  # pylint: disable=too-many-locals
+    trade_details: TradeDetails, active_levels: Optional[int] = None
+) -> html.Div:
     center_style = {"textAlign": "center"}
     all_accounts = get_all_accounts()
     configs: List[Tuple[Account, AccountConfig]] = []
@@ -268,7 +270,7 @@ def toggle_trade_modal(
     _, __, is_open: bool
 ) -> tuple[bool, str, None, None, Any, Dict[str, str], Dict[str, str], Dict[str, str], Dict[str, str]]:
     """Toggle the trade modal and reset the input fields."""
-    return (
+    return (  # type: ignore
         not is_open,
         "",
         None,
@@ -317,7 +319,7 @@ def parse_trade_signal(_, signal_input: str) -> tuple[Alert, Any, Any, Any, Any,
             dash.no_update,
         )
 
-    return (
+    return (  # type: ignore
         _render_trade_preview(trade_details),
         _render_risk_preview(trade_details),
         trade_details.to_dict(),
