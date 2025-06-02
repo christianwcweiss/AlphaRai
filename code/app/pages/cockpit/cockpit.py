@@ -1,12 +1,12 @@
 import dash
-from dash import html, dcc, Input, Output, State, ctx, callback
 from components.atoms.buttons.general.button import AlphaButton
 from components.atoms.content import MainContent
-from components.atoms.layout.layout import AlphaRow, AlphaCol
+from components.atoms.layout.layout import AlphaCol, AlphaRow
 from components.atoms.text.page import PageHeader
 from components.atoms.text.section import SectionHeader
 from components.frame.body import PageBody
 from constants import colors
+from dash import Input, Output, State, callback, ctx, dcc, html
 from models.main.account import Account
 from pages.base_page import BasePage
 from services.db.main.account import get_all_accounts, toggle_account_enabled

@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, Index
-from sqlalchemy.ext.declarative import declarative_base
 import datetime
+
+from sqlalchemy import Column, DateTime, Float, Index, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 

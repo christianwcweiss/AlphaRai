@@ -1,7 +1,6 @@
 from typing import List
 
 import pytest
-
 from quant_core.chart.features.indicators.adaptive_super_trend import DataFeatureAdaptiveSuperTrend
 from quant_dev.builder import Builder
 

@@ -1,5 +1,4 @@
 import pytest
-
 from models.main.account_config import AccountConfig
 from quant_core.enums.trade_mode import TradeMode
 from services.magician import Magician

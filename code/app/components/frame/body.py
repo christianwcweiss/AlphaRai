@@ -1,6 +1,7 @@
+from typing import List, Union
+
 from dash import html
 from dash.development.base_component import Component
-from typing import List, Union
 
 
 class PageBody(html.Div):  # pylint: disable=too-few-public-methods

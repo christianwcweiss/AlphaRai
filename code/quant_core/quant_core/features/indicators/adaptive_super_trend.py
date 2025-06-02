@@ -2,11 +2,10 @@ from typing import List
 
 import numpy as np
 import pandas as pd
-from sklearn.cluster import KMeans
-
 from quant_core.features.feature import DataFeature
 from quant_core.features.indicators.average_true_range import DataFeatureAverageTrueRange
 from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows
+from sklearn.cluster import KMeans
 
 
 class DataFeatureAdaptiveSuperTrend(DataFeature):  # pylint: disable=too-many-instance-attributes

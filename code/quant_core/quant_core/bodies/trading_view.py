@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any, Dict
 
 from quant_core.bodies.alert_body import AlertBody
 

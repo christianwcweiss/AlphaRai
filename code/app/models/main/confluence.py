@@ -1,7 +1,6 @@
-from sqlalchemy import Column, String, Integer, Boolean, Enum
-from sqlalchemy.ext.declarative import declarative_base
-
 from quant_core.enums.time_period import TimePeriod
+from sqlalchemy import Boolean, Column, Enum, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 

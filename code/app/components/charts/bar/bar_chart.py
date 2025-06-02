@@ -1,9 +1,8 @@
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 import pandas as pd
 import plotly.graph_objects as go
-
-from components.charts.chart import Chart, ChartTraceStyle, ChartLayoutStyle
+from components.charts.chart import Chart, ChartLayoutStyle, ChartTraceStyle
 from constants.colors import CHART_PALETTE
 
 

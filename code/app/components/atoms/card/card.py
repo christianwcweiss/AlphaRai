@@ -1,13 +1,11 @@
-from typing import Optional, Union, List
-
-from dash import html
-from dash.development.base_component import Component
-
-from components.atoms.divider.divider import Divider
-from components.atoms.text.paragraph import Paragraph
+from typing import List, Optional, Union
 
 from components.atoms.atom import Atom
+from components.atoms.divider.divider import Divider
+from components.atoms.text.paragraph import Paragraph
 from constants import colors
+from dash import html
+from dash.development.base_component import Component
 
 
 class AlphaCardHeader(Atom):

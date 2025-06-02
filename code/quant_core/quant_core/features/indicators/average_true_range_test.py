@@ -1,7 +1,6 @@
 from typing import List
 
 import pytest
-
 from quant_core.chart.features.indicators.average_true_range import DataFeatureAverageTrueRange
 from quant_dev.builder import Builder
 

@@ -1,7 +1,6 @@
-from typing import Optional, Any
+from typing import Any, Optional
 
 from quant_core.clients.mt5.mt5_client import Mt5Client  # adjust path to where you placed Mt5Client
-
 from quant_core.enums.order_type import OrderType
 from quant_core.enums.trade_direction import TradeDirection
 from quant_core.trader.trader import Trader

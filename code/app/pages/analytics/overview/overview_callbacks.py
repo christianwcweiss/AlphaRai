@@ -1,15 +1,12 @@
-from typing import Dict, List, Any, Union
+from typing import Any, Dict, List, Union
 
 import dash_bootstrap_components as dbc
-from dash import Input, Output, callback, ctx
-from dash.development.base_component import Component
-
-from components.atoms.layout.layout import AlphaRow, AlphaCol
-from components.molecules.charts.balance_over_time.balance_over_time import (
-    BalanceOverTimeMolecule,
-)
+from components.atoms.layout.layout import AlphaCol, AlphaRow
+from components.molecules.charts.balance_over_time.balance_over_time import BalanceOverTimeMolecule
 from components.molecules.toolbars.analytics_toolbar import analytics_bar_filter_trades, analytics_bar_get_active_states
 from constants import colors
+from dash import Input, Output, callback, ctx
+from dash.development.base_component import Component
 from pages.analytics.overview.overview_constants import PREFIX
 from quant_core.enums.chart_mode import ChartMode
 from quant_core.metrics.account_balance_over_time.balance_over_time import AccountBalanceOverTime

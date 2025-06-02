@@ -1,10 +1,9 @@
 import string
-from typing import Optional, Dict, Any, Union
-
-from dash import html
+from typing import Any, Dict, Optional, Union
 
 from components.atoms.atom import Atom
 from constants import colors
+from dash import html
 from exceptions.ui import ComponentPropertyError
 
 

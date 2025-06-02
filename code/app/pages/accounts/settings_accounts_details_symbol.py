@@ -2,12 +2,11 @@ from typing import Tuple
 
 import dash
 import dash_bootstrap_components as dbc
-from dash import html, dcc, Input, Output, State, callback
-
 from components.atoms.content import MainContent
 from components.atoms.divider.divider import Divider
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
+from dash import Input, Output, State, callback, dcc, html
 from pages.base_page import BasePage
 from quant_core.enums.asset_type import AssetType
 from quant_core.enums.stagger_method import StaggerMethod

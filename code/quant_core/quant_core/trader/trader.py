@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Any
+from typing import Any, Optional
 
-from quant_core.enums.trade_direction import TradeDirection
 from quant_core.enums.order_type import OrderType
+from quant_core.enums.trade_direction import TradeDirection
 
 
 class Trader(ABC):

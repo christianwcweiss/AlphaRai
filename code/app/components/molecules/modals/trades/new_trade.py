@@ -1,16 +1,15 @@
-from typing import List, Dict, Any, Tuple, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import dash_bootstrap_components as dbc
-from dash import html, dcc, Input, Output, State, callback, dash
-from dash_bootstrap_components import Alert
-
 from components.atoms.buttons.general.button import AlphaButton
-from components.atoms.card.card import AlphaCard, AlphaCardHeader, AlphaCardBody
+from components.atoms.card.card import AlphaCard, AlphaCardBody, AlphaCardHeader
 from components.atoms.divider.divider import Divider
-from components.atoms.layout.layout import AlphaRow, AlphaCol
+from components.atoms.layout.layout import AlphaCol, AlphaRow
 from components.molecules.molecule import Molecule
 from constants import colors
 from constants.style import HIDDEN
+from dash import Input, Output, State, callback, dash, dcc, html
+from dash_bootstrap_components import Alert
 from entities.trade_details import TradeDetails
 from models.main.account import Account
 from models.main.account_config import AccountConfig
@@ -18,10 +17,10 @@ from quant_core.clients.mt5.mt5_client import Mt5Client
 from quant_core.enums.stagger_method import StaggerMethod
 from quant_core.services.core_logger import CoreLogger
 from quant_core.utils.trade_utils import (
-    get_stagger_levels,
     calculate_position_size,
     calculate_risk_reward,
     calculate_weighted_risk_reward,
+    get_stagger_levels,
 )
 from services.db.main.account import get_all_accounts
 from services.db.main.account_config import get_config_by_account_and_symbol

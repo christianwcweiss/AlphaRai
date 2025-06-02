@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
 from db.database import MainSessionLocal
 from models.main.account_config import AccountConfig

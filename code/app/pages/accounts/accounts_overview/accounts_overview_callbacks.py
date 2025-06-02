@@ -1,27 +1,26 @@
-from typing import Tuple, Optional, Any, List
+from typing import Any, List, Optional, Tuple
 
 import dash
 import pandas as pd
-from dash import Input, Output, State, ctx, callback, ALL, html
-from dash.exceptions import PreventUpdate
-
-from components.atoms.layout.layout import AlphaRow, AlphaCol
+from components.atoms.layout.layout import AlphaCol, AlphaRow
 from components.molecules.cards.settings.account_card import AccountSettingsCard
+from dash import ALL, Input, Output, State, callback, ctx, html
+from dash.exceptions import PreventUpdate
 from models.main.account import Account
 from pages.accounts.accounts_overview.accounts_overview_constants import (
-    ADD_ACCOUNT_MODAL_ID,
-    OPEN_ADD_ACCOUNT_MODAL_ID,
-    ADD_ACCOUNT_CONFIRM_BUTTON_ID,
     ADD_ACCOUNT_CANCEL_BUTTON_ID,
+    ADD_ACCOUNT_CONFIRM_BUTTON_ID,
+    ADD_ACCOUNT_MODAL_ID,
     CONTENT_ROWS,
-    PAGE_INIT,
-    DELETE_ACCOUNT_MODAL_ID,
     DELETE_ACCOUNT_MODAL_CANCEL_BUTTON_ID,
     DELETE_ACCOUNT_MODAL_CONFIRM_BUTTON_ID,
+    DELETE_ACCOUNT_MODAL_ID,
     INPUT_ACCOUNT_NAME_ID,
     INPUT_ACCOUNT_SECRET_ID,
     INPUT_PLATFORM_ID,
     INPUT_PROP_FIRM,
+    OPEN_ADD_ACCOUNT_MODAL_ID,
+    PAGE_INIT,
     PENDING_DELETE_UID_ID,
 )
 from quant_core.enums.platform import Platform
@@ -30,9 +29,7 @@ from quant_core.metrics.account_balance_over_time.balance_over_time import Accou
 from quant_core.services.core_logger import CoreLogger
 from quant_core.utils.text_utils import generate_uid
 from services.db.cache.trade_history import get_all_trades_df
-from services.db.main.account import (
-    AccountService,
-)
+from services.db.main.account import AccountService
 
 
 def render_account_card(account: Account, history_data_frame: pd.DataFrame) -> html.Div:

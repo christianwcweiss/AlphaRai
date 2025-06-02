@@ -2,11 +2,11 @@ import os
 import string
 from contextlib import contextmanager
 from random import choices
-from typing import Optional, List, Any, Union, Type, Generator
+from typing import Any, Generator, List, Optional, Type, Union
 
 import pandas as pd
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeMeta
+from sqlalchemy.orm import DeclarativeMeta, sessionmaker
 
 
 class Builder:

@@ -1,7 +1,6 @@
 from typing import List
 
 import pytest
-
 from quant_core.chart.features.candles.heikin_ashi import DataFeatureHeikinAshi
 from quant_dev.builder import Builder
 

@@ -3,9 +3,7 @@ import os
 
 import boto3
 import pandas as pd
-from polygon import CryptoClient, StocksClient
-from polygon import ForexClient
-
+from polygon import CryptoClient, ForexClient, StocksClient
 from quant_core.enums.time_period import TimePeriod
 from quant_core.services.core_logger import CoreLogger
 

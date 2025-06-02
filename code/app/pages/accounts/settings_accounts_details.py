@@ -2,14 +2,13 @@ from typing import Tuple
 
 import dash
 import dash_bootstrap_components as dbc
-from dash import html, dcc, Input, Output, State, callback
-
 from components.atoms.content import MainContent
 from components.atoms.divider.divider import Divider
-from components.atoms.layout.layout import AlphaRow, AlphaCol
+from components.atoms.layout.layout import AlphaCol, AlphaRow
 from components.atoms.table.table import AlphaTable
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
+from dash import Input, Output, State, callback, dcc, html
 from pages.base_page import BasePage
 from services.db.main.account import get_account_by_uid
 from services.db.main.account_config import get_configs_by_account_id, sync_with_mt5

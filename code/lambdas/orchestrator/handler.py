@@ -3,7 +3,6 @@ from http import HTTPStatus
 from typing import Any, Dict, Tuple
 
 from quant_core.bodies.trading_view import TradingViewAlertBody
-from quant_core.features.indicators.average_true_range import DataFeatureAverageTrueRange
 from quant_core.clients.aws.sns import SNSClient
 from quant_core.clients.polygon_client.poly_client import PolygonClient
 from quant_core.entities.response import Response
@@ -11,6 +10,7 @@ from quant_core.enums.asset_type import AssetType
 from quant_core.enums.discord_channels import DiscordChannel
 from quant_core.enums.time_period import TimePeriod
 from quant_core.enums.trade_direction import TradeDirection
+from quant_core.features.indicators.average_true_range import DataFeatureAverageTrueRange
 from quant_core.services.core_logger import CoreLogger
 from quant_core.services.discord_bot import DiscordBot
 from quant_core.settings.configuration import Configuration

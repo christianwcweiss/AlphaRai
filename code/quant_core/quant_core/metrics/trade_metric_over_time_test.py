@@ -1,6 +1,5 @@
 import pandas as pd
 import pytest
-
 from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 from quant_core.utils.combination_utils import create_combination_bitmasks
 from quant_dev.builder import Builder

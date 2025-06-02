@@ -2,7 +2,6 @@ from typing import List
 
 import numpy as np
 import pandas as pd
-
 from quant_core.features.feature import DataFeature
 from quant_core.features.indicators.bollinger_bands import DataFeatureBollingerBands
 from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows

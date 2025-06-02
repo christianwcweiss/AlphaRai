@@ -1,10 +1,10 @@
-import threading
 import asyncio
-from typing import Any
-import boto3
-
-import discord
 import json
+import threading
+from typing import Any
+
+import boto3
+import discord
 from quant_core.services.core_logger import CoreLogger
 from services.trade_parser import TradeMessageParser
 from services.trade_router import TradeRouter

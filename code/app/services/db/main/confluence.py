@@ -1,7 +1,7 @@
 from db.database import MainSessionLocal
 from models.main.confluence import ConfluenceConfig
-from quant_core.services.core_logger import CoreLogger
 from quant_core.enums.time_period import TimePeriod
+from quant_core.services.core_logger import CoreLogger
 
 
 def get_all_confluences() -> list[ConfluenceConfig]:

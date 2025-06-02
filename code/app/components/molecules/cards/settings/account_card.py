@@ -3,12 +3,11 @@ from typing import Optional
 
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, dcc
-
-from components.atoms.card.card import AlphaCard, AlphaCardHeader, AlphaCardBody
+from components.atoms.card.card import AlphaCard, AlphaCardBody, AlphaCardHeader
 from components.charts.chart import ChartLayoutStyle, ChartMargin
 from components.charts.line.line_chart import LineChart
 from constants import colors
+from dash import dcc, html
 from models.main.account import Account
 from quant_core.enums.prop_firm import PropFirm
 from quant_core.utils.image_utils import encode_image

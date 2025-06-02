@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 import pandas as pd
-
 from quant_core.enums.trade_direction import TradeDirection
 
 

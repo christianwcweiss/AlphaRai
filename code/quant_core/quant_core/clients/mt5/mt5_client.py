@@ -3,12 +3,11 @@ import json
 from collections import defaultdict
 from datetime import datetime, timedelta
 from random import randint
-from typing import Optional, Any, List
+from typing import Any, List, Optional
 from unittest.mock import Mock
 
 import boto3
 import pandas as pd
-
 from quant_core.entities.dto.trade import AlphaTradeDTO
 from quant_core.entities.mt5.mt5_symbol import MT5Symbol
 from quant_core.entities.mt5.mt5_trade import CompletedMT5Trade

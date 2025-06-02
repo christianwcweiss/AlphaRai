@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Optional, Literal, List
+from typing import Dict, List, Literal, Optional
 
 import pandas as pd
-
 from quant_core.enums.trade_event_type import TradeEventType
 
 

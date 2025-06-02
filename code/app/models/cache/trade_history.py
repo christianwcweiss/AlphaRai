@@ -1,9 +1,8 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-
 from quant_core.entities.dto.trade import AlphaTradeDTO
 from quant_core.enums.trade_direction import TradeDirection
 from quant_core.enums.trade_event_type import TradeEventType
+from sqlalchemy import Column, DateTime, Float, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 

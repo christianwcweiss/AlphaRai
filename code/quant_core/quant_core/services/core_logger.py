@@ -1,7 +1,6 @@
 import logging
 import os
 
-
 LOG_COLORS = {
     logging.DEBUG: "\033[34m",  # Blue
     logging.INFO: "\033[32m",  # Green

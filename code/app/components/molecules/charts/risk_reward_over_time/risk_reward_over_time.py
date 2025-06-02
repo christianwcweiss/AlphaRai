@@ -1,11 +1,10 @@
 import pandas as pd
-from dash import html, dcc
-
-from components.atoms.card.card import AlphaCard, AlphaCardHeader, AlphaCardBody
-from components.atoms.layout.layout import AlphaRow, AlphaCol
+from components.atoms.card.card import AlphaCard, AlphaCardBody, AlphaCardHeader
+from components.atoms.layout.layout import AlphaCol, AlphaRow
 from components.charts.chart import ChartLayoutStyle, ChartMargin
 from components.charts.line.line_chart import LineChart
 from components.molecules.molecule import Molecule
+from dash import dcc, html
 
 # Chart Style
 VISIBLE_STYLE = {

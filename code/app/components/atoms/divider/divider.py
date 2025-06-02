@@ -1,9 +1,8 @@
-from typing import Optional, Dict, Any
-
-from dash import html
+from typing import Any, Dict, Optional
 
 from components.atoms.atom import Atom
 from constants import colors
+from dash import html
 
 
 class Divider(Atom):

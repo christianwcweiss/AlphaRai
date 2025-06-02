@@ -3,7 +3,6 @@ from typing import Dict, Union
 
 import numpy as np
 import pytest
-
 from quant_core.metrics.expectancy_over_time.expectancy_over_time import ExpectancyOverTime
 from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 from quant_core.utils.combination_utils import create_combination_bitmasks

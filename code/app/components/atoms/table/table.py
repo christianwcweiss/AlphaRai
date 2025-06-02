@@ -1,8 +1,8 @@
-from typing import Union, List, Optional, Dict, Any
-from dash import html
-from dash.development.base_component import Component
+from typing import Any, Dict, List, Optional, Union
 
 from components.atoms.atom import Atom
+from dash import html
+from dash.development.base_component import Component
 
 
 class AlphaTableCell(Atom):

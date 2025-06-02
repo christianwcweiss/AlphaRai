@@ -2,7 +2,6 @@ from typing import Optional
 
 import pandas as pd
 import plotly.graph_objects as go
-
 from components.charts.chart import Chart, ChartLayoutStyle
 from constants.colors import CHART_PALETTE
 

@@ -1,7 +1,7 @@
-from sqlalchemy import Column, String, Float, Integer, Enum, Boolean
-from sqlalchemy.ext.declarative import declarative_base
 from quant_core.enums.asset_type import AssetType
 from quant_core.enums.trade_mode import TradeMode
+from sqlalchemy import Boolean, Column, Enum, Float, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 

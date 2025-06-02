@@ -1,15 +1,14 @@
-from typing import Tuple, List, Dict, Any
+from typing import Any, Dict, List, Tuple
 
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, dcc
-from dash.development.base_component import Component
-
 from components.atoms.card.card import AlphaCard
 from components.atoms.divider.divider import Divider
 from components.atoms.layout.layout import AlphaCol, AlphaRow
 from components.atoms.text.subsubsection import SubSubsectionHeader
 from components.molecules.molecule import Molecule
+from dash import dcc, html
+from dash.development.base_component import Component
 from services.db.cache.trade_history import get_all_trades_df
 
 

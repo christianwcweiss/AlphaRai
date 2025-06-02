@@ -1,7 +1,6 @@
 from unittest.mock import Mock
 
 import pytest
-
 from entities.trade_details import TradeDetails
 from quant_core.enums.trade_direction import TradeDirection
 from services.trade_router import TradeRouter

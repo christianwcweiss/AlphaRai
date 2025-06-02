@@ -1,14 +1,12 @@
 import time
 
 import pytest
-from sklearn.utils import shuffle
-
-from quant_core.features.feature import DataFeature
 from quant_core.chart.features.indicators.average_true_range import DataFeatureAverageTrueRange
 from quant_core.chart.features.indicators.bollinger_bands import DataFeatureBollingerBands
 from quant_core.chart.features.indicators.keltner_channel import DataFeatureKeltnerChannel
+from quant_core.features.feature import DataFeature
 from quant_dev.builder import Builder
-
+from sklearn.utils import shuffle
 
 _FEATURES = [
     DataFeatureAverageTrueRange,

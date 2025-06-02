@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import List, Optional
 
 from db.database import MainSessionLocal
 from models.main.general_setting import GeneralSetting

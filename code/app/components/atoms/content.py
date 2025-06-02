@@ -1,5 +1,6 @@
-from dash import html
 from typing import List, Union
+
+from dash import html
 from dash.development.base_component import Component
 
 

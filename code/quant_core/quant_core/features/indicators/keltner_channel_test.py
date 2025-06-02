@@ -1,7 +1,6 @@
 from typing import List
 
 import pytest
-
 from quant_core.chart.features.indicators.keltner_channel import DataFeatureKeltnerChannel
 from quant_dev.builder import Builder
 

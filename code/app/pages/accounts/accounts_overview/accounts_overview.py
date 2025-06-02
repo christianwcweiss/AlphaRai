@@ -1,55 +1,48 @@
 import dash
 import dash_bootstrap_components as dbc
-from dash import html, dcc
-
 from components.atoms.buttons.general.button import AlphaButton
 from components.atoms.content import MainContent
 from components.atoms.divider.divider import Divider
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
 from constants import colors
+from dash import dcc, html
 from pages.accounts.accounts_overview.accounts_overview_callbacks import (  # type: ignore  # pylint: disable=unused-import  # noqa: E501, F401
     load_mt5_credentials_on_page_load,
-)
-from pages.accounts.accounts_overview.accounts_overview_callbacks import (  # type: ignore  # pylint: disable=unused-import  # noqa: E501, F401
     manage_delete,
-)
-from pages.accounts.accounts_overview.accounts_overview_callbacks import (  # type: ignore  # pylint: disable=unused-import  # noqa: E501, F401
     save_new_account,
-)
-from pages.accounts.accounts_overview.accounts_overview_callbacks import (  # type: ignore  # pylint: disable=unused-import  # noqa: E501, F401
     toggle_add_modal,
 )
 from pages.accounts.accounts_overview.accounts_overview_constants import (
-    LOADING_PAGE_ID,
-    OPEN_ADD_ACCOUNT_MODAL_ID,
     ADD_ACCOUNT_BUTTON_LABEL,
-    ADD_ACCOUNT_MODAL_TITLE,
-    ADD_ACCOUNT_MODAL_ID,
-    INPUT_ACCOUNT_NAME_ID,
-    INPUT_PROP_FIRM_LABEL,
-    INPUT_PROP_FIRM,
-    INPUT_PLATFORM_ID,
-    INPUT_ACCOUNT_SECRET_ID,
-    PROP_FIRM_OPTIONS,
-    PLATFORM_OPTIONS,
-    PENDING_DELETE_UID_ID,
-    DELETE_ACCOUNT_MODAL_ID,
-    DELETE_ACCOUNT_MODAL_TITLE,
-    DELETE_ACCOUNT_MODAL_BODY,
-    DELETE_ACCOUNT_MODAL_CONFIRM_BUTTON_LABEL,
-    DELETE_ACCOUNT_MODAL_CANCEL_BUTTON_LABEL,
-    DELETE_ACCOUNT_MODAL_CONFIRM_BUTTON_ID,
-    DELETE_ACCOUNT_MODAL_CANCEL_BUTTON_ID,
+    ADD_ACCOUNT_CANCEL_BUTTON_ID,
+    ADD_ACCOUNT_CANCEL_BUTTON_LABEL,
     ADD_ACCOUNT_CONFIRM_BUTTON_ID,
     ADD_ACCOUNT_CONFIRM_BUTTON_LABEL,
-    ADD_ACCOUNT_CANCEL_BUTTON_LABEL,
+    ADD_ACCOUNT_MODAL_ID,
+    ADD_ACCOUNT_MODAL_TITLE,
     CONTENT_ROWS,
+    DELETE_ACCOUNT_MODAL_BODY,
+    DELETE_ACCOUNT_MODAL_CANCEL_BUTTON_ID,
+    DELETE_ACCOUNT_MODAL_CANCEL_BUTTON_LABEL,
+    DELETE_ACCOUNT_MODAL_CONFIRM_BUTTON_ID,
+    DELETE_ACCOUNT_MODAL_CONFIRM_BUTTON_LABEL,
+    DELETE_ACCOUNT_MODAL_ID,
+    DELETE_ACCOUNT_MODAL_TITLE,
+    INPUT_ACCOUNT_NAME_ID,
     INPUT_ACCOUNT_NAME_LABEL,
+    INPUT_ACCOUNT_SECRET_ID,
     INPUT_ACCOUNT_SECRET_LABEL,
+    INPUT_PLATFORM_ID,
     INPUT_PLATFORM_LABEL,
-    ADD_ACCOUNT_CANCEL_BUTTON_ID,
+    INPUT_PROP_FIRM,
+    INPUT_PROP_FIRM_LABEL,
+    LOADING_PAGE_ID,
+    OPEN_ADD_ACCOUNT_MODAL_ID,
     PAGE_INIT,
+    PENDING_DELETE_UID_ID,
+    PLATFORM_OPTIONS,
+    PROP_FIRM_OPTIONS,
 )
 from pages.base_page import BasePage
 
