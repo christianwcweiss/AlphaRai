@@ -14,7 +14,6 @@ from pages.analytics.overview.overview_constants import PREFIX
 from quant_core.enums.chart_mode import ChartMode
 from quant_core.metrics.account_balance_over_time.balance_over_time import AccountBalanceOverTime
 from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
-from quant_core.services.core_logger import CoreLogger
 from services.db.cache.trade_history import get_all_trades_df
 
 
@@ -116,7 +115,6 @@ def render_overview_content(  # pylint: disable=too-many-arguments, too-many-pos
     )
 
     chart_mode = ChartMode.ABSOLUTE if show_abs else ChartMode.RELATIVE
-    CoreLogger().info(f"Chart mode: {chart_mode}")
 
     return (
         AlphaRow(

@@ -6,6 +6,7 @@ from dash_bootstrap_components import Alert
 
 from components.atoms.buttons.general.button import AlphaButton
 from components.atoms.card.card import AlphaCard, AlphaCardHeader, AlphaCardBody
+from components.atoms.divider.divider import Divider
 from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.molecules.molecule import Molecule
 from constants import colors
@@ -37,9 +38,9 @@ def _render_trade_input_text_area() -> html.Div:
                 style={"width": "100%", "height": "350px", "display": "block"},
                 placeholder="Paste signal here...",
             ),
-            html.Br(),
+            Divider().render(),
             AlphaButton("Parse Signal", "parse-trade-btn").render(),
-            html.Br(),
+            Divider().render(),
         ],
         id="trade-input-container",
         style={"marginBottom": "1rem"},
@@ -183,7 +184,7 @@ def _render_risk_preview(  # pylint: disable=too-many-locals
                         html.Div(f"Risk %: {config.risk_percent}%"),
                         html.Div(f"Absolute Risk: ${round(balance * config.risk_percent / 100)}"),
                         html.Div(f"Weighted RR: {weighted[-1]:.2f}" if weighted else "Weighted RR: n.a."),
-                        html.Hr(),
+                        Divider().render(),
                     ],
                     style={"marginBottom": "1rem"},
                 )
@@ -295,12 +296,11 @@ def toggle_trade_modal(
 def parse_trade_signal(_, signal_input: str) -> tuple[Alert, Any, Any, Any, Any, Any, Any]:
     """Parse the trade signal and display the details."""
     if not signal_input:
-        return (
+        return (  # type: ignore
             dbc.Alert("Please paste a signal...", color=colors.WARNING_COLOR),
             dash.no_update,
             dash.no_update,
             HIDDEN,
-            dash.no_update,
             dash.no_update,
             dash.no_update,
         )
@@ -309,12 +309,11 @@ def parse_trade_signal(_, signal_input: str) -> tuple[Alert, Any, Any, Any, Any,
         trade_details = TradeMessageParser.parse(signal_input)
     except Exception as error:  # pylint: disable=broad-exception-caught
         CoreLogger().error(f"Failed to parse signal: {error}")
-        return (
+        return (  # type: ignore
             dbc.Alert(f"Error parsing signal: {error}", color=colors.ERROR_COLOR),
             dash.no_update,
             dash.no_update,
             HIDDEN,
-            dash.no_update,
             dash.no_update,
             dash.no_update,
         )

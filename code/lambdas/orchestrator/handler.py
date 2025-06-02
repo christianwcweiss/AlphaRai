@@ -29,6 +29,8 @@ def _get_entry_and_exit_prices(alert: TradingViewAlertBody) -> Tuple[float, floa
         data_frame = polygon_client.get_forex_data(symbol=symbol, time_period=alert.period, n_candles=2000)
     elif alert.asset_type is AssetType.INDICES:
         raise NotImplementedError("Indices data retrieval is not implemented yet.")
+    elif alert.asset_type is AssetType.COMMODITIES:
+        data_frame = polygon_client.get_forex_data(symbol=symbol, time_period=alert.period, n_candles=2000)
     else:
         raise ValueError(f"Unsupported asset type: {alert.asset_type}")
 
@@ -36,14 +38,14 @@ def _get_entry_and_exit_prices(alert: TradingViewAlertBody) -> Tuple[float, floa
 
     data_frame = atr_14_feature.add_feature(data_frame)
 
+    entry_price = alert.price if alert.price else data_frame.iloc[-1]["close"]
+
     if alert.direction.normalize() is TradeDirection.LONG:
-        entry_price = data_frame.iloc[-1]["close"]
         stop_loss_price = entry_price - data_frame.iloc[-1]["atr_14"] * 2
         take_profit_1_price = entry_price + (data_frame.iloc[-1]["atr_14"])
         take_profit_2_price = entry_price + (data_frame.iloc[-1]["atr_14"] * 2)
         take_profit_3_price = entry_price + (data_frame.iloc[-1]["atr_14"] * 3)
     else:
-        entry_price = data_frame.iloc[-1]["close"]
         stop_loss_price = entry_price + data_frame.iloc[-1]["atr_14"] * 2
         take_profit_1_price = entry_price - (data_frame.iloc[-1]["atr_14"])
         take_profit_2_price = entry_price - (data_frame.iloc[-1]["atr_14"] * 2)
@@ -96,6 +98,7 @@ def handle(event: Dict[str, Any], _: Dict[str, Any]) -> Dict[str, Any]:
         period=TimePeriod(int(event_body["period"])),
         asset_type=AssetType(event_body["assetType"]),
         time=event_body["time"],
+        price=float(event_body.get("price")) if "price" in event_body else None,
         powered_by=event_body.get("poweredBy"),
     )
 
@@ -110,6 +113,8 @@ def handle(event: Dict[str, Any], _: Dict[str, Any]) -> Dict[str, Any]:
         discord_channel = DiscordChannel.STOCK_SIGNALS
     elif parsed_body.asset_type is AssetType.INDICES:
         discord_channel = DiscordChannel.INDICES_SIGNALS
+    elif parsed_body.asset_type is AssetType.COMMODITIES:
+        discord_channel = DiscordChannel.COMMODITIES_SIGNALS
     else:
         raise NotImplementedError(f"Unsupported asset type: {parsed_body.asset_type}")
 

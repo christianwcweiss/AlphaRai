@@ -5,6 +5,7 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc, Input, Output, State, callback
 
 from components.atoms.content import MainContent
+from components.atoms.divider.divider import Divider
 from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.atoms.table.table import AlphaTable
 from components.atoms.text.page import PageHeader
@@ -67,7 +68,7 @@ class SettingsDetailsPage(BasePage):
                 MainContent(
                     [
                         html.Div(id="table-container"),
-                        html.Br(),
+                        Divider().render(),
                         AlphaRow(
                             [
                                 AlphaCol(
@@ -113,7 +114,7 @@ def render_table(uid: str) -> html.Div:
     return html.Div(
         [
             build_table(uid, enabled=True),
-            html.Hr(),
+            Divider().render(),
             build_table(uid, enabled=False),
         ]
     )

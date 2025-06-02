@@ -19,6 +19,7 @@ class AlertBody(abc.ABC):
         direction: TradeDirection,
         asset_type: AssetType,
         time: str,
+        price: Optional[float] = None,
         powered_by: Optional[str] = None,
     ) -> None:
         self._symbol = symbol
@@ -26,6 +27,7 @@ class AlertBody(abc.ABC):
         self._direction = direction
         self._asset_type = asset_type
         self._time = time
+        self._price = price
         self._powered_by = powered_by
 
     @property
@@ -52,6 +54,11 @@ class AlertBody(abc.ABC):
     def time(self) -> str:
         """Time of the alert."""
         return self._time
+
+    @property
+    def price(self) -> Optional[float]:
+        """Price of the alert."""
+        return self._price
 
     @property
     def powered_by(self) -> Optional[str]:

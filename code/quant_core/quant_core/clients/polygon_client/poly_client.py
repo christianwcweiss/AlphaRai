@@ -38,7 +38,7 @@ class PolygonClient:
     def get_crypto_data(self, symbol: str, time_period: TimePeriod, n_candles: int = 2000) -> pd.DataFrame:
         """Get crypto data from Polygon.io."""
         start_date = pd.Timestamp.now() - pd.Timedelta(minutes=time_period.value * n_candles)
-        end_date = pd.Timestamp.now()
+        end_date = pd.Timestamp.now() + pd.Timedelta(minutes=time_period.value)
 
         polygon_data = self._crypto_client.get_aggregate_bars(
             symbol=symbol,
@@ -48,6 +48,7 @@ class PolygonClient:
             timespan="minute",
             full_range=True,
             warnings=False,
+            adjusted=True,
         )
 
         polygon_data_frame = pd.DataFrame(polygon_data)
@@ -113,8 +114,6 @@ class PolygonClient:
 
         polygon_data_frame = polygon_data_frame[["date", "open", "high", "low", "close", "volume"]]
         polygon_data_frame["date"] = pd.to_datetime(polygon_data_frame["date"], unit="ms")
-        polygon_data_frame.set_index("date", inplace=True)
-        polygon_data_frame.sort_index(inplace=True)
         polygon_data_frame = polygon_data_frame.astype(
             {"open": "float64", "high": "float64", "low": "float64", "close": "float64", "volume": "int64"}
         )

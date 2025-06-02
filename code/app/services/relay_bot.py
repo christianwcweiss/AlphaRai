@@ -32,11 +32,14 @@ class DiscordRelayBot:
 
     def __init__(self):
         self._token = json.loads(self._get_credentials_from_secrets_manager("DISCORD_BOT_TOKEN"))["DISCORD_BOT_TOKEN"]
+        self._processed_message_ids = set()
 
         self._thread = None
         self._loop = None
         self._client = None
         self._running = False
+
+        self._on_ready_ran = False
 
     def _get_credentials_from_secrets_manager(self, secret_name: str) -> str:
         secretsmanager_client = boto3.client("secretsmanager")
@@ -50,7 +53,12 @@ class DiscordRelayBot:
 
         @client.event
         async def on_ready():
-            """Event handler for when the bot is ready and connected to Discord."""
+            if self._on_ready_ran:
+                CoreLogger().debug("on_ready() already ran once — skipping duplicate execution.")
+                return
+
+            self._on_ready_ran = True
+
             CoreLogger().info(f"Logged in as {client.user}")
             CoreLogger().info(f"Connected to {len(client.guilds)} server(s):")
 
@@ -60,32 +68,43 @@ class DiscordRelayBot:
                     CoreLogger().info(f"Channel: {channel.name} (ID: {channel.id})")
 
         @client.event
-        async def on_message(message: Any) -> None:
-            """Handle incoming messages and forward them to the local app."""
+        async def on_disconnect():
+            CoreLogger().warning("Discord bot disconnected... waiting to reconnect.")
 
+        @client.event
+        async def on_message(message: Any) -> None:
             CoreLogger().info(
-                f"Received message from {message.author.name}/{message.author.id} in {message.channel.name}: {message.content}"  # noqa: E501
+                f"Received message from {message.author.name}/{message.author.id} "
+                f"in {message.channel.name}: {message.content}"
             )
 
             if str(message.author.id) not in ALPHA_RAI_WEBHOOKS_USER_IDS:
                 return
 
-            if str(message.channel.id) in ALPHA_RAI_CHANNEL_IDS:
-                CoreLogger().info(f"Signal: {message.content}")
+            if str(message.channel.id) not in ALPHA_RAI_CHANNEL_IDS:
+                return
 
-                trade = TradeMessageParser().parse(message.content)
+            if message.id in self._processed_message_ids:
+                CoreLogger().debug(f"Duplicate message {message.id} ignored.")
+                return
 
-                CoreLogger().info(f"Parsed trade {trade} successfully received from Discord.")
+            self._processed_message_ids.add(message.id)
 
-                TradeRouter(trade=trade).route()
+            if len(self._processed_message_ids) > 1000:
+                self._processed_message_ids = set(list(self._processed_message_ids)[-500:])
+
+            CoreLogger().info(f"Signal: {message.content}")
+
+            trade = TradeMessageParser().parse(message.content)
+
+            CoreLogger().info(f"Parsed trade {trade} successfully received from Discord.")
+
+            TradeRouter(trade=trade).route()
 
         return client
 
     def run(self):
         """Start the Discord bot in a separate thread."""
-        if self._running:
-            CoreLogger().debug("Bot already running.")
-            return
 
         def start_bot():
             try:
@@ -104,8 +123,15 @@ class DiscordRelayBot:
                     self._loop.run_until_complete(self._client.close())
                     self._loop.close()
 
-        self._thread = threading.Thread(target=start_bot, daemon=True)
-        self._thread.start()
+        with self._lock:
+            if self._running:
+                CoreLogger().debug("Bot already running — skipping thread start.")
+                return
+
+            CoreLogger().info("Starting Discord bot thread!")
+            self._running = True
+            self._thread = threading.Thread(target=start_bot, daemon=True)
+            self._thread.start()
 
     def stop(self):
         """Stop the Discord bot if it is running."""

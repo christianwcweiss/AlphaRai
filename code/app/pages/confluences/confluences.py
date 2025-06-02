@@ -6,6 +6,7 @@ from dash import html, callback, Input, Output, State, ctx
 
 from components.atoms.buttons.general.button import AlphaButton
 from components.atoms.content import MainContent
+from components.atoms.divider.divider import Divider
 from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.atoms.modal.modal import AlphaModal
 from components.atoms.table.table import AlphaTable
@@ -95,7 +96,7 @@ class ConfluencesPage(BasePage):
                 MainContent(
                     [
                         build_confluence_table(),
-                        html.Br(),
+                        Divider().render(),
                         AlphaButton("➕ Add Confluence", "open-add-confluence-btn").render(),
                         AlphaModal(
                             modal_id="add-confluence-modal",

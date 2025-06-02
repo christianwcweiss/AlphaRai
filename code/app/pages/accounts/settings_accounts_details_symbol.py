@@ -5,6 +5,7 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc, Input, Output, State, callback
 
 from components.atoms.content import MainContent
+from components.atoms.divider.divider import Divider
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
 from pages.base_page import BasePage
@@ -53,7 +54,7 @@ class SymbolSettingsPage(BasePage):
                                     options=[{"label": a.value.capitalize(), "value": a.value} for a in AssetType],
                                 ),
                                 dbc.Switch(id="input-enabled", label="Enabled"),
-                                html.Br(),
+                                Divider().render(),
                                 dbc.Button("Save", id="save-symbol-settings", color="primary"),
                             ]
                         )

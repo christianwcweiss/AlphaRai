@@ -65,7 +65,7 @@ class AccountSettingsCard:  # pylint: disable=too-few-public-methods
                                     ),
                                     html.Span("Delete"),
                                 ],
-                                id={"type": "delete", "index": self.account.uid},
+                                id={"type": "initiate-delete", "index": self.account.uid},
                                 n_clicks=0,
                                 style={"display": "flex", "alignItems": "center", "cursor": "pointer"},
                             )

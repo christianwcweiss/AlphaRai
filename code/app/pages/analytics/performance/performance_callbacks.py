@@ -12,7 +12,6 @@ from pages.analytics.performance.performance_constants import PREFIX
 from quant_core.enums.chart_mode import ChartMode
 from quant_core.metrics.expectancy_over_time.expectancy_over_time import ExpectancyOverTime
 from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
-from quant_core.services.core_logger import CoreLogger
 from services.db.cache.trade_history import get_all_trades_df
 
 
@@ -114,7 +113,6 @@ def render_performance_content(  # pylint: disable=too-many-arguments, too-many-
     )
 
     chart_mode = ChartMode.ABSOLUTE if show_abs else ChartMode.RELATIVE
-    CoreLogger().info(f"Chart mode: {chart_mode}")
 
     return (
         AlphaRow(

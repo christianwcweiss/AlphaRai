@@ -9,6 +9,7 @@ class DiscordChannel(Enum):
     CRYPTO_SIGNALS = "CRYPTO_SIGNALS"
     STOCK_SIGNALS = "STOCK_SIGNALS"
     INDICES_SIGNALS = "INDICES_SIGNALS"
+    COMMODITIES_SIGNALS = "COMMODITIES_SIGNALS"
 
     def get_channel_id(self) -> str:
         """Get the Discord channel ID for the given channel."""
@@ -16,4 +17,5 @@ class DiscordChannel(Enum):
             DiscordChannel.CRYPTO_SIGNALS: "1341053733446090753",
             DiscordChannel.FOREX_SIGNALS: "1341053733060087961",
             DiscordChannel.STOCK_SIGNALS: "1341053686217965779",
+            DiscordChannel.COMMODITIES_SIGNALS: "1378814931675250718",
         }[self]

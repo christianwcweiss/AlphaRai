@@ -6,6 +6,7 @@ from dash import html, callback, Input, Output, State, ctx
 
 from components.atoms.buttons.general.button import AlphaButton
 from components.atoms.content import MainContent
+from components.atoms.divider.divider import Divider
 from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.atoms.modal.modal import AlphaModal
 from components.atoms.table.table import AlphaTable
@@ -96,10 +97,10 @@ class GeneralSettingsPage(BasePage):  # pylint: disable=too-few-public-methods
                 MainContent(
                     [
                         build_table(),
-                        html.Br(),
+                        Divider().render(),
                         AlphaButton("➕ Add Setting", "open-add-setting-btn").render(),
-                        html.Br(),
-                        html.Br(),
+                        Divider().render(),
+                        Divider().render(),
                         AlphaButton("🔄 Sync Trades from TradingView", "sync-trades-btn").render(),
                         html.Div(id="sync-trades-status", className="mt-3"),
                         AlphaModal(

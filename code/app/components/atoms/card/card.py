@@ -2,6 +2,8 @@ from typing import Optional, Union, List
 
 from dash import html
 from dash.development.base_component import Component
+
+from components.atoms.divider.divider import Divider
 from components.atoms.text.paragraph import Paragraph
 
 from components.atoms.atom import Atom
@@ -135,17 +137,7 @@ class AlphaCard(Atom):  # pylint: disable=too-many-instance-attributes
         children = [header_section]
 
         if self._show_divider:
-            children.append(
-                html.Hr(
-                    style={
-                        "width": "100%",
-                        "border": "none",
-                        "height": "2px",
-                        "backgroundColor": "#E0E0E0",  # or colors.BORDER_COLOR if you have one
-                        "margin": "0.5rem 0",
-                    }
-                )
-            )
+            children.append(Divider().render())
 
         children += main_section
 
