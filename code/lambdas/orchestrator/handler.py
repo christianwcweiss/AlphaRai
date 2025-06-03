@@ -30,7 +30,7 @@ def _get_entry_and_exit_prices(alert: TradingViewAlertBody) -> Tuple[float, floa
     elif alert.asset_type is AssetType.INDICES:
         raise NotImplementedError("Indices data retrieval is not implemented yet.")
     elif alert.asset_type is AssetType.COMMODITIES:
-        data_frame = polygon_client.get_forex_data(symbol=symbol, time_period=alert.period, n_candles=2000)
+        data_frame = polygon_client.get_forex_data(symbol=f"C:{symbol}", time_period=alert.period, n_candles=2000)
     else:
         raise ValueError(f"Unsupported asset type: {alert.asset_type}")
 

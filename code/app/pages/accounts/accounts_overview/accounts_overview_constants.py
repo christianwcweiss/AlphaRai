@@ -1,8 +1,9 @@
+from quant_core.enums.platform import Platform
+from quant_core.enums.prop_firm import PropFirm
+
 ########################################################################################################################
 # IDs
 ########################################################################################################################
-from quant_core.enums.platform import Platform
-from quant_core.enums.prop_firm import PropFirm
 
 _IDS_PAGE_PREFIX = "accounts-overview"
 

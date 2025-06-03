@@ -12,7 +12,7 @@ class AccountConfig(Base):  # type: ignore  # pylint: disable=too-few-public-met
     __tablename__ = "main_account_config"
 
     id = Column(Integer, primary_key=True, index=True)
-    account_id = Column(String, index=True)  # Renamed from uid
+    account_id = Column(String, index=True)
     signal_asset_id = Column(String, nullable=False)
     entry_stagger_method = Column(String, default="linear")
     n_staggers = Column(Integer, default=1)

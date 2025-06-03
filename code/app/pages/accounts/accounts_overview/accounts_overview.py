@@ -1,8 +1,9 @@
 import dash
 import dash_bootstrap_components as dbc
-from components.atoms.buttons.general.button import AlphaButton
+from components.atoms.buttons.general.button import AlphaButton, AlphaButtonColor
 from components.atoms.content import MainContent
 from components.atoms.divider.divider import Divider
+from components.atoms.layout.layout import AlphaRow, AlphaCol
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
 from constants import colors
@@ -67,16 +68,10 @@ class AccountsPage(BasePage):
                                 AlphaButton(
                                     DELETE_ACCOUNT_MODAL_CONFIRM_BUTTON_LABEL,
                                     button_id=DELETE_ACCOUNT_MODAL_CONFIRM_BUTTON_ID,
-                                    style={
-                                        "backgroundColor": colors.SUCCESS_COLOR,
-                                    },
                                 ).render(),
                                 AlphaButton(
                                     DELETE_ACCOUNT_MODAL_CANCEL_BUTTON_LABEL,
                                     button_id=DELETE_ACCOUNT_MODAL_CANCEL_BUTTON_ID,
-                                    style={
-                                        "backgroundColor": colors.ERROR_COLOR,
-                                    },
                                 ).render(),
                             ]
                         ),
@@ -119,22 +114,34 @@ class AccountsPage(BasePage):
                                     placeholder=INPUT_PROP_FIRM_LABEL,
                                     className="mb-2",
                                 ),
-                                AlphaButton(
-                                    button_id=ADD_ACCOUNT_CONFIRM_BUTTON_ID,
-                                    label=ADD_ACCOUNT_CONFIRM_BUTTON_LABEL,
-                                    style={
-                                        "backgroundColor": colors.SUCCESS_COLOR,
-                                        "width": "100%",
-                                    },
-                                ).render(),
-                                AlphaButton(
-                                    button_id=ADD_ACCOUNT_CANCEL_BUTTON_ID,
-                                    label=ADD_ACCOUNT_CANCEL_BUTTON_LABEL,
-                                    style={
-                                        "backgroundColor": colors.ERROR_COLOR,
-                                        "width": "100%",
-                                    },
-                                ).render(),
+                                AlphaRow(
+                                    children=[
+                                        AlphaCol(
+                                            AlphaButton(
+                                                button_id=ADD_ACCOUNT_CONFIRM_BUTTON_ID,
+                                                label=ADD_ACCOUNT_CONFIRM_BUTTON_LABEL,
+                                                button_color=AlphaButtonColor.CONFIRM
+                                            ).render(),
+                                            xs=12,
+                                            sm=6,
+                                            md=6,
+                                            lg=6,
+                                            xl=6,
+                                        ),
+                                        AlphaCol(
+                                            AlphaButton(
+                                                button_id=ADD_ACCOUNT_CANCEL_BUTTON_ID,
+                                                label=ADD_ACCOUNT_CANCEL_BUTTON_LABEL,
+                                                button_color=AlphaButtonColor.CANCEL
+                                            ).render(),
+                                            xs=12,
+                                            sm=6,
+                                            md=6,
+                                            lg=6,
+                                            xl=6,
+                                        )
+                                    ]
+                                )
                             ]
                         ),
                     ],

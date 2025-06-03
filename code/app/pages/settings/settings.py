@@ -61,7 +61,6 @@ def build_table() -> html.Table:
                     AlphaButton(
                         "✏️",
                         {"type": "edit-setting", "index": setting.key},
-                        style={"backgroundColor": "#FFC107", "width": "40px"},
                     ).render(),
                     width="auto",
                 )
@@ -74,7 +73,6 @@ def build_table() -> html.Table:
                     AlphaButton(
                         "🗑️",
                         {"type": "delete-setting", "index": setting.key},
-                        style={"backgroundColor": "#DC3545", "width": "40px"},
                     ).render(),
                     width="auto",
                 )

@@ -1,12 +1,13 @@
 import pandas as pd
+from sqlalchemy import text
+
 from db.database import CacheSessionLocal
 from models.cache.trade_history import Trade
 from quant_core.clients.mt5.mt5_client import Mt5Client
 from quant_core.enums.asset_type import AssetType
 from quant_core.services.core_logger import CoreLogger
-from services.db.main.account import get_all_accounts
-from services.db.main.account_config import get_all_configs
-from sqlalchemy import text
+from services.db.main.account import AccountService
+from services.db.main.account_config import AccountConfigService
 
 
 def get_all_trades() -> list[Trade]:
@@ -24,14 +25,14 @@ def get_all_trades_df(enrich: bool = True) -> pd.DataFrame:
     trades_df = trades_df[[col for col in trades_df.columns if not col.startswith("_sa_")]]
 
     if enrich:
-        accounts = get_all_accounts()
+        accounts = AccountService().get_all_accounts()
         accounts_df = pd.DataFrame([a.__dict__ for a in accounts])
         accounts_df = accounts_df[[col for col in accounts_df.columns if not col.startswith("_sa_")]]
 
         trades_df = trades_df.merge(accounts_df, left_on="account_id", right_on="uid", how="left")
         trades_df.drop(columns=["id_x", "id_y", "enabled", "uid"], inplace=True)
 
-        accounts_config = get_all_configs()
+        accounts_config = AccountConfigService().get_all_configs()
         accounts_config_df = pd.DataFrame([c.__dict__ for c in accounts_config])
         accounts_config_df = accounts_config_df[
             [col for col in accounts_config_df.columns if not col.startswith("_sa_")]
@@ -96,7 +97,7 @@ def truncate_table(table_name: str) -> None:
 def _sync_trades_into_db(days: int) -> None:
     results = []
 
-    for account in get_all_accounts():
+    for account in AccountService().get_all_accounts():
         try:
             alpha_trades = Mt5Client(account.secret_name).get_history_alpha_trades(account_id=account.uid, days=days)
             CoreLogger().info(f"Fetched {len(alpha_trades)} trades for account {account.friendly_name}")

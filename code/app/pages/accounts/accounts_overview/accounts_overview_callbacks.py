@@ -1,12 +1,10 @@
 from typing import Any, List, Optional, Tuple
 
 import dash
-import pandas as pd
-from components.atoms.layout.layout import AlphaCol, AlphaRow
-from components.molecules.cards.settings.account_card import AccountSettingsCard
-from dash import ALL, Input, Output, State, callback, ctx, html
+from dash import ALL, Input, Output, State, callback, ctx
 from dash.exceptions import PreventUpdate
-from models.main.account import Account
+
+from components.atoms.layout.layout import AlphaRow
 from pages.accounts.accounts_overview.accounts_overview_constants import (
     ADD_ACCOUNT_CANCEL_BUTTON_ID,
     ADD_ACCOUNT_CONFIRM_BUTTON_ID,
@@ -23,36 +21,12 @@ from pages.accounts.accounts_overview.accounts_overview_constants import (
     PAGE_INIT,
     PENDING_DELETE_UID_ID,
 )
+from pages.accounts.accounts_overview.accounts_overview_render import render_all_accounts
 from quant_core.enums.platform import Platform
 from quant_core.enums.prop_firm import PropFirm
-from quant_core.metrics.account_balance_over_time.balance_over_time import AccountBalanceOverTime
 from quant_core.services.core_logger import CoreLogger
 from quant_core.utils.text_utils import generate_uid
-from services.db.cache.trade_history import get_all_trades_df
 from services.db.main.account import AccountService
-
-
-def render_account_card(account: Account, history_data_frame: pd.DataFrame) -> html.Div:
-    """Render the account card with the given account and relative DataFrame."""
-    data_frame = (
-        history_data_frame[history_data_frame["account_id"] == account.uid] if not history_data_frame.empty else None
-    )
-
-    return AccountSettingsCard(account, data_frame).render()
-
-
-def reload_mt5_accounts():
-    """Reload the MT5 accounts and their trades."""
-    accounts = sorted(AccountService.get_all_accounts(), key=lambda x: x.friendly_name)
-    trades_df = get_all_trades_df()
-
-    balance_df = AccountBalanceOverTime().calculate(
-        data_frame=trades_df,
-    )
-
-    return AlphaRow(
-        [AlphaCol(render_account_card(account, balance_df), xs=12, sm=6, md=4, lg=3, xl=3) for account in accounts]
-    )
 
 
 @callback(
@@ -94,7 +68,7 @@ def save_new_account(
         raise PreventUpdate
 
     if ctx.triggered_id == ADD_ACCOUNT_CANCEL_BUTTON_ID:
-        return reload_mt5_accounts()
+        return render_all_accounts()
 
     AccountService().upsert_account(
         friendly_name=account_name,
@@ -104,7 +78,7 @@ def save_new_account(
         uid=generate_uid(),
     )
 
-    return reload_mt5_accounts()
+    return render_all_accounts()
 
 
 @callback(
@@ -114,7 +88,7 @@ def save_new_account(
 )
 def load_mt5_credentials_on_page_load(_: Any) -> AlphaRow:
     """Load the MT5 accounts on page load."""
-    return reload_mt5_accounts()
+    return render_all_accounts()
 
 
 @callback(
@@ -157,7 +131,7 @@ def manage_delete(
             account = AccountService().get_account_by_uid(uid)
             AccountService().delete_account(account.uid)
 
-            return reload_mt5_accounts(), False, None
+            return render_all_accounts(), False, None
 
         raise PreventUpdate
 
