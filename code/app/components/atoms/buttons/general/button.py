@@ -90,11 +90,7 @@ class AlphaButton(Atom):
     def render(self) -> html.Div:
         """Render the button as a Dash HTML component."""
 
-        button = html.Button(
-            self._label,
-            id=self._id,
-            style=self._build_style()
-        )
+        button = html.Button(self._label, id=self._id, style=self._build_style())
 
         if self._href:
             button = html.A(
@@ -109,6 +105,6 @@ class AlphaButton(Atom):
                 "display": "inline-block",
                 "visibility": "hidden" if self._hidden else "visible",
                 "width": self._width,
-                "height": self._height
-            }
+                "height": self._height,
+            },
         )

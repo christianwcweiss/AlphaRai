@@ -1,10 +1,9 @@
 from typing import Any, List, Optional, Tuple
 
 import dash
+from components.atoms.layout.layout import AlphaRow
 from dash import ALL, Input, Output, State, callback, ctx
 from dash.exceptions import PreventUpdate
-
-from components.atoms.layout.layout import AlphaRow
 from pages.accounts.accounts_overview.accounts_overview_constants import (
     ADD_ACCOUNT_CANCEL_BUTTON_ID,
     ADD_ACCOUNT_CONFIRM_BUTTON_ID,

@@ -1,8 +1,7 @@
 import pandas as pd
-from dash import html
-
 from components.atoms.layout.layout import AlphaCol, AlphaRow
 from components.molecules.cards.accounts.account_card import AccountCard
+from dash import html
 from models.main.account import Account
 from quant_core.metrics.account_balance_over_time.balance_over_time import AccountBalanceOverTime
 from services.db.cache.trade_history import get_all_trades_df

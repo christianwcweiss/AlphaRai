@@ -1,20 +1,32 @@
-from typing import Tuple, List
+from typing import List, Tuple
 
 import dash
-from dash import Input, Output, State, callback, html, dcc, ALL, MATCH
-
 from components.atoms.text.page import PageHeader
-from pages.accounts.account_details.account_details_constants import SYNC_MT5_BUTTON_ID, CARD_CONTAINER, SETTINGS_UID, \
-    DYNAMIC_HEADER, SETTINGS_URL, EDIT_ACCOUNT_CONFIG_BUTTON_ID, EDIT_MODAL_ID, EDIT_MODAL_BODY_ID, \
-    EDIT_MODAL_BUTTON_SAVE_ID, EDIT_SIGNAL_ASSET_ID, EDIT_PLATFORM_ASSET_ID, EDIT_STAGGER_METHOD_ID, EDIT_N_STAGGERS_ID, \
-    EDIT_RISK_ID, EDIT_MODE_ID, EDIT_ASSET_TYPE_ID, EDIT_ENABLED_ID, EDIT_CONFIG_ID, EDIT_MODAL_BUTTON_CANCEL_ID
+from dash import ALL, Input, Output, State, callback, html
+from pages.accounts.account_details.account_details_constants import (
+    CARD_CONTAINER,
+    DYNAMIC_HEADER,
+    EDIT_ACCOUNT_CONFIG_BUTTON_ID,
+    EDIT_ASSET_TYPE_ID,
+    EDIT_CONFIG_ID,
+    EDIT_ENABLED_ID,
+    EDIT_MODAL_BODY_ID,
+    EDIT_MODAL_BUTTON_CANCEL_ID,
+    EDIT_MODAL_BUTTON_SAVE_ID,
+    EDIT_MODAL_ID,
+    EDIT_MODE_ID,
+    EDIT_N_STAGGERS_ID,
+    EDIT_PLATFORM_ASSET_ID,
+    EDIT_RISK_ID,
+    EDIT_SIGNAL_ASSET_ID,
+    EDIT_STAGGER_METHOD_ID,
+    SETTINGS_UID,
+    SETTINGS_URL,
+    SYNC_MT5_BUTTON_ID,
+)
 from pages.accounts.account_details.account_details_render import render_account_config_cards, render_edit_modal_body
-from quant_core.enums.asset_type import AssetType
-from quant_core.enums.trade_mode import TradeMode
-from quant_core.services.core_logger import CoreLogger
 from services.db.main.account import AccountService
 from services.db.main.account_config import AccountConfigService
-import dash_bootstrap_components as dbc
 
 
 @callback(
@@ -61,13 +73,14 @@ def sync_symbols_callback(_sync_button_clicks: int, uid: str) -> html.Div:
 
     return render_config_cards(uid)
 
+
 @callback(
     Output(EDIT_MODAL_ID, "is_open"),
     Output(EDIT_MODAL_BODY_ID, "children"),
     [Input({"type": EDIT_ACCOUNT_CONFIG_BUTTON_ID, "index": ALL}, "n_clicks")],
     State(EDIT_MODAL_ID, "is_open"),
     State(SETTINGS_UID, "children"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def open_edit_modal(n_clicks: List[int], _is_open: bool, uid: str) -> Tuple[bool, html.Div]:
     """Open the edit modal for the account configuration."""
@@ -82,7 +95,9 @@ def open_edit_modal(n_clicks: List[int], _is_open: bool, uid: str) -> Tuple[bool
 
     return True, render_edit_modal_body(config=config)
 
+
 from dash import ctx
+
 
 @callback(
     Output(EDIT_MODAL_ID, "is_open", allow_duplicate=True),
@@ -99,9 +114,9 @@ from dash import ctx
     State(EDIT_ENABLED_ID, "value"),
     State(EDIT_CONFIG_ID, "data"),
     State(SETTINGS_UID, "children"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
-def save_config(
+def save_config(  # pylint: disable=too-many-arguments, too-many-positional-arguments
     _save_clicks: int,
     _cancel_clicks: int,
     signal_asset_id: str,
@@ -113,7 +128,7 @@ def save_config(
     asset_type: str,
     enabled: bool,
     config_id: str,
-    uid: str
+    uid: str,
 ) -> Tuple[bool, html.Div]:
     """Save or cancel edits to account config. Close modal and refresh cards."""
     if ctx.triggered_id == EDIT_MODAL_BUTTON_CANCEL_ID:
@@ -132,12 +147,10 @@ def save_config(
                 "mode": mode,
                 "asset_type": asset_type,
                 "enabled": enabled,
-            }
+            },
         )
         updated_cards = render_account_config_cards(AccountConfigService().get_configs_by_account_id(uid))
 
         return False, updated_cards
 
     raise dash.exceptions.PreventUpdate
-
-

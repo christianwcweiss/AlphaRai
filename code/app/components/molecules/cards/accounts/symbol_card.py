@@ -1,8 +1,7 @@
 import os
 
-from dash import html
-
 from components.atoms.card.card import AlphaCard, AlphaCardHeader
+from dash import html
 from models.main.account_config import AccountConfig
 from quant_core.utils.image_utils import encode_image
 
@@ -28,7 +27,6 @@ class AccountConfigCard:  # pylint: disable=too-few-public-methods
                         ),
                         style={"textDecoration": "none", "color": "inherit"},
                     ),
-
                     html.Button(
                         html.Img(
                             src=f"data:image/png;base64,{edit_icon}",

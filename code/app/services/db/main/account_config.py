@@ -9,7 +9,6 @@ from quant_core.services.core_logger import CoreLogger
 from services.symbol_lookup import ALL_SYMBOLS
 
 
-
 class AccountConfigService:
     """Service class for managing account configurations in the database."""
 
@@ -31,7 +30,9 @@ class AccountConfigService:
     def get_config_by_account_and_symbol(account_id: str, signal_asset_id: str) -> Optional[AccountConfig]:
         """Fetch a configuration for a given account ID and signal asset ID."""
         with MainSessionLocal() as session:
-            return session.query(AccountConfig).filter_by(account_id=account_id, signal_asset_id=signal_asset_id).first()
+            return (
+                session.query(AccountConfig).filter_by(account_id=account_id, signal_asset_id=signal_asset_id).first()
+            )
 
     @staticmethod
     def upsert_configs(account_id: str, configs: Union[Dict[str, Any], List[Dict[str, Any]]]) -> None:
@@ -77,20 +78,23 @@ class AccountConfigService:
     @staticmethod
     def sync_with_mt5(account_id: str, secret_id: str) -> None:
         """Sync account configurations with MT5 symbols."""
-        symbols =  Mt5Client(secret_id=secret_id).get_all_symbols()
+        symbols = Mt5Client(secret_id=secret_id).get_all_symbols()
 
         AccountConfigService().upsert_configs(
             account_id,
             [
-                {"signal_asset_id": symbol.name,
-                 "platform_asset_id": symbol.name,
-                 "entry_stagger_method": StaggerMethod.FIBONACCI.value,
-                 "n_staggers": 3,
-                 "risk_percent": 0.5,
-                 "decimal_points": symbol.digits,
-                 "lot_size": symbol.trade_contract_size,
-                 "enabled": False,
-                 "asset_type": ALL_SYMBOLS.get(symbol.name, None),
-                 "mode": TradeMode.DEFAULT.name, } for symbol in symbols
+                {
+                    "signal_asset_id": symbol.name,
+                    "platform_asset_id": symbol.name,
+                    "entry_stagger_method": StaggerMethod.FIBONACCI.value,
+                    "n_staggers": 3,
+                    "risk_percent": 0.5,
+                    "decimal_points": symbol.digits,
+                    "lot_size": symbol.trade_contract_size,
+                    "enabled": False,
+                    "asset_type": ALL_SYMBOLS.get(symbol.name, None),
+                    "mode": TradeMode.DEFAULT.name,
+                }
+                for symbol in symbols
             ],
         )

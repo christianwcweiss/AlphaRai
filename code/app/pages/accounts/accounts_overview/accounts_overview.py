@@ -3,7 +3,7 @@ import dash_bootstrap_components as dbc
 from components.atoms.buttons.general.button import AlphaButton, AlphaButtonColor
 from components.atoms.content import MainContent
 from components.atoms.divider.divider import Divider
-from components.atoms.layout.layout import AlphaRow, AlphaCol
+from components.atoms.layout.layout import AlphaCol, AlphaRow
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
 from constants import colors
@@ -120,7 +120,7 @@ class AccountsPage(BasePage):
                                             AlphaButton(
                                                 button_id=ADD_ACCOUNT_CONFIRM_BUTTON_ID,
                                                 label=ADD_ACCOUNT_CONFIRM_BUTTON_LABEL,
-                                                button_color=AlphaButtonColor.CONFIRM
+                                                button_color=AlphaButtonColor.CONFIRM,
                                             ).render(),
                                             xs=12,
                                             sm=6,
@@ -132,16 +132,16 @@ class AccountsPage(BasePage):
                                             AlphaButton(
                                                 button_id=ADD_ACCOUNT_CANCEL_BUTTON_ID,
                                                 label=ADD_ACCOUNT_CANCEL_BUTTON_LABEL,
-                                                button_color=AlphaButtonColor.CANCEL
+                                                button_color=AlphaButtonColor.CANCEL,
                                             ).render(),
                                             xs=12,
                                             sm=6,
                                             md=6,
                                             lg=6,
                                             xl=6,
-                                        )
+                                        ),
                                     ]
-                                )
+                                ),
                             ]
                         ),
                     ],

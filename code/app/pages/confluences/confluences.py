@@ -62,7 +62,6 @@ def build_confluence_table() -> html.Table:
                     AlphaButton(
                         "✏️",
                         {"type": "edit-confluence", "index": conf.confluence_id},
-                        style={"backgroundColor": "#FFC107", "width": "40px"},
                     ).render(),
                     width="auto",
                 )
@@ -74,7 +73,6 @@ def build_confluence_table() -> html.Table:
                 AlphaButton(
                     "🗑️",
                     {"type": "delete-confluence", "index": conf.confluence_id},
-                    style={"backgroundColor": "#DC3545", "width": "40px"},
                 ).render(),
                 width="auto",
             )

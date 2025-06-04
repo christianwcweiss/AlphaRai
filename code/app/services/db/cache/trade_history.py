@@ -1,6 +1,4 @@
 import pandas as pd
-from sqlalchemy import text
-
 from db.database import CacheSessionLocal
 from models.cache.trade_history import Trade
 from quant_core.clients.mt5.mt5_client import Mt5Client
@@ -8,6 +6,7 @@ from quant_core.enums.asset_type import AssetType
 from quant_core.services.core_logger import CoreLogger
 from services.db.main.account import AccountService
 from services.db.main.account_config import AccountConfigService
+from sqlalchemy import text
 
 
 def get_all_trades() -> list[Trade]:
