@@ -21,3 +21,4 @@ strategies/*
 **__pycache__**
 logs/**
 cache.db
+/code/app/db/data/database.db
