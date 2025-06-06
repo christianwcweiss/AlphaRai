@@ -1,95 +1,100 @@
-from typing import List, Tuple
-
-import dash
 import dash_bootstrap_components as dbc
-from dash import Input, Output, State, callback, ctx, html
+from dash import Input, Output, callback
+from dash.exceptions import PreventUpdate
+from pages.settings.settings_contants import (
+    POLYGON_API_KEY_INPUT_ID,
+    TRADE_WINDOW_END,
+    TRADE_WINDOW_START,
+    TRADE_WINDOW_START_HOUR_ID,
+    TRADE_WINDOW_START_MINUTE_ID,
+    TRADE_WINDOW_START_WEEKDAY_ID,
+    TRADE_WINDOW_STOP_HOUR_ID,
+    TRADE_WINDOW_STOP_MINUTE_ID,
+    TRADE_WINDOW_STOP_WEEKDAY_ID,
+)
+from quant_core.enums.weekday import Weekday
 from quant_core.services.core_logger import CoreLogger
+from quant_core.utils.time_utils import (
+    convert_minutes_since_week_started_to_time,
+    convert_time_data_to_minutes_since_week_started,
+)
 from services.db.cache.trade_history import sync_trades_from_all_accounts
-from services.db.main.general_setting import GeneralSettingService, delete_setting, get_all_settings, upsert_setting
+from services.db.main.general_setting import GeneralSettingService
 
 
 @callback(
-    Output("add-setting-modal", "is_open"),
-    [
-        Input("open-add-setting-btn", "n_clicks"),
-        Input("confirm-add-setting", "n_clicks"),
-        Input("cancel-add-setting", "n_clicks"),
-    ],
-    State("add-setting-modal", "is_open"),
-    prevent_initial_call=True,
+    Output(TRADE_WINDOW_START_WEEKDAY_ID, "value"),
+    Output(TRADE_WINDOW_START_HOUR_ID, "value"),
+    Output(TRADE_WINDOW_START_MINUTE_ID, "value"),
+    Output(TRADE_WINDOW_STOP_WEEKDAY_ID, "value"),
+    Output(TRADE_WINDOW_STOP_HOUR_ID, "value"),
+    Output(TRADE_WINDOW_STOP_MINUTE_ID, "value"),
+    Input("url", "pathname"),
 )
-def toggle_add_modal(_, __, ___, ____) -> bool:
-    """Toggle the add setting modal."""
-    return ctx.triggered_id == "open-add-setting-btn"
+def load_trade_window_settings(_):
+    """Load the trade window settings from the database and return them in a format suitable for the UI."""
+    start_setting = GeneralSettingService.get_setting_by_key(TRADE_WINDOW_START)
+    stop_setting = GeneralSettingService.get_setting_by_key(TRADE_WINDOW_END)
+
+    start_min = int(start_setting.value) if start_setting else 180
+    stop_min = int(stop_setting.value) if stop_setting else 7020
+
+    start_day, start_hour, start_minute = convert_minutes_since_week_started_to_time(start_min)
+    stop_day, stop_hour, stop_minute = convert_minutes_since_week_started_to_time(stop_min)
+
+    return (start_day.name, str(start_hour), f"{start_minute:02}", stop_day.name, str(stop_hour), f"{stop_minute:02}")
 
 
 @callback(
-    Output("edit-setting-modal", "is_open"),
-    Output("modal-edit-key", "value"),
-    Output("modal-edit-value", "value"),
-    Input({"type": "edit-setting", "index": dash.ALL}, "n_clicks"),
+    Output("trade-window-store", "data", allow_duplicate=True),
+    Input(TRADE_WINDOW_START_WEEKDAY_ID, "value"),
+    Input(TRADE_WINDOW_START_HOUR_ID, "value"),
+    Input(TRADE_WINDOW_START_MINUTE_ID, "value"),
+    Input(TRADE_WINDOW_STOP_WEEKDAY_ID, "value"),
+    Input(TRADE_WINDOW_STOP_HOUR_ID, "value"),
+    Input(TRADE_WINDOW_STOP_MINUTE_ID, "value"),
     prevent_initial_call=True,
 )
-def open_edit_modal(edit_clicks: List[int]) -> Tuple[bool, str, str]:
-    """Open the edit modal and populate it with the selected setting's key and value."""
-    if not any(edit_clicks):
-        raise dash.exceptions.PreventUpdate
+def save_trade_window_settings(  # pylint: disable=too-many-arguments, too-many-positional-arguments
+    start_day: str, start_hour: str, start_min: str, stop_day: str, stop_hour: str, stop_min: str
+) -> str:
+    """Save the trade window settings to the database."""
+    try:
+        start_minutes = convert_time_data_to_minutes_since_week_started(
+            Weekday[start_day], int(start_hour), int(start_min)
+        )
+        stop_minutes = convert_time_data_to_minutes_since_week_started(Weekday[stop_day], int(stop_hour), int(stop_min))
 
-    key = ctx.triggered_id.get("index")
-    setting = next((s for s in GeneralSettingService().get_all_settings() if s.key == key), None)
+        GeneralSettingService.upsert_setting(TRADE_WINDOW_START, str(start_minutes))
+        GeneralSettingService.upsert_setting(TRADE_WINDOW_END, str(stop_minutes))
 
-    if not setting:
-        raise dash.exceptions.PreventUpdate
-
-    return True, setting.key, setting.value
+        return ""
+    except Exception as exception:  # pylint: disable=broad-exception-caught
+        return f"Error saving trade window: {str(exception)}"
 
 
 @callback(
-    Output("general-settings-table", "children", allow_duplicate=True),
-    Input("confirm-add-setting", "n_clicks"),
-    State("modal-add-key", "value"),
-    State("modal-add-value", "value"),
-    prevent_initial_call=True,
+    Output(POLYGON_API_KEY_INPUT_ID, "value"),
+    Input("url", "pathname"),
 )
-def save_new_setting(_, key: str, value: str) -> html.Table:
-    """Save new setting to the database."""
-    if not key or not value:
-        raise dash.exceptions.PreventUpdate
-    if key in (s.key for s in GeneralSettingService().get_all_settings()):
-        raise dash.exceptions.PreventUpdate
-    upsert_setting(key, value)
+def load_polygon_api_key(_: str):
+    """Load the Polygon API key from the database and return it masked."""
+    setting = GeneralSettingService.get_setting_by_key("POLYGON_API_KEY")
 
-    return build_table()
+    return "*" * len(setting.value) if setting and setting.value else ""
 
 
-@callback(
-    Output("general-settings-table", "children", allow_duplicate=True),
-    Input("confirm-edit-setting", "n_clicks"),
-    State("modal-edit-key", "value"),
-    State("modal-edit-value", "value"),
-    prevent_initial_call=True,
-)
-def save_edited_setting(_, key: str, value: str) -> html.Table:
-    """Save edited setting to the database."""
-    if not key:
-        raise dash.exceptions.PreventUpdate
-    upsert_setting(key, value)
+@callback(Output("polygon-api-key-store", "data"), Input(POLYGON_API_KEY_INPUT_ID, "value"), prevent_initial_call=True)
+def save_polygon_api_key(value) -> str:
+    """Save the Polygon API key to the database."""
+    if not value or value == "*****":
+        raise PreventUpdate
 
-    return build_table()
-
-
-@callback(
-    Output("general-settings-table", "children", allow_duplicate=True),
-    Input({"type": "delete-setting", "index": dash.ALL}, "n_clicks"),
-    prevent_initial_call=True,
-)
-def delete_selected_setting(_) -> html.Table:
-    """Delete selected setting if it's not required."""
-    key = ctx.triggered_id.get("index")
-    if key and key not in _REQUIRED_KEYS:
-        delete_setting(key)
-
-    return build_table()
+    try:
+        GeneralSettingService.upsert_setting("POLYGON_API_KEY", value)
+        return "*****"
+    except Exception:  # pylint: disable=broad-exception-caught
+        return ""
 
 
 @callback(

@@ -5,7 +5,10 @@ from components.atoms.text.section import SectionHeader
 from components.frame.body import PageBody
 from dash import dcc, html
 from pages.base_page import BasePage
-from pages.cockpit.cockpit_callbacks import control_bot_and_toggle_accounts, update_bot_status
+from pages.cockpit.cockpit_callbacks import (  # pylint: disable=unused-import # noqa: F401
+    control_bot_and_toggle_accounts,
+    update_bot_status,
+)
 from services.relay_bot import DiscordRelayBot
 
 COCKPIT_PATH = "/"

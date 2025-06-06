@@ -7,6 +7,7 @@ ACCENT_COLOR = "#FF4081"  # Accent Pink A200
 
 # Background & Surface
 BACKGROUND_COLOR = "#F5F5F5"  # Light grey background
+BACKGROUND_WHITE = "#FFFFFF"  # Pure white background
 SURFACE_COLOR = "#FFFFFF"  # Card or surface color
 ELEVATED_SURFACE_COLOR = "#FAFAFA"
 SHADOW_COLOR = "rgba(0, 0, 0, 0.2)"

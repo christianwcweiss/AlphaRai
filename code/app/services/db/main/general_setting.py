@@ -72,6 +72,5 @@ def upsert_setting(key: str, value: str) -> GeneralSetting:
 def delete_setting(key: str) -> None:
     """Delete a setting by key."""
     with MainSessionLocal() as session:
-        """Delete a general setting by its key."""
         session.query(GeneralSetting).filter_by(key=key).delete()
         session.commit()

@@ -2,7 +2,7 @@ from typing import List, Tuple
 
 import dash
 from components.atoms.text.page import PageHeader
-from dash import ALL, Input, Output, State, callback, html
+from dash import ALL, Input, Output, State, callback, ctx, html
 from pages.accounts.account_details.account_details_constants import (
     CARD_CONTAINER,
     DYNAMIC_HEADER,
@@ -94,9 +94,6 @@ def open_edit_modal(n_clicks: List[int], _is_open: bool, uid: str) -> Tuple[bool
         raise dash.exceptions.PreventUpdate
 
     return True, render_edit_modal_body(config=config)
-
-
-from dash import ctx
 
 
 @callback(

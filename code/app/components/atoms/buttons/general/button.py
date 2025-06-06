@@ -39,10 +39,10 @@ class AlphaButtonColor(Enum):
     CANCEL = colors.ERROR_COLOR
 
 
-class AlphaButton(Atom):
+class AlphaButton(Atom):  # pylint: disable=too-many-instance-attributes
     """A button component for Dash applications."""
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-instance-attributes
         self,
         label: str,
         button_id: Optional[Union[str, Dict[str, Any]]] = None,

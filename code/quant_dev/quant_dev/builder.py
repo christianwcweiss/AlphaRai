@@ -103,7 +103,7 @@ class Builder:
     @staticmethod
     @contextmanager
     def temporary_test_db(
-        models: Union[Type[DeclarativeMeta], List[Type[DeclarativeMeta]]]
+        models: Union[Type[DeclarativeMeta], List[Type[DeclarativeMeta]]],
     ) -> Generator[sessionmaker, None, None]:
         if not isinstance(models, list):
             models = [models]

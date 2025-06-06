@@ -6,7 +6,6 @@ from components.atoms.divider.divider import Divider
 from components.atoms.layout.layout import AlphaCol, AlphaRow
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
-from constants import colors
 from dash import dcc, html
 from pages.accounts.accounts_overview.accounts_overview_callbacks import (  # type: ignore  # pylint: disable=unused-import  # noqa: E501, F401
     load_mt5_credentials_on_page_load,

@@ -1,22 +1,19 @@
-from typing import List, Tuple
-
 import dash
-import dash_bootstrap_components as dbc
 from components.atoms.buttons.general.button import AlphaButton
 from components.atoms.content import MainContent
-from components.atoms.divider.divider import Divider
-from components.atoms.layout.layout import AlphaCol, AlphaRow
-from components.atoms.modal.modal import AlphaModal
-from components.atoms.table.table import AlphaTable
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
-from dash import Input, Output, State, callback, ctx, html
-from models.main.general_setting import GeneralSetting
+from dash import dcc, html
 from pages.base_page import BasePage
-from pages.settings.settings_render import render_keys_settings_row, render_trade_settings_row
-from quant_core.services.core_logger import CoreLogger
-from services.db.cache.trade_history import sync_trades_from_all_accounts
-from services.db.main.general_setting import delete_setting, get_all_settings, upsert_setting
+from pages.settings.settings_callbacks import (  # pylint: disable=unused-import  # noqa: F401
+    load_polygon_api_key,
+    load_trade_window_settings,
+    save_polygon_api_key,
+    save_trade_window_settings,
+    sync_trades_from_metatrader_5,
+)
+from pages.settings.settings_contants import POLYGON_API_KEY_STORE_ID
+from pages.settings.settings_render import render_keys_settings_card, render_trade_settings_card
 
 dash.register_page(__name__, path="/settings", name="Settings")
 
@@ -33,10 +30,11 @@ class GeneralSettingsPage(BasePage):  # pylint: disable=too-few-public-methods
                 PageHeader("General Settings").render(),
                 MainContent(
                     [
-                        render_trade_settings_row(),
-                        Divider().render(),
-                        render_keys_settings_row(),
-                        Divider().render(),
+                        render_trade_settings_card(),
+                        render_keys_settings_card(),
+                        dcc.Store(id="trade-window-store"),
+                        dcc.Store(id=POLYGON_API_KEY_STORE_ID),
+                        # deprecated sync trades button -> move to analytics page
                         AlphaButton("Sync Trades from TradingView", "sync-trades-btn").render(),
                         html.Div(id="sync-trades-status", className="mt-3"),
                     ]

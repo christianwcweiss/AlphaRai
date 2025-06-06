@@ -5,7 +5,7 @@ from components.atoms.layout.layout import AlphaRow
 from components.frame.body import PageBody
 from constants.style import HIDDEN
 from dash import dcc, html
-from pages.accounts.account_details.account_details_callbacks import (
+from pages.accounts.account_details.account_details_callbacks import (  # pylint: disable=unused-import  # noqa: F401
     extract_uid_from_url,
     open_edit_modal,
     render_config_cards,
