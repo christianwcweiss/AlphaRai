@@ -1,9 +1,8 @@
-from sqlalchemy import Boolean, Column, Integer, String, Enum
-from sqlalchemy.ext.declarative import declarative_base
-
 from quant_core.entities.dto.account import AccountDTO
 from quant_core.enums.platform import Platform
 from quant_core.enums.prop_firm import PropFirm
+from sqlalchemy import Boolean, Column, Enum, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 

@@ -1,19 +1,15 @@
-from dash import dcc, page_container, Dash, callback, Output, Input, State, dash, html
-import dash_bootstrap_components as dbc
+import os
 
+import dash_bootstrap_components as dbc
 from components.atoms.buttons.general.button import AlphaButton
-from components.molecules.modals.logs.log_viewer import LogViewer
 from components.frame.top_bar import TopBar
+from components.molecules.modals.logs.log_viewer import LogViewer
 from components.molecules.modals.trades.new_trade import NewTradeModal
 from constants import colors
+from dash import Dash, Input, Output, State, callback, dash, dcc, html, page_container
 from db.database import init_db
 from quant_core.services.core_logger import CoreLogger
-from services.relay_bot import DiscordRelayBot
-
-init_db()
-
-bot_instance = DiscordRelayBot()
-bot_instance.run()
+from services.relay_bot import DiscordRelayBot  # pylint: disable=unused-import  # noqa: F401
 
 app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.COSMO], suppress_callback_exceptions=True)
 server = app.server
@@ -33,20 +29,6 @@ app.layout = dbc.Container(
         AlphaButton(
             "+",
             "open-trade-modal-btn",
-            style={
-                "position": "fixed",
-                "bottom": "30px",
-                "right": "30px",
-                "zIndex": 1050,
-                "borderRadius": "50%",
-                "width": "60px",
-                "height": "60px",
-                "padding": "0",
-                "fontSize": "28px",
-                "boxShadow": "0 4px 12px rgba(0,0,0,0.2)",
-                "backgroundColor": colors.PRIMARY_COLOR,
-                "color": "#fff",
-            },
         ).render(),
     ],
     fluid=True,
@@ -85,4 +67,10 @@ def toggle_log_modal(_, is_open: bool) -> tuple[bool, str]:
 
 
 if __name__ == "__main__":
+    init_db()
+    if os.environ.get("WERKZEUG_RUN_MAIN") == "true":  # Avoid starting the bot multiple times in debug mode
+        pass
+        # bot_instance = DiscordRelayBot()
+        # bot_instance.run()
+
     app.run(debug=True)

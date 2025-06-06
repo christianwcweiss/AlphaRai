@@ -1,7 +1,5 @@
 from typing import List
 
-from typing_extensions import Tuple
-
 from entities.trade_details import TradeDetails
 from models.main.account import Account
 from models.main.account_config import AccountConfig
@@ -12,10 +10,11 @@ from quant_core.enums.stagger_method import StaggerMethod
 from quant_core.enums.trade_direction import TradeDirection
 from quant_core.services.core_logger import CoreLogger
 from quant_core.trader.platforms.metatrader import Mt5Trader
-from quant_core.utils.trade_utils import get_stagger_levels, calculate_position_size
-from services.db.main.account import get_all_accounts
-from services.db.main.account_config import get_config_by_account_and_symbol
+from quant_core.utils.trade_utils import calculate_position_size, get_stagger_levels
+from services.db.main.account import AccountService
+from services.db.main.account_config import AccountConfigService
 from services.magician import Magician
+from typing_extensions import Tuple
 
 
 class TradeRouter:  # pylint: disable=too-few-public-methods
@@ -34,7 +33,7 @@ class TradeRouter:  # pylint: disable=too-few-public-methods
 
     def _get_enabled_accounts(self, trade: TradeDetails) -> List[Tuple[Account, AccountConfig]]:
         """Gets enabled accounts based on trade signal."""
-        accounts = get_all_accounts()
+        accounts = AccountService().get_all_accounts()
         matched_accounts = []
 
         for account in accounts:
@@ -42,7 +41,7 @@ class TradeRouter:  # pylint: disable=too-few-public-methods
                 CoreLogger().info(f"Account {account.uid} is disabled. Skipping...")
                 continue
 
-            if config := get_config_by_account_and_symbol(account.uid, trade.symbol):
+            if config := AccountConfigService().get_config_by_account_and_symbol(account.uid, trade.symbol):
                 if config.enabled:
                     CoreLogger().info(f"Found config for {account.uid}: {config}")
                     matched_accounts.append((account, config))

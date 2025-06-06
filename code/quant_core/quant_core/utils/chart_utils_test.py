@@ -1,9 +1,8 @@
 import pytest
-from sklearn.utils import shuffle
-
 from quant_core.enums.time_period import TimePeriod
 from quant_core.utils.chart_utils import check_df_sorted, get_data_frame_period
 from quant_dev.builder import Builder
+from sklearn.utils import shuffle
 
 
 class TestChartUtilities:

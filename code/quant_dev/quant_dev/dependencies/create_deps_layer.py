@@ -13,10 +13,7 @@ from contextlib import suppress
 from json import JSONDecodeError
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 import boto3
 import pip

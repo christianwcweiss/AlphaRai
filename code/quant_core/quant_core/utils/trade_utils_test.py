@@ -1,11 +1,10 @@
 from typing import List
 
 import pytest
-
 from models.main.account_config import AccountConfig
 from quant_core.enums.asset_type import AssetType
 from quant_core.enums.stagger_method import StaggerMethod
-from quant_core.utils.trade_utils import get_stagger_levels, calculate_position_size
+from quant_core.utils.trade_utils import calculate_position_size, get_stagger_levels
 
 
 class TestTradeUtils:

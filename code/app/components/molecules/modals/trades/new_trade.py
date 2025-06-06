@@ -1,15 +1,15 @@
-from typing import List, Dict, Any, Tuple, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import dash_bootstrap_components as dbc
-from dash import html, dcc, Input, Output, State, callback, dash
-from dash_bootstrap_components import Alert
-
 from components.atoms.buttons.general.button import AlphaButton
-from components.atoms.card.card import AlphaCard, AlphaCardHeader, AlphaCardBody
-from components.atoms.layout.layout import AlphaRow, AlphaCol
+from components.atoms.card.card import AlphaCard, AlphaCardBody, AlphaCardHeader
+from components.atoms.divider.divider import Divider
+from components.atoms.layout.layout import AlphaCol, AlphaRow
 from components.molecules.molecule import Molecule
 from constants import colors
 from constants.style import HIDDEN
+from dash import Input, Output, State, callback, dash, dcc, html
+from dash_bootstrap_components import Alert
 from entities.trade_details import TradeDetails
 from models.main.account import Account
 from models.main.account_config import AccountConfig
@@ -17,13 +17,13 @@ from quant_core.clients.mt5.mt5_client import Mt5Client
 from quant_core.enums.stagger_method import StaggerMethod
 from quant_core.services.core_logger import CoreLogger
 from quant_core.utils.trade_utils import (
-    get_stagger_levels,
     calculate_position_size,
     calculate_risk_reward,
     calculate_weighted_risk_reward,
+    get_stagger_levels,
 )
-from services.db.main.account import get_all_accounts
-from services.db.main.account_config import get_config_by_account_and_symbol
+from services.db.main.account import AccountService
+from services.db.main.account_config import AccountConfigService
 from services.trade_parser import TradeMessageParser
 from services.trade_router import TradeRouter
 
@@ -37,9 +37,9 @@ def _render_trade_input_text_area() -> html.Div:
                 style={"width": "100%", "height": "350px", "display": "block"},
                 placeholder="Paste signal here...",
             ),
-            html.Br(),
+            Divider().render(),
             AlphaButton("Parse Signal", "parse-trade-btn").render(),
-            html.Br(),
+            Divider().render(),
         ],
         id="trade-input-container",
         style={"marginBottom": "1rem"},
@@ -130,10 +130,12 @@ def _render_risk_preview(  # pylint: disable=too-many-locals
     trade_details: TradeDetails, active_levels: Optional[int] = None
 ) -> html.Div:
     center_style = {"textAlign": "center"}
-    all_accounts = get_all_accounts()
+    all_accounts = AccountService().get_all_accounts()
     configs: List[Tuple[Account, AccountConfig]] = []
     for account in all_accounts:
-        if config := get_config_by_account_and_symbol(account_id=account.uid, signal_asset_id=trade_details.symbol):
+        if config := AccountConfigService().get_config_by_account_and_symbol(
+            account_id=account.uid, signal_asset_id=trade_details.symbol
+        ):
             if config.enabled:
                 configs.append((account, config))
 
@@ -183,7 +185,7 @@ def _render_risk_preview(  # pylint: disable=too-many-locals
                         html.Div(f"Risk %: {config.risk_percent}%"),
                         html.Div(f"Absolute Risk: ${round(balance * config.risk_percent / 100)}"),
                         html.Div(f"Weighted RR: {weighted[-1]:.2f}" if weighted else "Weighted RR: n.a."),
-                        html.Hr(),
+                        Divider().render(),
                     ],
                     style={"marginBottom": "1rem"},
                 )
@@ -217,7 +219,7 @@ def _render_trade_details_section() -> List[html.Div]:
                     children=[
                         html.Div(
                             [
-                                AlphaButton("Execute Trade", "submit-trade-btn", style={"display": "none"}).render(),
+                                AlphaButton("Execute Trade", "submit-trade-btn").render(),
                             ]
                         ),
                     ]
@@ -295,12 +297,11 @@ def toggle_trade_modal(
 def parse_trade_signal(_, signal_input: str) -> tuple[Alert, Any, Any, Any, Any, Any, Any]:
     """Parse the trade signal and display the details."""
     if not signal_input:
-        return (
+        return (  # type: ignore
             dbc.Alert("Please paste a signal...", color=colors.WARNING_COLOR),
             dash.no_update,
             dash.no_update,
             HIDDEN,
-            dash.no_update,
             dash.no_update,
             dash.no_update,
         )
@@ -309,12 +310,11 @@ def parse_trade_signal(_, signal_input: str) -> tuple[Alert, Any, Any, Any, Any,
         trade_details = TradeMessageParser.parse(signal_input)
     except Exception as error:  # pylint: disable=broad-exception-caught
         CoreLogger().error(f"Failed to parse signal: {error}")
-        return (
+        return (  # type: ignore
             dbc.Alert(f"Error parsing signal: {error}", color=colors.ERROR_COLOR),
             dash.no_update,
             dash.no_update,
             HIDDEN,
-            dash.no_update,
             dash.no_update,
             dash.no_update,
         )

@@ -1,5 +1,4 @@
 import pandas as pd
-
 from quant_core.enums.time_period import TimePeriod
 from quant_core.enums.trade_direction import TradeDirection
 

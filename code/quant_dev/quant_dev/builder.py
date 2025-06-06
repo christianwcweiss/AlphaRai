@@ -1,9 +1,12 @@
 import os
 import string
+from contextlib import contextmanager
 from random import choices
-from typing import Optional, List, Any
+from typing import Any, Generator, List, Optional, Type, Union
 
 import pandas as pd
+from sqlalchemy import create_engine
+from sqlalchemy.orm import DeclarativeMeta, sessionmaker
 
 
 class Builder:
@@ -96,3 +99,21 @@ class Builder:
         )
 
         return data_frame
+
+    @staticmethod
+    @contextmanager
+    def temporary_test_db(
+        models: Union[Type[DeclarativeMeta], List[Type[DeclarativeMeta]]],
+    ) -> Generator[sessionmaker, None, None]:
+        if not isinstance(models, list):
+            models = [models]
+
+        db_url = "sqlite:///:memory:"
+
+        engine = create_engine(db_url, echo=False)
+        SessionLocal = sessionmaker(bind=engine)
+
+        for model in models:
+            model.metadata.create_all(bind=engine)
+
+        yield SessionLocal

@@ -1,5 +1,4 @@
 import pytest
-
 from components.molecules.toolbars.analytics_toolbar import analytics_bar_get_active_states
 from quant_dev.builder import Builder
 

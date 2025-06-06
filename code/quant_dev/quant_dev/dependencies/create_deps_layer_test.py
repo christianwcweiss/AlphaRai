@@ -3,21 +3,18 @@ import shutil
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Dict
-from typing import Generator
-from typing import List
-from typing import Optional
-from unittest.mock import Mock
-from unittest.mock import patch
+from typing import Dict, Generator, List, Optional
+from unittest.mock import Mock, patch
 
 import pytest
 from botocore.exceptions import ClientError
-
-from quant_dev.dependencies.create_deps_layer import FileMaker
-from quant_dev.dependencies.create_deps_layer import FORMAT
-from quant_dev.dependencies.create_deps_layer import generate_and_upload_new_zip_file
-from quant_dev.dependencies.create_deps_layer import get_new_aws_credentials
 from quant_dev.builder import Builder
+from quant_dev.dependencies.create_deps_layer import (
+    FORMAT,
+    FileMaker,
+    generate_and_upload_new_zip_file,
+    get_new_aws_credentials,
+)
 
 
 class TestGenerateAndUpload:

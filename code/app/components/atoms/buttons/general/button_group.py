@@ -1,10 +1,10 @@
-from typing import List, Dict, Optional, Any
 import string
+from typing import Any, Dict, List, Optional
 
 import dash_bootstrap_components as dbc
-from dash import html
 from components.atoms.atom import Atom
 from constants import colors
+from dash import html
 from exceptions.ui import ComponentPropertyError
 
 

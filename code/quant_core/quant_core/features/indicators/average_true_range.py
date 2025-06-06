@@ -2,10 +2,9 @@ from typing import List
 
 import numpy as np
 import pandas as pd
-from ta.volatility import AverageTrueRange
-
 from quant_core.features.feature import DataFeature
 from quant_core.utils.chart_utils import check_df_sorted, check_enough_rows
+from ta.volatility import AverageTrueRange
 
 
 class DataFeatureAverageTrueRange(DataFeature):

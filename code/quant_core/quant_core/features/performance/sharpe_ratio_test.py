@@ -1,5 +1,4 @@
 import pytest
-
 from quant_core.chart.features.performance.sharpe_ratio import DataFeatureSharpeRatio
 from quant_core.enums.trade_direction import TradeDirection
 from quant_dev.builder import Builder

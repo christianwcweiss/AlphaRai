@@ -1,14 +1,14 @@
-from typing import Tuple, List, Dict, Any
+from typing import Any, Dict, List, Tuple
 
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, dcc
-from dash.development.base_component import Component
-
 from components.atoms.card.card import AlphaCard
+from components.atoms.divider.divider import Divider
 from components.atoms.layout.layout import AlphaCol, AlphaRow
 from components.atoms.text.subsubsection import SubSubsectionHeader
 from components.molecules.molecule import Molecule
+from dash import dcc, html
+from dash.development.base_component import Component
 from services.db.cache.trade_history import get_all_trades_df
 
 
@@ -222,23 +222,13 @@ class AnalyticsToolbarMolecule(Molecule):  # pylint: disable=too-few-public-meth
         )
 
     def render(self) -> Component:
-        divider = html.Hr(
-            style={
-                "width": "100%",
-                "border": "none",
-                "height": "2px",
-                "backgroundColor": "#E0E0E0",
-                "margin": "0.5rem 0",
-            }
-        )
-
         return html.Div(
             AlphaCard(
                 children=[
                     self._render_filter_dropdowns(),
-                    divider,
+                    Divider().render(),
                     self._render_group_by_buttons(),
-                    divider,
+                    Divider().render(),
                     self._render_view_mode_buttons(),
                 ],
                 show_divider=False,

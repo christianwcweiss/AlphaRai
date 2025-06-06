@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 repo_root = Path(__file__).resolve().parents[2]

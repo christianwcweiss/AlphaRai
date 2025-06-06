@@ -1,7 +1,6 @@
 import dash_bootstrap_components as dbc
-from dash import html
-
 from components.atoms.atom import Atom
+from dash import html
 
 
 class AlphaModal(Atom):  # pylint: disable=too-few-public-methods, too-many-instance-attributes

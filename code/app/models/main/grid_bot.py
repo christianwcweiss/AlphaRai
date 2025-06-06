@@ -1,13 +1,5 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Boolean,
-    Float,
-    UniqueConstraint,
-)
+from sqlalchemy import Boolean, Column, Float, Integer, String, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
-
 
 Base = declarative_base()
 

@@ -1,8 +1,7 @@
-from dash import html, dcc
 import dash_bootstrap_components as dbc
-
 from components.molecules.molecule import Molecule
 from constants import colors
+from dash import dcc, html
 
 _LOG_VIEWER_STYLE = {
     "position": "fixed",

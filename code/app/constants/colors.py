@@ -7,6 +7,7 @@ ACCENT_COLOR = "#FF4081"  # Accent Pink A200
 
 # Background & Surface
 BACKGROUND_COLOR = "#F5F5F5"  # Light grey background
+BACKGROUND_WHITE = "#FFFFFF"  # Pure white background
 SURFACE_COLOR = "#FFFFFF"  # Card or surface color
 ELEVATED_SURFACE_COLOR = "#FAFAFA"
 SHADOW_COLOR = "rgba(0, 0, 0, 0.2)"
@@ -23,6 +24,8 @@ TEXT_ON_PRIMARY = "#FFFFFF"
 TEXT_ON_SECONDARY = "#000000"
 TEXT_ON_ACCENT = "#FFFFFF"
 PLACEHOLDER_TEXT = "#9E9E9E"
+TEXT_WHITE = "#FFFFFF"
+TEXT_BLACK = "#000000"
 
 # Status Colors
 SUCCESS_COLOR = "#4CAF50"
@@ -82,4 +85,4 @@ def get_text_color(background_color: str) -> str:
 
     luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue
 
-    return TEXT_ON_PRIMARY if luminance > 128 else TEXT_ON_SECONDARY
+    return TEXT_BLACK if luminance > 150 else TEXT_WHITE

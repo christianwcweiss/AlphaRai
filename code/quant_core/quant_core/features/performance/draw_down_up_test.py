@@ -1,7 +1,6 @@
 from typing import List
 
 import pytest
-
 from quant_core.chart.features.performance.draw_down_up import DataFeatureDrawDownAndUp
 from quant_core.enums.trade_direction import TradeDirection
 from quant_dev.builder import Builder

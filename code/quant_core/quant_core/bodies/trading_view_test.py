@@ -2,7 +2,6 @@ import json
 
 import boto3
 from moto import mock_aws
-
 from quant_core.bodies.trading_view import TradingViewAlertBody
 from quant_core.enums.asset_type import AssetType
 from quant_core.enums.time_period import TimePeriod

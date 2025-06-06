@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any, Dict
 
 from quant_core.bodies.alert_body import AlertBody
 
@@ -16,5 +16,6 @@ class TradingViewAlertBody(AlertBody):
             "direction": self.direction.value,
             "asset_type": self.asset_type.value,
             "time": self.time,
+            "price": self.price,
             "powered_by": self.powered_by,
         }

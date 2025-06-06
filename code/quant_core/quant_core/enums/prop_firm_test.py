@@ -1,7 +1,6 @@
 import os
 
 import pytest
-
 from quant_core.enums.prop_firm import PropFirm
 
 

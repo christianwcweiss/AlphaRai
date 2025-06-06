@@ -1,13 +1,12 @@
 from typing import List
 
 import pandas as pd
-from dash import html, dcc
-
-from components.atoms.card.card import AlphaCard, AlphaCardHeader, AlphaCardBody
-from components.atoms.layout.layout import AlphaRow, AlphaCol
+from components.atoms.card.card import AlphaCard, AlphaCardBody, AlphaCardHeader
+from components.atoms.layout.layout import AlphaCol, AlphaRow
 from components.charts.chart import ChartLayoutStyle, ChartMargin
 from components.charts.line.line_chart import LineChart
 from components.molecules.molecule import Molecule
+from dash import dcc, html
 from quant_core.enums.chart_mode import ChartMode
 
 BALANCE_OVER_TIME_MODE_STORE_ID = "balance-over-time_mode-store"

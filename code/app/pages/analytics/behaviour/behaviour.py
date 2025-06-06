@@ -1,10 +1,9 @@
 import dash
-from dash import html, dcc
-
 from components.atoms.content import MainContent
 from components.atoms.tabbar.tabbar import AlphaTabToolbar
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
+from dash import dcc, html
 from pages.analytics.analysis import TAB_LABELS
 from pages.base_page import BasePage
 

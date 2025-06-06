@@ -1,5 +1,5 @@
 import json
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 from quant_core.enums.time_period import TimePeriod
 from quant_core.enums.trade_direction import TradeDirection

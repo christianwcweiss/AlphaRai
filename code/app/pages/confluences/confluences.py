@@ -2,19 +2,19 @@ from typing import List
 
 import dash
 import dash_bootstrap_components as dbc
-from dash import html, callback, Input, Output, State, ctx
-
 from components.atoms.buttons.general.button import AlphaButton
 from components.atoms.content import MainContent
-from components.atoms.layout.layout import AlphaRow, AlphaCol
+from components.atoms.divider.divider import Divider
+from components.atoms.layout.layout import AlphaCol, AlphaRow
 from components.atoms.modal.modal import AlphaModal
 from components.atoms.table.table import AlphaTable
 from components.atoms.text.page import PageHeader
 from components.frame.body import PageBody
+from dash import Input, Output, State, callback, ctx, html
 from pages.base_page import BasePage
 from quant_core.confluences.confluences import CONFLUENCE_LIST
 from quant_core.enums.time_period import TimePeriod
-from services.db.main.confluence import get_all_confluences, get_confluence_by_id, upsert_confluence, delete_confluence
+from services.db.main.confluence import delete_confluence, get_all_confluences, get_confluence_by_id, upsert_confluence
 
 dash.register_page(__name__, path="/confluences", name="Confluences")
 
@@ -62,7 +62,6 @@ def build_confluence_table() -> html.Table:
                     AlphaButton(
                         "✏️",
                         {"type": "edit-confluence", "index": conf.confluence_id},
-                        style={"backgroundColor": "#FFC107", "width": "40px"},
                     ).render(),
                     width="auto",
                 )
@@ -74,7 +73,6 @@ def build_confluence_table() -> html.Table:
                 AlphaButton(
                     "🗑️",
                     {"type": "delete-confluence", "index": conf.confluence_id},
-                    style={"backgroundColor": "#DC3545", "width": "40px"},
                 ).render(),
                 width="auto",
             )
@@ -95,7 +93,7 @@ class ConfluencesPage(BasePage):
                 MainContent(
                     [
                         build_confluence_table(),
-                        html.Br(),
+                        Divider().render(),
                         AlphaButton("➕ Add Confluence", "open-add-confluence-btn").render(),
                         AlphaModal(
                             modal_id="add-confluence-modal",

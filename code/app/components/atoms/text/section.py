@@ -1,10 +1,9 @@
 from typing import Optional
 
-from dash import html
-from dash.development.base_component import Component
-
 from components.atoms.atom import Atom
 from constants import colors
+from dash import html
+from dash.development.base_component import Component
 from exceptions.ui import ComponentPropertyError
 
 

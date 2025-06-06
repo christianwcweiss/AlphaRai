@@ -1,7 +1,6 @@
 from pathlib import Path
 
-from setuptools import find_packages
-from setuptools import setup
+from setuptools import find_packages, setup
 
 with open(Path(__file__).with_name("requirements.txt"), "r", encoding="utf-8") as file:
     install_requires = file.read().splitlines()

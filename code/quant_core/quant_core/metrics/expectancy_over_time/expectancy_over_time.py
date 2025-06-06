@@ -1,7 +1,6 @@
 from typing import Optional
 
 import pandas as pd
-
 from quant_core.enums.trade_event_type import TradeEventType
 from quant_core.metrics.trade_metric_over_time import TradeMetricOverTime
 

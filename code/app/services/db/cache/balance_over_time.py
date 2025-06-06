@@ -1,5 +1,4 @@
 import pandas as pd
-
 from db.database import CacheSessionLocal
 from models.cache.balance_over_time import BalanceOverTimeCache
 

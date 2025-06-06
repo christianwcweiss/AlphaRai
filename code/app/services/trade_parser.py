@@ -94,9 +94,9 @@ class TradeMessageParser:
 
         with suppress(ValueError):
             parsed_trade = TradeMessageParser.parse_algopro_chat(message)
-
-        with suppress(ValueError):
-            parsed_trade = TradeMessageParser.parse_alpharai_chat(message)
+        if not parsed_trade:
+            with suppress(ValueError):
+                parsed_trade = TradeMessageParser.parse_alpharai_chat(message)
 
         if parsed_trade is None:
             raise ValueError("Failed to parse trade message from Algopro or Alpharai chat")

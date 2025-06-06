@@ -1,5 +1,4 @@
 import dash_bootstrap_components as dbc
-
 from constants.colors import PRIMARY_COLOR
 
 APP_BAR_ITEMS = [

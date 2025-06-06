@@ -1,7 +1,7 @@
-import requests  # type: ignore
-
 import json
+
 import boto3
+import requests  # type: ignore
 from quant_core.enums.discord_channels import DiscordChannel
 from quant_core.services.core_logger import CoreLogger
 

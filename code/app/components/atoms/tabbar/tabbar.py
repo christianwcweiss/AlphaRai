@@ -1,8 +1,9 @@
 from typing import List, Optional
-from dash import html, dcc
+
 from components.atoms.atom import Atom
 from components.atoms.card.card import AlphaCard
 from constants import colors
+from dash import dcc, html
 
 
 class AlphaTabToolbar(Atom):  # pylint: disable=too-few-public-methods
