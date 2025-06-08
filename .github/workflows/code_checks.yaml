@@ -21,6 +21,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pre-commit
           pip install -r requirements_dev.txt
+          pip install -r requirements.txt
 
       - name: Run pre-commit checks
         run: pre-commit run --all-files
