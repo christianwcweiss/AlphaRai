@@ -9,6 +9,7 @@ from pages.cockpit.cockpit_callbacks import (  # pylint: disable=unused-import #
     control_bot_and_toggle_accounts,
     update_bot_status,
 )
+from pages.cockpit.cockpit_render import render_tv_calendar
 from services.relay_bot import DiscordRelayBot
 
 COCKPIT_PATH = "/"
@@ -31,6 +32,8 @@ class CockpitPage(BasePage):
                         html.Div(id="bot-controls-container"),
                         SectionHeader("Account Management").render(),
                         html.Div(id="account-toggle-container"),
+                        SectionHeader("Trading View Calendar").render(),
+                        render_tv_calendar()
                     ]
                 ),
             ]
