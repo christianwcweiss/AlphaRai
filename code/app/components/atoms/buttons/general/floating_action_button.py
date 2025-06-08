@@ -1,21 +1,24 @@
-from dash import html
 from enum import Enum
 from typing import Any, Dict, Optional
+
 from components.atoms.atom import Atom
 from constants import colors
+from dash import html
 from exceptions.ui import ComponentPropertyError
 
 
 class AlphaFabSize(Enum):
+    """Enumeration for Floating Action Button (FAB) sizes."""
+
     SMALL = "40px"
     MEDIUM = "56px"
     LARGE = "72px"
 
 
-class AlphaFloatingActionButton(Atom):
+class AlphaFloatingActionButton(Atom):  # pylint: disable=too-many-instance-attributes
     """Material-style Floating Action Button (FAB)."""
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments, too-many-positional-arguments
         self,
         icon: str,  # expected as text or emoji or unicode for now
         button_id: str,
