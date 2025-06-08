@@ -22,9 +22,12 @@ def render_all_accounts():
     accounts = sorted(AccountService.get_all_accounts(), key=lambda x: x.friendly_name)
     trades_df = get_all_trades_df()
 
-    balance_df = AccountBalanceOverTime().calculate(
-        data_frame=trades_df,
-    )
+    if trades_df.empty:
+        balance_df = pd.DataFrame(columns=["account_id", "balance", "timestamp"])
+    else:
+        balance_df = AccountBalanceOverTime().calculate(
+            data_frame=trades_df,
+        )
 
     return AlphaRow(
         [AlphaCol(_render_account_card(account, balance_df), xs=12, sm=6, md=4, lg=3, xl=3) for account in accounts]
