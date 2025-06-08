@@ -23,7 +23,7 @@ def get_all_trades_df(enrich: bool = True) -> pd.DataFrame:
     trades_df = pd.DataFrame([t.__dict__ for t in all_trades])
     trades_df = trades_df[[col for col in trades_df.columns if not col.startswith("_sa_")]]
 
-    if enrich:
+    if enrich and not trades_df.empty:
         accounts = AccountService().get_all_accounts()
         accounts_df = pd.DataFrame([a.__dict__ for a in accounts])
         accounts_df = accounts_df[[col for col in accounts_df.columns if not col.startswith("_sa_")]]

@@ -11,6 +11,8 @@ from db.database import init_db
 from quant_core.services.core_logger import CoreLogger
 from services.relay_bot import DiscordRelayBot  # pylint: disable=unused-import  # noqa: F401
 
+init_db()
+
 app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.COSMO], suppress_callback_exceptions=True)
 server = app.server
 
@@ -67,7 +69,6 @@ def toggle_log_modal(_, is_open: bool) -> tuple[bool, str]:
 
 
 if __name__ == "__main__":
-    init_db()
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":  # Avoid starting the bot multiple times in debug mode
         pass
         # bot_instance = DiscordRelayBot()

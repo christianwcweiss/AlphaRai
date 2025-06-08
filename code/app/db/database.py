@@ -29,7 +29,7 @@ MAIN_TABLES = [
     ("main_account_configs", AccountConfig),
     ("main_grid_bots", GridBot),
 ]
-CACHE_TABLES = [("cache_trade_history", Trade), ("cache_balance_over_time", BalanceOverTimeCache)]
+CACHE_TABLES = [("cache_trades", Trade), ("cache_balance_over_time", BalanceOverTimeCache)]
 
 main_engine = create_engine(MAIN_DATABASE_URL, echo=False)
 MainSessionLocal = sessionmaker(bind=main_engine)

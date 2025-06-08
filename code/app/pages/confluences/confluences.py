@@ -92,7 +92,7 @@ class ConfluencesPage(BasePage):
                 PageHeader("Confluences").render(),
                 MainContent(
                     [
-                        build_confluence_table(),
+                        # build_confluence_table(),
                         Divider().render(),
                         AlphaButton("➕ Add Confluence", "open-add-confluence-btn").render(),
                         AlphaModal(
