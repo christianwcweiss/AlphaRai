@@ -1,4 +1,3 @@
 pylint
 black
 mypy
-tqdm==4.67.1
