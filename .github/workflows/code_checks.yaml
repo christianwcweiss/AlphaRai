@@ -1,11 +1,11 @@
 name: Pre-commit
 
 on:
-  pull_request:  # triggers on all PRs to any branch
+  pull_request:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout code
