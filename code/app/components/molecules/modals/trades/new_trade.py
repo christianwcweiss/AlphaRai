@@ -323,9 +323,7 @@ def parse_trade_signal(_, signal_input: str) -> tuple[Alert, Any, Any, Any, Any,
         _render_trade_preview(trade_details),
         _render_risk_preview(trade_details),
         trade_details.to_dict(),
-        AlphaButton(
-            "Execute Trade", "submit-trade-btn", hidden=False
-        ).default_style,
+        AlphaButton("Execute Trade", "submit-trade-btn", hidden=False).default_style,
         {"display": "none"},
         {"marginBottom": "1.5rem", "display": "block"},
     )

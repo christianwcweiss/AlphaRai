@@ -1,7 +1,7 @@
 import asyncio
 import json
 import threading
-from typing import Any
+from typing import Any, Set
 
 import boto3
 import botocore.exceptions
@@ -32,11 +32,14 @@ class DiscordRelayBot:
 
     def __init__(self) -> None:
         try:
-            self._token = json.loads(self._get_credentials_from_secrets_manager("DISCORD_BOT_TOKEN"))["DISCORD_BOT_TOKEN"]
+            self._token = json.loads(self._get_credentials_from_secrets_manager("DISCORD_BOT_TOKEN"))[
+                "DISCORD_BOT_TOKEN"
+            ]
         except (ValueError, botocore.exceptions.ClientError) as error:
             CoreLogger().error(f"Failed to load Discord bot token from secrets manager: {error}")
             CoreLogger().warning("Automatic trading will be disabled due to missing credentials.")
-        self._processed_message_ids = set()
+
+        self._processed_message_ids: Set[str] = set()
 
         self._thread = None
         self._loop = None
