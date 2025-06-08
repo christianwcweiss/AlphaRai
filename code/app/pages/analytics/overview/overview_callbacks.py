@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Union
 
+import dash.exceptions
 import dash_bootstrap_components as dbc
 from components.atoms.layout.layout import AlphaCol, AlphaRow
 from components.molecules.charts.balance_over_time.balance_over_time import BalanceOverTimeMolecule
@@ -74,17 +75,7 @@ def render_overview_content(  # pylint: disable=too-many-arguments, too-many-pos
         asset_types=asset_types,
     )
     if trades_df.empty:
-        return (
-            dbc.Alert("⚠️ No trade data found.", color=colors.ERROR_COLOR),
-            False,
-            False,
-            False,
-            False,
-            False,
-            False,
-            True,
-            False,
-        )
+        return dbc.Alert("⚠️ No trade data found.", color=colors.ERROR_COLOR), False, False, False, False, False, False, True, False
 
     (
         group_by_account_id,
