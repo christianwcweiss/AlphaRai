@@ -1,10 +1,12 @@
 import os
 
+from models.cache.balance_over_time import BalanceOverTimeCache
 from models.cache.trade_history import Trade
 from models.main.account import Account
 from models.main.account_config import AccountConfig
 from models.main.confluence import ConfluenceConfig
 from models.main.general_setting import GeneralSetting
+from models.main.grid_bot import GridBot
 from quant_core.services.core_logger import CoreLogger
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
@@ -25,8 +27,9 @@ MAIN_TABLES = [
     ("main_confluences", ConfluenceConfig),
     ("main_general_settings", GeneralSetting),
     ("main_account_configs", AccountConfig),
+    ("main_grid_bots", GridBot),
 ]
-CACHE_TABLES = [("cache_trades", Trade)]
+CACHE_TABLES = [("cache_trades", Trade), ("cache_balance_over_time", BalanceOverTimeCache)]
 
 main_engine = create_engine(MAIN_DATABASE_URL, echo=False)
 MainSessionLocal = sessionmaker(bind=main_engine)

@@ -1,9 +1,7 @@
-import argparse
 import os
-from argparse import Namespace
 
 import dash_bootstrap_components as dbc
-from components.atoms.buttons.general.floating_action_button import AlphaFloatingActionButton
+from components.atoms.buttons.general.button import AlphaButton
 from components.frame.top_bar import TopBar
 from components.molecules.modals.logs.log_viewer import LogViewer
 from components.molecules.modals.trades.new_trade import NewTradeModal
@@ -13,47 +11,31 @@ from db.database import init_db
 from quant_core.services.core_logger import CoreLogger
 from services.relay_bot import DiscordRelayBot  # pylint: disable=unused-import  # noqa: F401
 
+init_db()
 
-def parse_args() -> Namespace:
-    """Parse command line arguments."""
+app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.COSMO], suppress_callback_exceptions=True)
+server = app.server
 
-    parser = argparse.ArgumentParser(description="Run the Dash application.")
-
-    parser.add_argument(
-        "--debug",
-        action="store_true",
-        help="Run the app in debug mode with hot-reloading.",
-    )
-
-    return parser.parse_args()
+TRADE_STORE_ID = "parsed-trade-store"
 
 
-def main() -> Dash:
-    """Initialize the Dash application and set up the layout."""
-    init_db()
-
-    dash_app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.COSMO])
-
-    trade_store_id = "parsed-trade-store"
-    dash_app.layout = dbc.Container(
-        [
-            dcc.Location(id="url", refresh=False),
-            TopBar(),
-            LogViewer().render(),
-            page_container,
-            NewTradeModal().render(),
-            dcc.Store(id=trade_store_id),
-            html.Div(id="trade-status"),
-            AlphaFloatingActionButton(
-                "+",
-                "open-trade-modal-btn",
-            ).render(),
-        ],
-        fluid=True,
-        style={"backgroundColor": colors.GREY_100, "minHeight": "100vh"},
-    )
-
-    return dash_app
+app.layout = dbc.Container(
+    [
+        dcc.Location(id="url", refresh=False),
+        TopBar(),
+        LogViewer().render(),
+        page_container,
+        NewTradeModal().render(),
+        dcc.Store(id=TRADE_STORE_ID),
+        html.Div(id="trade-status"),
+        AlphaButton(
+            "+",
+            "open-trade-modal-btn",
+        ).render(),
+    ],
+    fluid=True,
+    style={"backgroundColor": colors.GREY_100, "minHeight": "100vh"},
+)
 
 
 @callback(Output("log-preview", "children"), Input("log-refresh", "n_intervals"))
@@ -88,11 +70,8 @@ def toggle_log_modal(_, is_open: bool) -> tuple[bool, str]:
 
 if __name__ == "__main__":
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":  # Avoid starting the bot multiple times in debug mode
-        bot_instance = DiscordRelayBot()
-        bot_instance.run()
+        pass
+        # bot_instance = DiscordRelayBot()
+        # bot_instance.run()
 
-    arguments = parse_args()
-    debug_mode = arguments.debug
-
-    app = main()
-    app.run(debug=debug_mode)
+    app.run(debug=True)
