@@ -77,3 +77,13 @@ def convert_minutes_since_week_started_to_time(minutes: int) -> tuple[Weekday, i
     minute = remaining_minutes % 60
 
     return Weekday.from_number(weekday_number), hour, minute
+
+
+def get_current_minutes_since_week_started(tz: str = "UTC") -> int:
+    """
+    Get the current time in minutes since the start of the week.
+    """
+    now = datetime.now(pytz.timezone(tz))
+    weekday = Weekday.from_number(now.weekday())
+
+    return convert_time_data_to_minutes_since_week_started(weekday, now.hour, now.minute)

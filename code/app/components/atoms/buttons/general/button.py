@@ -87,6 +87,11 @@ class AlphaButton(Atom):  # pylint: disable=too-many-instance-attributes
             "boxShadow": f"0px 2px 6px {colors.SHADOW_COLOR}",
         }
 
+    @property
+    def default_style(self) -> Dict[str, Any]:
+        """Default style for the button."""
+        return self._build_style()
+
     def render(self) -> html.Div:
         """Render the button as a Dash HTML component."""
 
