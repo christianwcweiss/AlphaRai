@@ -2,6 +2,7 @@ import os
 
 import dash_bootstrap_components as dbc
 from components.atoms.buttons.general.button import AlphaButton
+from components.atoms.buttons.general.floating_action_button import AlphaFloatingActionButton
 from components.frame.top_bar import TopBar
 from components.molecules.modals.logs.log_viewer import LogViewer
 from components.molecules.modals.trades.new_trade import NewTradeModal
@@ -28,7 +29,7 @@ app.layout = dbc.Container(
         NewTradeModal().render(),
         dcc.Store(id=TRADE_STORE_ID),
         html.Div(id="trade-status"),
-        AlphaButton(
+        AlphaFloatingActionButton(
             "+",
             "open-trade-modal-btn",
         ).render(),
