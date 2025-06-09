@@ -1,7 +1,6 @@
 import math
 from typing import List, Tuple
 
-from models.main.account_config import AccountConfig
 from quant_core.enums.asset_type import AssetType
 from quant_core.enums.stagger_method import StaggerMethod
 
@@ -110,36 +109,44 @@ def calculate_weighted_risk_reward(risk_rewards: List[float], sizes: List[float]
     return round(weighted_risk_reward, 2)
 
 
-def lookup_tick_and_contract_details(account_config: AccountConfig) -> Tuple[float, float, float]:
+def lookup_tick_and_contract_details(
+    asset_type: AssetType, decimal_points: int, lot_size: float
+) -> Tuple[float, float, float]:
     """Tick and contract size lookup based on account configuration."""
-    if account_config.asset_type is AssetType.FOREX:
+    if asset_type is AssetType.FOREX:
         tick_value = 10.0
-        tick_size = 10 ** (-account_config.decimal_points + 1)
-        contract_size = account_config.lot_size
-    elif account_config.asset_type is AssetType.CRYPTO:
+        tick_size = 10 ** (-decimal_points + 1)
+        contract_size = lot_size
+    elif asset_type is AssetType.CRYPTO:
         tick_value = 1.0
         tick_size = 1.0
-        contract_size = account_config.lot_size
-    elif account_config.asset_type is AssetType.COMMODITIES:
+        contract_size = lot_size
+    elif asset_type is AssetType.COMMODITIES:
         tick_value = 1.0
-        tick_size = 10 ** (-account_config.decimal_points)
-        contract_size = account_config.lot_size
-    elif account_config.asset_type is AssetType.STOCK:
+        tick_size = 10 ** (-decimal_points)
+        contract_size = lot_size
+    elif asset_type is AssetType.STOCK:
         tick_value = 1.0
-        tick_size = 10 ** (-account_config.decimal_points)
-        contract_size = account_config.lot_size
-    elif account_config.asset_type is AssetType.INDICES:
+        tick_size = 1
+        contract_size = lot_size
+    elif asset_type is AssetType.INDICES:
         tick_value = 1.0
         tick_size = 1.0
-        contract_size = account_config.lot_size
+        contract_size = lot_size
     else:
-        raise ValueError(f"Invalid asset type: {account_config.asset_type}")
+        raise ValueError(f"Invalid asset type: {asset_type}")
 
     return tick_value, tick_size, contract_size
 
 
-def calculate_position_size(
-    entry_price: float, stop_loss_price: float, percentage_risk: float, balance: float, account_config: AccountConfig
+def calculate_position_size(  # pylint: disable=too-many-arguments, too-many-positional-arguments
+    entry_price: float,
+    stop_loss_price: float,
+    percentage_risk: float,
+    balance: float,
+    asset_type: AssetType,
+    decimal_points: int,
+    lot_size: float,
 ) -> float:
     """
     Calculate the appropriate lot size for a trade based on risk parameters and asset metadata.
@@ -151,11 +158,16 @@ def calculate_position_size(
     if stop_distance == 0:
         raise ValueError("Stop loss and entry price cannot be the same.")
 
-    tick_value, tick_size, _ = lookup_tick_and_contract_details(account_config)
+    tick_value, tick_size, _ = lookup_tick_and_contract_details(
+        asset_type=asset_type, decimal_points=decimal_points, lot_size=lot_size
+    )
 
     pip_value_per_lot = tick_value / tick_size
 
     risk_amount = (percentage_risk / 100.0) * balance
-    lot_size = risk_amount / (stop_distance * pip_value_per_lot)
+    entry_lot_size = risk_amount / (stop_distance * pip_value_per_lot)
 
-    return round(max(lot_size, 0.01), 2)
+    if asset_type is AssetType.STOCK:
+        return float(entry_lot_size // 1)
+
+    return round(max(entry_lot_size, 0.01), 2)

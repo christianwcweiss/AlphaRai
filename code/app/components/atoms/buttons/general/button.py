@@ -50,7 +50,7 @@ class AlphaButton(Atom):  # pylint: disable=too-many-instance-attributes
         width: str = "100%",
         height: str = "50px",
         button_variant: AlphaButtonVariant = AlphaButtonVariant.CONTAINED,
-        button_color: AlphaButtonColor = AlphaButtonColor.PRIMARY,
+        button_color: Union[AlphaButtonColor, str] = AlphaButtonColor.PRIMARY,
         start_icon: Optional[AlphaButtonIcon] = None,
         end_icon: Optional[AlphaButtonIcon] = None,
         hidden: bool = False,
@@ -76,8 +76,12 @@ class AlphaButton(Atom):  # pylint: disable=too-many-instance-attributes
 
     def _build_style(self) -> Dict[str, Any]:
         return {
-            "backgroundColor": self._button_color.value,
-            "color": colors.get_text_color(self._button_color.value),
+            "backgroundColor": (
+                self._button_color.value if isinstance(self._button_color, AlphaButtonColor) else self._button_color
+            ),
+            "color": colors.get_text_color(
+                self._button_color.value if isinstance(self._button_color, AlphaButtonColor) else self._button_color
+            ),
             "fontWeight": "bold",
             "width": self._width,
             "border": "none",
@@ -86,6 +90,11 @@ class AlphaButton(Atom):  # pylint: disable=too-many-instance-attributes
             "height": self._height,
             "boxShadow": f"0px 2px 6px {colors.SHADOW_COLOR}",
         }
+
+    @property
+    def default_style(self) -> Dict[str, Any]:
+        """Default style for the button."""
+        return self._build_style()
 
     def render(self) -> html.Div:
         """Render the button as a Dash HTML component."""

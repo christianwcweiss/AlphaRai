@@ -52,7 +52,7 @@ def extract_uid_from_url(pathname: str) -> Tuple[str, html.Div]:
 )
 def render_config_cards(uid: str) -> html.Div:
     """Render the tables for enabled and disabled configurations."""
-    account_configs = AccountConfigService().get_configs_by_account_id(uid)
+    account_configs = AccountConfigService().get_configs_by_account(uid)
 
     return render_account_config_cards(account_configs)
 
@@ -69,7 +69,7 @@ def sync_symbols_callback(_sync_button_clicks: int, uid: str) -> html.Div:
     if not account:
         raise dash.exceptions.PreventUpdate
 
-    AccountConfigService().sync_with_mt5(account_id=uid, secret_id=account.secret_name)
+    AccountConfigService().sync_with_mt5(account_uid=uid, secret_id=account.secret_name)
 
     return render_config_cards(uid)
 
@@ -89,7 +89,7 @@ def open_edit_modal(n_clicks: List[int], _is_open: bool, uid: str) -> Tuple[bool
     if all(click is None or click == 0 for click in n_clicks) or not triggered_symbol:
         raise dash.exceptions.PreventUpdate
 
-    config = AccountConfigService().get_config_by_account_and_symbol(account_id=uid, signal_asset_id=triggered_symbol)
+    config = AccountConfigService().get_config(account_uid=uid, platform_asset_id=triggered_symbol)
     if not config:
         raise dash.exceptions.PreventUpdate
 
@@ -133,7 +133,7 @@ def save_config(  # pylint: disable=too-many-arguments, too-many-positional-argu
 
     if ctx.triggered_id == EDIT_MODAL_BUTTON_SAVE_ID:
         AccountConfigService().upsert_configs(
-            account_id=uid,
+            account_uid=uid,
             configs={
                 "id": config_id,
                 "signal_asset_id": signal_asset_id,
@@ -146,7 +146,7 @@ def save_config(  # pylint: disable=too-many-arguments, too-many-positional-argu
                 "enabled": enabled,
             },
         )
-        updated_cards = render_account_config_cards(AccountConfigService().get_configs_by_account_id(uid))
+        updated_cards = render_account_config_cards(AccountConfigService().get_configs_by_account(uid))
 
         return False, updated_cards
 

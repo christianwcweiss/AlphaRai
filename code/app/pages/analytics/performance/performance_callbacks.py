@@ -74,7 +74,17 @@ def render_performance_content(  # pylint: disable=too-many-arguments, too-many-
         asset_types=asset_types,
     )
     if trades_df.empty:
-        return dbc.Alert("⚠️ No trade data found.", color=colors.ERROR_COLOR)
+        return (
+            dbc.Alert("⚠️ No trade data found.", color=colors.ERROR_COLOR),
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            True,
+            False,
+        )
 
     (
         group_by_account_id,

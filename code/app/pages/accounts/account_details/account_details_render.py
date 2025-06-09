@@ -11,6 +11,7 @@ from pages.accounts.account_details.account_details_constants import (
     EDIT_ASSET_TYPE_ID,
     EDIT_CONFIG_ID,
     EDIT_ENABLED_ID,
+    EDIT_ENTRY_OFFSET_ID,
     EDIT_MODAL_BODY_ID,
     EDIT_MODAL_BUTTON_CANCEL_ID,
     EDIT_MODAL_BUTTON_SAVE_ID,
@@ -27,6 +28,7 @@ from pages.accounts.account_details.account_details_constants import (
     SYNC_MT5_BUTTON_LABEL,
 )
 from quant_core.enums.asset_type import AssetType
+from quant_core.enums.stagger_method import StaggerMethod
 from quant_core.enums.trade_mode import TradeMode
 
 
@@ -55,7 +57,21 @@ def render_edit_modal() -> dbc.Modal:
     return dbc.Modal(
         [
             dbc.ModalHeader(dbc.ModalTitle("Edit Configuration")),
-            dbc.ModalBody(id=EDIT_MODAL_BODY_ID),
+            dbc.ModalBody(
+                id=EDIT_MODAL_BODY_ID,
+                children=[
+                    dcc.Dropdown(id=EDIT_SIGNAL_ASSET_ID),
+                    dcc.Dropdown(id=EDIT_PLATFORM_ASSET_ID),
+                    dcc.Dropdown(id=EDIT_STAGGER_METHOD_ID),
+                    dcc.Dropdown(id=EDIT_ENTRY_OFFSET_ID),
+                    dcc.Dropdown(id=EDIT_N_STAGGERS_ID),
+                    dcc.Dropdown(id=EDIT_RISK_ID),
+                    dcc.Dropdown(id=EDIT_MODE_ID),
+                    dcc.Dropdown(id=EDIT_ASSET_TYPE_ID),
+                    dcc.Dropdown(id=EDIT_ENABLED_ID),
+                    dcc.Store(id=EDIT_CONFIG_ID),
+                ],
+            ),
             dbc.ModalFooter(
                 children=[
                     AlphaCol(
@@ -130,6 +146,9 @@ def render_account_config_cards(account_configs: List[AccountConfig]) -> html.Di
 
 def render_edit_modal_body(config: AccountConfig) -> html.Div:
     """Render the body of the edit modal for an account configuration."""
+
+    print(config.mode, config.entry_stagger_method)
+
     return html.Div(
         [
             dbc.Row(
@@ -158,7 +177,7 @@ def render_edit_modal_body(config: AccountConfig) -> html.Div:
                             dbc.Label("Entry Stagger Method"),
                             dcc.Dropdown(
                                 id=EDIT_STAGGER_METHOD_ID,
-                                options=[{"label": m, "value": m} for m in ["linear", "fibonacci", "log"]],
+                                options=[{"label": m.name, "value": m} for m in list(StaggerMethod)],
                                 value=config.entry_stagger_method,
                                 clearable=False,
                             ),
@@ -189,8 +208,8 @@ def render_edit_modal_body(config: AccountConfig) -> html.Div:
                             dbc.Label("Mode"),
                             dcc.Dropdown(
                                 id=EDIT_MODE_ID,
-                                options=[{"label": m.name, "value": m.name} for m in TradeMode],
-                                value=config.mode,
+                                options=[{"label": m.name, "value": m} for m in TradeMode],
+                                value=config.mode if config.mode else TradeMode.DEFAULT.name,
                                 clearable=False,
                             ),
                         ],
@@ -249,7 +268,7 @@ def render_edit_modal_body(config: AccountConfig) -> html.Div:
                     ),
                 ]
             ),
-            dcc.Store(id=EDIT_CONFIG_ID, data=config.id),
+            dcc.Store(id=EDIT_CONFIG_ID, data=config.platform_asset_id),
         ]
     )
 

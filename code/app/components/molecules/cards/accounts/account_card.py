@@ -19,8 +19,8 @@ class AccountCard:  # pylint: disable=too-few-public-methods
     def __init__(self, account: Account, data_frame: Optional[pd.DataFrame] = None) -> None:
         self._account = account
         self._data_frame = data_frame
-        self._icon_id = f"account-options-btn-{account.id}"
-        self._popover_id = f"account-options-popover-{account.id}"
+        self._icon_id = f"account-options-btn-{account.uid}"
+        self._popover_id = f"account-options-popover-{account.uid}"
         self._delete_btn_id = f"delete-account-{account.uid}"
 
     def _render_header(self) -> html.Div:

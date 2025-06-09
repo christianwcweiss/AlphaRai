@@ -1,14 +1,20 @@
 import dash
+from components.atoms.buttons.general.button import AlphaButton
 from components.atoms.content import MainContent
 from components.atoms.text.page import PageHeader
-from components.atoms.text.section import SectionHeader
 from components.frame.body import PageBody
 from dash import dcc, html
 from pages.base_page import BasePage
 from pages.cockpit.cockpit_callbacks import (  # pylint: disable=unused-import # noqa: F401
     control_bot_and_toggle_accounts,
-    update_bot_status,
 )
+from pages.cockpit.cockpit_constants import (
+    BOT_CONTROLS_CONTAINER,
+    BOT_STATUS_INTERVAL_ID,
+    START_BOT_BTN_ID,
+    STOP_BOT_BTN_ID,
+)
+from pages.cockpit.cockpit_render import render_account_management_row, render_tv_calendar_row
 from services.relay_bot import DiscordRelayBot
 
 COCKPIT_PATH = "/"
@@ -26,11 +32,16 @@ class CockpitPage(BasePage):
                 PageHeader(self._title).render(),
                 MainContent(
                     [
-                        SectionHeader("Discord Bot Control").render(),
-                        dcc.Interval(id="bot-status-interval", interval=2000, n_intervals=0),
-                        html.Div(id="bot-controls-container"),
-                        SectionHeader("Account Management").render(),
-                        html.Div(id="account-toggle-container"),
+                        dcc.Interval(id=BOT_STATUS_INTERVAL_ID, interval=2000, n_intervals=0),
+                        html.Div(id=BOT_CONTROLS_CONTAINER),
+                        AlphaButton(
+                            label="Placeholder for Bot Controls", button_id=START_BOT_BTN_ID, hidden=True
+                        ).render(),
+                        AlphaButton(
+                            label="Placeholder for Bot Controls", button_id=STOP_BOT_BTN_ID, hidden=True
+                        ).render(),
+                        render_account_management_row(),
+                        render_tv_calendar_row(),
                     ]
                 ),
             ]

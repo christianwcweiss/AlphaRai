@@ -6,14 +6,7 @@ from quant_core.enums.order_type import OrderType
 try:
     import MetaTrader5 as mt5
 except ImportError:
-
-    class mt5:  # type: ignore  # pylint: disable=too-few-public-methods, invalid-name
-        """Mock class for MetaTrader5 to avoid import errors when not available."""
-
-        ORDER_TYPE_BUY = 0
-        ORDER_TYPE_BUY_LIMIT = 2
-        ORDER_TYPE_SELL = 1
-        ORDER_TYPE_SELL_LIMIT = 3
+    from quant_core.mock import mt5
 
 
 class TradeDirection(Enum):

@@ -25,3 +25,11 @@ class Weekday(Enum):
         if number < 0 or number > 6:
             raise ValueError("Number must be between 0 and 6.")
         return list(Weekday)[number]
+
+    @staticmethod
+    def from_mt5(number: int) -> "Weekday":
+        """Convert a MetaTrader5 weekday number to a Weekday enum."""
+        if number < 0 or number > 6:
+            raise ValueError("MT5 weekday number must be between 0 and 6.")
+        # MT5 uses 1=Monday, 7=Sunday, so we adjust accordingly
+        return list(Weekday)[(number - 1) % 7]

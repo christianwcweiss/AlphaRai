@@ -1,7 +1,5 @@
+from models.main.main_base import Base
 from sqlalchemy import Column, String
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
 
 
 class GeneralSetting(Base):  # type: ignore  # pylint: disable=too-few-public-methods

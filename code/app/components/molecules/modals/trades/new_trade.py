@@ -133,9 +133,7 @@ def _render_risk_preview(  # pylint: disable=too-many-locals
     all_accounts = AccountService().get_all_accounts()
     configs: List[Tuple[Account, AccountConfig]] = []
     for account in all_accounts:
-        if config := AccountConfigService().get_config_by_account_and_symbol(
-            account_id=account.uid, signal_asset_id=trade_details.symbol
-        ):
+        if config := AccountConfigService().get_config(account_uid=account.uid, platform_asset_id=trade_details.symbol):
             if config.enabled:
                 configs.append((account, config))
 
@@ -167,7 +165,9 @@ def _render_risk_preview(  # pylint: disable=too-many-locals
                     stop_loss_price=trade_details.stop_loss,
                     percentage_risk=risk_per_trade,
                     balance=balance,
-                    account_config=config,
+                    asset_type=config.asset_type,
+                    decimal_points=config.decimal_points,
+                    lot_size=config.lot_size,
                 )
                 for entry in entries
             ]
@@ -323,7 +323,7 @@ def parse_trade_signal(_, signal_input: str) -> tuple[Alert, Any, Any, Any, Any,
         _render_trade_preview(trade_details),
         _render_risk_preview(trade_details),
         trade_details.to_dict(),
-        AlphaButton.DEFAULT_STYLE,
+        AlphaButton("Execute Trade", "submit-trade-btn", hidden=False).default_style,
         {"display": "none"},
         {"marginBottom": "1.5rem", "display": "block"},
     )
