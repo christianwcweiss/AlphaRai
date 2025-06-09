@@ -1,7 +1,6 @@
-from sqlalchemy import Boolean, Column, Enum, Integer, String
-
 from models.main.main_base import Base
 from quant_core.enums.time_period import TimePeriod
+from sqlalchemy import Boolean, Column, Enum, Integer, String
 
 
 class ConfluenceConfig(Base):  # type: ignore  # pylint: disable=too-few-public-methods
