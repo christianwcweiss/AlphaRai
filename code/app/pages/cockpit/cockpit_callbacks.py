@@ -4,7 +4,7 @@ import dash
 from components.atoms.layout.layout import AlphaRow
 from dash import Input, Output, State, callback, ctx, html
 from pages.cockpit.cockpit_constants import ACCOUNT_TOGGLE_ID, START_BOT_BTN_ID, STOP_BOT_BTN_ID
-from pages.cockpit.cockpit_render import render_account_cards, render_bot_controls
+from pages.cockpit.cockpit_render import render_account_management_row, render_account_cards, render_bot_controls_row
 from services.db.main.account import AccountService
 from services.relay_bot import DiscordRelayBot
 
@@ -24,7 +24,7 @@ def control_bot_and_toggle_accounts(
     _stop_bot_clicks: int,
     _account_toggle_clicks: List[int],
     _account_toggle_ids: List[Optional[Union[Dict[str, Any], str, int]]],
-) -> AlphaRow:
+) -> html.Div:
     """Control the Discord bot and toggle account states based on user interactions."""
     triggered = ctx.triggered_id
 
@@ -46,4 +46,4 @@ def control_bot_and_toggle_accounts(
 )
 def update_bot_status(_n_intervals: int) -> html.Div:
     """Update the bot controls based on the current status of the Discord bot."""
-    return render_bot_controls(bot_instance.is_running())
+    return render_bot_controls_row(bot_instance.is_running())

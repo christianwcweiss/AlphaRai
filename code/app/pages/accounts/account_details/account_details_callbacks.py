@@ -52,7 +52,7 @@ def extract_uid_from_url(pathname: str) -> Tuple[str, html.Div]:
 )
 def render_config_cards(uid: str) -> html.Div:
     """Render the tables for enabled and disabled configurations."""
-    account_configs = AccountConfigService().get_configs_by_account_id(uid)
+    account_configs = AccountConfigService().get_configs_by_account(uid)
 
     return render_account_config_cards(account_configs)
 
@@ -133,7 +133,7 @@ def save_config(  # pylint: disable=too-many-arguments, too-many-positional-argu
 
     if ctx.triggered_id == EDIT_MODAL_BUTTON_SAVE_ID:
         AccountConfigService().upsert_configs(
-            account_id=uid,
+            account_uid=uid,
             configs={
                 "id": config_id,
                 "signal_asset_id": signal_asset_id,
@@ -146,7 +146,7 @@ def save_config(  # pylint: disable=too-many-arguments, too-many-positional-argu
                 "enabled": enabled,
             },
         )
-        updated_cards = render_account_config_cards(AccountConfigService().get_configs_by_account_id(uid))
+        updated_cards = render_account_config_cards(AccountConfigService().get_configs_by_account(uid))
 
         return False, updated_cards
 

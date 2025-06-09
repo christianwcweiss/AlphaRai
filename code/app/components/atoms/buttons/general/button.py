@@ -50,7 +50,7 @@ class AlphaButton(Atom):  # pylint: disable=too-many-instance-attributes
         width: str = "100%",
         height: str = "50px",
         button_variant: AlphaButtonVariant = AlphaButtonVariant.CONTAINED,
-        button_color: AlphaButtonColor = AlphaButtonColor.PRIMARY,
+        button_color: Union[AlphaButtonColor, str] = AlphaButtonColor.PRIMARY,
         start_icon: Optional[AlphaButtonIcon] = None,
         end_icon: Optional[AlphaButtonIcon] = None,
         hidden: bool = False,
@@ -77,7 +77,9 @@ class AlphaButton(Atom):  # pylint: disable=too-many-instance-attributes
     def _build_style(self) -> Dict[str, Any]:
         return {
             "backgroundColor": self._button_color.value,
-            "color": colors.get_text_color(self._button_color.value),
+            "color": colors.get_text_color(
+                self._button_color.value if isinstance(self._button_color, AlphaButtonColor) else self._button_color
+            ),
             "fontWeight": "bold",
             "width": self._width,
             "border": "none",
