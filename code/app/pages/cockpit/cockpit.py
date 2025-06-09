@@ -9,7 +9,7 @@ from pages.cockpit.cockpit_callbacks import (  # pylint: disable=unused-import #
     control_bot_and_toggle_accounts,
     update_bot_status,
 )
-from pages.cockpit.cockpit_render import render_tv_calendar_card
+from pages.cockpit.cockpit_render import render_tv_calendar_card, render_account_cards
 from services.relay_bot import DiscordRelayBot
 
 COCKPIT_PATH = "/"
@@ -30,8 +30,7 @@ class CockpitPage(BasePage):
                         SectionHeader("Discord Bot Control").render(),
                         dcc.Interval(id="bot-status-interval", interval=2000, n_intervals=0),
                         html.Div(id="bot-controls-container"),
-                        SectionHeader("Account Management").render(),
-                        html.Div(id="account-toggle-container"),
+                        render_account_cards(),
                         render_tv_calendar_card(),
                     ]
                 ),

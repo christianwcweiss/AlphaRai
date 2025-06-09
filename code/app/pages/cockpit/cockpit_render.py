@@ -2,6 +2,8 @@ from components.atoms.buttons.general.button import AlphaButton, AlphaButtonColo
 from components.atoms.card.card import AlphaCard, AlphaCardBody, AlphaCardHeader
 from components.atoms.layout.layout import AlphaCol, AlphaRow
 from dash import html
+
+from constants import colors
 from models.main.account import Account
 from pages.cockpit.cockpit_constants import (
     ACCOUNT_TOGGLE_ID,
@@ -24,22 +26,37 @@ def render_account_card(account: Account) -> html.Div:
     ).render()
 
 
-def render_account_cards() -> AlphaRow:
+def render_account_cards() -> html.Div:
     """Render a row of account cards based on the current accounts in the database."""
     accounts = AccountService().get_all_accounts()
 
-    return AlphaRow(
+    return html.Div(
         children=[
-            AlphaCol(
-                render_account_card(account),
-                style={"marginBottom": "10px"},
-                xs=12,
-                sm=6,
-                md=4,
-                lg=4,
-                xl=4,
+            AlphaRow(
+                children=[
+                    AlphaCard(
+                        header=AlphaCardHeader(
+                            children=[
+                                html.H3("Account Management", style={"textAlign": "center"}),
+                                html.P(
+                                    "Click on an account to toggle its enabled state.",
+                                    style={"textAlign": "center", "color": colors.TEXT_DISABLED},
+                                )
+                            ]
+                        ).render(),
+                        body=AlphaCardBody(
+                            children=[
+                                html.Div(id="account-toggle-container"),
+                            ]
+                        ).render(),
+                        show_divider=True,
+                        style={
+                            "backgroundColor": "#ffffff",
+                            "marginBottom": "20px",
+                        },
+                    ).render()
+                ]
             )
-            for account in accounts
         ]
     )
 
