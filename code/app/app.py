@@ -1,4 +1,5 @@
 import os
+from argparse import Namespace
 
 import dash_bootstrap_components as dbc
 from components.atoms.buttons.general.floating_action_button import AlphaFloatingActionButton
@@ -10,32 +11,50 @@ from dash import Dash, Input, Output, State, callback, dash, dcc, html, page_con
 from db.database import init_db
 from quant_core.services.core_logger import CoreLogger
 from services.relay_bot import DiscordRelayBot  # pylint: disable=unused-import  # noqa: F401
-
-init_db()
-
-app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.COSMO], suppress_callback_exceptions=True)
-server = app.server
-
-TRADE_STORE_ID = "parsed-trade-store"
+import argparse
 
 
-app.layout = dbc.Container(
-    [
-        dcc.Location(id="url", refresh=False),
-        TopBar(),
-        LogViewer().render(),
-        page_container,
-        NewTradeModal().render(),
-        dcc.Store(id=TRADE_STORE_ID),
-        html.Div(id="trade-status"),
-        AlphaFloatingActionButton(
-            "+",
-            "open-trade-modal-btn",
-        ).render(),
-    ],
-    fluid=True,
-    style={"backgroundColor": colors.GREY_100, "minHeight": "100vh"},
-)
+def parse_args() -> Namespace:
+    """Parse command line arguments."""
+
+    parser = argparse.ArgumentParser(description="Run the Dash application.")
+
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Run the app in debug mode with hot-reloading.",
+    )
+
+    return parser.parse_args()
+
+
+def main() -> Dash:
+    init_db()
+
+    app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.COSMO])
+    server = app.server
+
+    TRADE_STORE_ID = "parsed-trade-store"
+
+    app.layout = dbc.Container(
+        [
+            dcc.Location(id="url", refresh=False),
+            TopBar(),
+            LogViewer().render(),
+            page_container,
+            NewTradeModal().render(),
+            dcc.Store(id=TRADE_STORE_ID),
+            html.Div(id="trade-status"),
+            AlphaFloatingActionButton(
+                "+",
+                "open-trade-modal-btn",
+            ).render(),
+        ],
+        fluid=True,
+        style={"backgroundColor": colors.GREY_100, "minHeight": "100vh"},
+    )
+
+    return app
 
 
 @callback(Output("log-preview", "children"), Input("log-refresh", "n_intervals"))
@@ -73,5 +92,9 @@ if __name__ == "__main__":
         pass
         # bot_instance = DiscordRelayBot()
         # bot_instance.run()
+
+    arguments = parse_args()
+
+    app = main()
 
     app.run(debug=True)

@@ -1,12 +1,10 @@
 from dataclasses import dataclass
 from typing import Optional
-
 from quant_core.enums.platform import Platform
 from quant_core.enums.prop_firm import PropFirm
 
-
 @dataclass
-class AccountDTO:  # pylint: disable=too-many-instance-attributes
+class AccountDTO:
     """DTO for Account entity."""
 
     uid: str

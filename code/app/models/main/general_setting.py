@@ -1,6 +1,7 @@
 from models.main.main_base import Base
 from sqlalchemy import Column, String
 
+from models.main.main_base import Base
 
 class GeneralSetting(Base):  # type: ignore  # pylint: disable=too-few-public-methods
     """General settings for the application."""

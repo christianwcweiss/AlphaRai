@@ -1,4 +1,5 @@
 from typing import List, Optional
+from sqlalchemy.orm import joinedload
 
 from db.database import MainSessionLocal
 from models.main.account import Account
@@ -7,7 +8,6 @@ from quant_core.enums.platform import Platform
 from quant_core.enums.prop_firm import PropFirm
 from quant_core.services.core_logger import CoreLogger
 from quant_core.utils.text_utils import generate_uid
-from sqlalchemy.orm import joinedload
 
 
 class AccountService:
@@ -90,7 +90,7 @@ class AccountService:
         return account
 
     @staticmethod
-    def create_account_with_config(  # pylint: disable=too-many-arguments, too-many-positional-arguments
+    def create_account_with_config(
         friendly_name: str,
         secret_name: str,
         platform: Platform,

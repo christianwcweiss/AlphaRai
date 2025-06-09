@@ -27,9 +27,28 @@ def render_account_card(account: Account) -> html.Div:
 
 
 def render_account_cards() -> html.Div:
-    """Render a row of account cards based on the current accounts in the database."""
     accounts = AccountService().get_all_accounts()
 
+    return html.Div(
+        children=[
+            AlphaRow(
+                children=[
+                    AlphaCol(
+                        children=render_account_card(account),
+                        xs=12,
+                        sm=6,
+                        md=4,
+                        lg=3,
+                        xl=3,
+                    ) for account in accounts
+                ]
+            )
+        ]
+    )
+
+
+def render_account_management_row() -> html.Div:
+    """Render a row of account cards based on the current accounts in the database."""
     return html.Div(
         children=[
             AlphaRow(
@@ -101,7 +120,7 @@ def _render_tv_calendar() -> html.Div:
     )
 
 
-def render_tv_calendar_card() -> html.Div:
+def render_tv_calendar_row() -> html.Div:
     """Render a card containing the Trading View calendar widget."""
     return html.Div(
         children=[
@@ -135,40 +154,58 @@ def render_tv_calendar_card() -> html.Div:
         ],
     )
 
-
-def render_bot_controls(bot_running: bool) -> html.Div:
+def render_bot_controls_row(bot_running: bool) -> html.Div:
     """Render the controls for the Discord bot, including start and stop buttons."""
     return html.Div(
-        [
-            AlphaRow(
-                children=[
-                    AlphaCol(
-                        AlphaButton(
-                            BOT_RUNNING_LABEL if bot_running else START_BOT_BTN_LABEL,
-                            button_id=START_BOT_BTN_ID,
-                            button_color=AlphaButtonColor.SUCCESS if bot_running else AlphaButtonColor.ERROR,
-                        ).render(),
-                        xs=12,
-                        sm=6,
-                        md=6,
-                        lg=6,
-                        xl=6,
-                    ),
-                    AlphaCol(
-                        AlphaButton(
-                            STOP_BOT_BTN_LABEL,
-                            button_id=STOP_BOT_BTN_ID,
-                            button_color=AlphaButtonColor.ERROR,
-                            hidden=not bot_running,
-                        ).render(),
-                        xs=12,
-                        sm=6,
-                        md=6,
-                        lg=6,
-                        xl=6,
-                    ),
-                ]
-            )
-        ],
-        style={"marginBottom": "20px"},
+        children=[
+            AlphaCard(
+                header=AlphaCardHeader(
+                    children=[
+                        html.H3("Discord Bot Controls", style={"textAlign": "center"}),
+                        html.P(
+                            "Start or stop the trading signal bot. Only one bot should run at a time.",
+                            style={"textAlign": "center", "color": colors.TEXT_DISABLED},
+                        ),
+                    ]
+                ).render(),
+                body=AlphaCardBody(
+                    children=[
+                        AlphaRow(
+                            children=[
+                                AlphaCol(
+                                    AlphaButton(
+                                        BOT_RUNNING_LABEL if bot_running else START_BOT_BTN_LABEL,
+                                        button_id=START_BOT_BTN_ID,
+                                        button_color=AlphaButtonColor.SUCCESS if bot_running else AlphaButtonColor.ERROR,
+                                    ).render(),
+                                    xs=12,
+                                    sm=6,
+                                    md=6,
+                                    lg=6,
+                                    xl=6,
+                                ),
+                                AlphaCol(
+                                    AlphaButton(
+                                        STOP_BOT_BTN_LABEL,
+                                        button_id=STOP_BOT_BTN_ID,
+                                        button_color=AlphaButtonColor.ERROR,
+                                        hidden=not bot_running,
+                                    ).render(),
+                                    xs=12,
+                                    sm=6,
+                                    md=6,
+                                    lg=6,
+                                    xl=6,
+                                ),
+                            ]
+                        )
+                    ]
+                ).render(),
+                show_divider=True,
+                style={
+                    "backgroundColor": "#ffffff",
+                    "marginBottom": "20px",
+                },
+            ).render()
+        ]
     )

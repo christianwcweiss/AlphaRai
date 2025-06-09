@@ -76,9 +76,7 @@ class AlphaButton(Atom):  # pylint: disable=too-many-instance-attributes
 
     def _build_style(self) -> Dict[str, Any]:
         return {
-            "backgroundColor": (
-                self._button_color.value if isinstance(self._button_color, AlphaButtonColor) else self._button_color
-            ),
+            "backgroundColor": self._button_color.value,
             "color": colors.get_text_color(
                 self._button_color.value if isinstance(self._button_color, AlphaButtonColor) else self._button_color
             ),
