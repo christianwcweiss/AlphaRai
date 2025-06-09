@@ -1,0 +1,309 @@
+from enum import IntEnum
+
+try:
+    import MetaTrader5 as mt5
+except ImportError:
+    from quant_core.mock import mt5
+
+
+class MT5TimeFrame(IntEnum):
+    """Enum for MetaTrader 5 timeframes."""
+
+    M1 = mt5.TIMEFRAME_M1
+    M2 = mt5.TIMEFRAME_M2
+    M3 = mt5.TIMEFRAME_M3
+    M4 = mt5.TIMEFRAME_M4
+    M5 = mt5.TIMEFRAME_M5
+    M6 = mt5.TIMEFRAME_M6
+    M10 = mt5.TIMEFRAME_M10
+    M12 = mt5.TIMEFRAME_M12
+    M15 = mt5.TIMEFRAME_M15
+    M20 = mt5.TIMEFRAME_M20
+    M30 = mt5.TIMEFRAME_M30
+    H1 = mt5.TIMEFRAME_H1
+    H2 = mt5.TIMEFRAME_H2
+    H3 = mt5.TIMEFRAME_H3
+    H4 = mt5.TIMEFRAME_H4
+    H6 = mt5.TIMEFRAME_H6
+    H8 = mt5.TIMEFRAME_H8
+    H12 = mt5.TIMEFRAME_H12
+    D1 = mt5.TIMEFRAME_D1
+    W1 = mt5.TIMEFRAME_W1
+    MN1 = mt5.TIMEFRAME_MN1
+
+
+class MT5OrderType(IntEnum):
+    """Enum for MetaTrader 5 order types."""
+
+    BUY = mt5.ORDER_TYPE_BUY
+    SELL = mt5.ORDER_TYPE_SELL
+    BUY_LIMIT = mt5.ORDER_TYPE_BUY_LIMIT
+    SELL_LIMIT = mt5.ORDER_TYPE_SELL_LIMIT
+    BUY_STOP = mt5.ORDER_TYPE_BUY_STOP
+    SELL_STOP = mt5.ORDER_TYPE_SELL_STOP
+    BUY_STOP_LIMIT = mt5.ORDER_TYPE_BUY_STOP_LIMIT
+    SELL_STOP_LIMIT = mt5.ORDER_TYPE_SELL_STOP_LIMIT
+    CLOSE_BY = mt5.ORDER_TYPE_CLOSE_BY
+
+
+class MT5OrderState(IntEnum):
+    """Enum for MetaTrader 5 order states."""
+
+    STARTED = mt5.ORDER_STATE_STARTED
+    PLACED = mt5.ORDER_STATE_PLACED
+    CANCELED = mt5.ORDER_STATE_CANCELED
+    PARTIAL = mt5.ORDER_STATE_PARTIAL
+    FILLED = mt5.ORDER_STATE_FILLED
+    REJECTED = mt5.ORDER_STATE_REJECTED
+    EXPIRED = mt5.ORDER_STATE_EXPIRED
+    REQUEST_ADD = mt5.ORDER_STATE_REQUEST_ADD
+    REQUEST_MODIFY = mt5.ORDER_STATE_REQUEST_MODIFY
+    REQUEST_CANCEL = mt5.ORDER_STATE_REQUEST_CANCEL
+
+
+class MT5DealType(IntEnum):
+    """Enum for MetaTrader 5 deal types."""
+
+    BUY = mt5.DEAL_TYPE_BUY
+    SELL = mt5.DEAL_TYPE_SELL
+    BALANCE = mt5.DEAL_TYPE_BALANCE
+    CREDIT = mt5.DEAL_TYPE_CREDIT
+    CHARGE = mt5.DEAL_TYPE_CHARGE
+    CORRECTION = mt5.DEAL_TYPE_CORRECTION
+    BONUS = mt5.DEAL_TYPE_BONUS
+    COMMISSION = mt5.DEAL_TYPE_COMMISSION
+    COMMISSION_DAILY = mt5.DEAL_TYPE_COMMISSION_DAILY
+    COMMISSION_MONTHLY = mt5.DEAL_TYPE_COMMISSION_MONTHLY
+    COMMISSION_AGENT_DAILY = mt5.DEAL_TYPE_COMMISSION_AGENT_DAILY
+    COMMISSION_AGENT_MONTHLY = mt5.DEAL_TYPE_COMMISSION_AGENT_MONTHLY
+    INTEREST = mt5.DEAL_TYPE_INTEREST
+    BUY_CANCELED = mt5.DEAL_TYPE_BUY_CANCELED
+    SELL_CANCELED = mt5.DEAL_TYPE_SELL_CANCELED
+    DIVIDEND = mt5.DEAL_DIVIDEND
+    DIVIDEND_FRANKED = mt5.DEAL_DIVIDEND_FRANKED
+    TAX = mt5.DEAL_TAX
+
+
+class MT5CopyTicks(IntEnum):
+    """Enum for MetaTrader 5 copy ticks modes."""
+
+    ALL = mt5.COPY_TICKS_ALL
+    INFO = mt5.COPY_TICKS_INFO
+    TRADE = mt5.COPY_TICKS_TRADE
+
+
+class MT5TickFlag(IntEnum):
+    """Enum for MetaTrader 5 tick flags."""
+
+    BID = mt5.TICK_FLAG_BID
+    ASK = mt5.TICK_FLAG_ASK
+    LAST = mt5.TICK_FLAG_LAST
+    VOLUME = mt5.TICK_FLAG_VOLUME
+    BUY = mt5.TICK_FLAG_BUY
+    SELL = mt5.TICK_FLAG_SELL
+
+
+class MT5PositionType(IntEnum):
+    """Enum for MetaTrader 5 position types."""
+
+    BUY = mt5.POSITION_TYPE_BUY
+    SELL = mt5.POSITION_TYPE_SELL
+
+
+class MT5PositionReason(IntEnum):
+    """Enum for MetaTrader 5 position reasons."""
+
+    CLIENT = mt5.POSITION_REASON_CLIENT
+    MOBILE = mt5.POSITION_REASON_MOBILE
+    WEB = mt5.POSITION_REASON_WEB
+    EXPERT = mt5.POSITION_REASON_EXPERT
+
+
+class MT5OrderFilling(IntEnum):
+    """Enum for MetaTrader 5 order filling types."""
+
+    FOK = mt5.ORDER_FILLING_FOK
+    IOC = mt5.ORDER_FILLING_IOC
+    RETURN = mt5.ORDER_FILLING_RETURN
+    BOC = mt5.ORDER_FILLING_BOC
+
+
+class MT5OrderTime(IntEnum):
+    """Enum for MetaTrader 5 order time types."""
+
+    GTC = mt5.ORDER_TIME_GTC
+    DAY = mt5.ORDER_TIME_DAY
+    SPECIFIED = mt5.ORDER_TIME_SPECIFIED
+    SPECIFIED_DAY = mt5.ORDER_TIME_SPECIFIED_DAY
+
+
+class MT5OrderReason(IntEnum):
+    """Enum for MetaTrader 5 order reasons."""
+
+    CLIENT = mt5.ORDER_REASON_CLIENT
+    MOBILE = mt5.ORDER_REASON_MOBILE
+    WEB = mt5.ORDER_REASON_WEB
+    EXPERT = mt5.ORDER_REASON_EXPERT
+    SL = mt5.ORDER_REASON_SL
+    TP = mt5.ORDER_REASON_TP
+    SO = mt5.ORDER_REASON_SO
+
+
+class MT5DealEntry(IntEnum):
+    """Enum for MetaTrader 5 deal entries."""
+
+    IN_ = mt5.DEAL_ENTRY_IN
+    OUT = mt5.DEAL_ENTRY_OUT
+    INOUT = mt5.DEAL_ENTRY_INOUT
+    OUT_BY = mt5.DEAL_ENTRY_OUT_BY
+
+
+class MT5DealReason(IntEnum):
+    """Enum for MetaTrader 5 deal reasons."""
+
+    CLIENT = mt5.DEAL_REASON_CLIENT
+    MOBILE = mt5.DEAL_REASON_MOBILE
+    WEB = mt5.DEAL_REASON_WEB
+    EXPERT = mt5.DEAL_REASON_EXPERT
+    SL = mt5.DEAL_REASON_SL
+    TP = mt5.DEAL_REASON_TP
+    SO = mt5.DEAL_REASON_SO
+    ROLLOVER = mt5.DEAL_REASON_ROLLOVER
+    VMARGIN = mt5.DEAL_REASON_VMARGIN
+    SPLIT = mt5.DEAL_REASON_SPLIT
+
+
+class MT5TradeAction(IntEnum):
+    """Enum for MetaTrader 5 trade actions."""
+
+    DEAL = mt5.TRADE_ACTION_DEAL
+    PENDING = mt5.TRADE_ACTION_PENDING
+    SLTP = mt5.TRADE_ACTION_SLTP
+    MODIFY = mt5.TRADE_ACTION_MODIFY
+    REMOVE = mt5.TRADE_ACTION_REMOVE
+    CLOSE_BY = mt5.TRADE_ACTION_CLOSE_BY
+
+
+class MT5ChartMode(IntEnum):
+    """Enum for MetaTrader 5 chart modes."""
+
+    BID = mt5.SYMBOL_CHART_MODE_BID
+    LAST = mt5.SYMBOL_CHART_MODE_LAST
+
+
+class MT5CalcMode(IntEnum):
+    """Enum for MetaTrader 5 calculation modes."""
+
+    FOREX = mt5.SYMBOL_CALC_MODE_FOREX
+    FUTURES = mt5.SYMBOL_CALC_MODE_FUTURES
+    CFD = mt5.SYMBOL_CALC_MODE_CFD
+    CFDINDEX = mt5.SYMBOL_CALC_MODE_CFDINDEX
+    CFDLEVERAGE = mt5.SYMBOL_CALC_MODE_CFDLEVERAGE
+    FOREX_NO_LEVERAGE = mt5.SYMBOL_CALC_MODE_FOREX_NO_LEVERAGE
+    EXCH_STOCKS = mt5.SYMBOL_CALC_MODE_EXCH_STOCKS
+    EXCH_FUTURES = mt5.SYMBOL_CALC_MODE_EXCH_FUTURES
+    EXCH_OPTIONS = mt5.SYMBOL_CALC_MODE_EXCH_OPTIONS
+    EXCH_OPTIONS_MARGIN = mt5.SYMBOL_CALC_MODE_EXCH_OPTIONS_MARGIN
+    EXCH_BONDS = mt5.SYMBOL_CALC_MODE_EXCH_BONDS
+    EXCH_STOCKS_MOEX = mt5.SYMBOL_CALC_MODE_EXCH_STOCKS_MOEX
+    EXCH_BONDS_MOEX = mt5.SYMBOL_CALC_MODE_EXCH_BONDS_MOEX
+    SERV_COLLATERAL = mt5.SYMBOL_CALC_MODE_SERV_COLLATERAL
+
+
+class MT5TradeMode(IntEnum):
+    """Enum for MetaTrader 5 trade modes."""
+
+    DISABLED = mt5.SYMBOL_TRADE_MODE_DISABLED
+    LONGONLY = mt5.SYMBOL_TRADE_MODE_LONGONLY
+    SHORTONLY = mt5.SYMBOL_TRADE_MODE_SHORTONLY
+    CLOSEONLY = mt5.SYMBOL_TRADE_MODE_CLOSEONLY
+    FULL = mt5.SYMBOL_TRADE_MODE_FULL
+
+
+class MT5ExecutionMode(IntEnum):
+    """Enum for MetaTrader 5 execution modes."""
+
+    REQUEST = mt5.SYMBOL_TRADE_EXECUTION_REQUEST
+    INSTANT = mt5.SYMBOL_TRADE_EXECUTION_INSTANT
+    MARKET = mt5.SYMBOL_TRADE_EXECUTION_MARKET
+    EXCHANGE = mt5.SYMBOL_TRADE_EXECUTION_EXCHANGE
+
+
+class MT5SwapMode(IntEnum):
+    """Enum for MetaTrader 5 swap modes."""
+
+    DISABLED = mt5.SYMBOL_SWAP_MODE_DISABLED
+    POINTS = mt5.SYMBOL_SWAP_MODE_POINTS
+    CURRENCY_SYMBOL = mt5.SYMBOL_SWAP_MODE_CURRENCY_SYMBOL
+    CURRENCY_MARGIN = mt5.SYMBOL_SWAP_MODE_CURRENCY_MARGIN
+    CURRENCY_DEPOSIT = mt5.SYMBOL_SWAP_MODE_CURRENCY_DEPOSIT
+    INTEREST_CURRENT = mt5.SYMBOL_SWAP_MODE_INTEREST_CURRENT
+    INTEREST_OPEN = mt5.SYMBOL_SWAP_MODE_INTEREST_OPEN
+    REOPEN_CURRENT = mt5.SYMBOL_SWAP_MODE_REOPEN_CURRENT
+    REOPEN_BID = mt5.SYMBOL_SWAP_MODE_REOPEN_BID
+
+
+class MT5DayOfWeek(IntEnum):
+    """Enum for MetaTrader 5 days of the week."""
+
+    SUNDAY = mt5.DAY_OF_WEEK_SUNDAY
+    MONDAY = mt5.DAY_OF_WEEK_MONDAY
+    TUESDAY = mt5.DAY_OF_WEEK_TUESDAY
+    WEDNESDAY = mt5.DAY_OF_WEEK_WEDNESDAY
+    THURSDAY = mt5.DAY_OF_WEEK_THURSDAY
+    FRIDAY = mt5.DAY_OF_WEEK_FRIDAY
+    SATURDAY = mt5.DAY_OF_WEEK_SATURDAY
+
+
+class MT5GTCMode(IntEnum):
+    """Enum for MetaTrader 5 GTC (Good Till Cancelled) modes."""
+
+    GTC = mt5.SYMBOL_ORDERS_GTC
+    DAILY = mt5.SYMBOL_ORDERS_DAILY
+    DAILY_NO_STOPS = mt5.SYMBOL_ORDERS_DAILY_NO_STOPS
+
+
+class MT5OptionRight(IntEnum):
+    """Enum for MetaTrader 5 option rights."""
+
+    CALL = mt5.SYMBOL_OPTION_RIGHT_CALL
+    PUT = mt5.SYMBOL_OPTION_RIGHT_PUT
+
+
+class MT5OptionMode(IntEnum):
+    """Enum for MetaTrader 5 option modes."""
+
+    EUROPEAN = mt5.SYMBOL_OPTION_MODE_EUROPEAN
+    AMERICAN = mt5.SYMBOL_OPTION_MODE_AMERICAN
+
+
+class MT5AccountTradeMode(IntEnum):
+    """Enum for MetaTrader 5 account trade modes."""
+
+    DEMO = mt5.ACCOUNT_TRADE_MODE_DEMO
+    CONTEST = mt5.ACCOUNT_TRADE_MODE_CONTEST
+    REAL = mt5.ACCOUNT_TRADE_MODE_REAL
+
+
+class MT5StopoutMode(IntEnum):
+    """Enum for MetaTrader 5 stopout modes."""
+
+    PERCENT = mt5.ACCOUNT_STOPOUT_MODE_PERCENT
+    MONEY = mt5.ACCOUNT_STOPOUT_MODE_MONEY
+
+
+class MT5MarginMode(IntEnum):
+    """Enum for MetaTrader 5 margin modes."""
+
+    RETAIL_NETTING = mt5.ACCOUNT_MARGIN_MODE_RETAIL_NETTING
+    EXCHANGE = mt5.ACCOUNT_MARGIN_MODE_EXCHANGE
+    RETAIL_HEDGING = mt5.ACCOUNT_MARGIN_MODE_RETAIL_HEDGING
+
+
+class MT5BookType(IntEnum):
+    """Enum for MetaTrader 5 book types."""
+
+    SELL = mt5.BOOK_TYPE_SELL
+    BUY = mt5.BOOK_TYPE_BUY
+    SELL_MARKET = mt5.BOOK_TYPE_SELL_MARKET
+    BUY_MARKET = mt5.BOOK_TYPE_BUY_MARKET

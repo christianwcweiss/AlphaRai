@@ -41,7 +41,7 @@ class TradeRouter:  # pylint: disable=too-few-public-methods
                 CoreLogger().info(f"Account {account.uid} is disabled. Skipping...")
                 continue
 
-            if config := AccountConfigService().get_config_by_account_and_symbol(account.uid, trade.symbol):
+            if config := AccountConfigService().get_config(account_uid=account.uid, platform_asset_id=trade.symbol):
                 if config.enabled:
                     CoreLogger().info(f"Found config for {account.uid}: {config}")
                     matched_accounts.append((account, config))
@@ -81,7 +81,9 @@ class TradeRouter:  # pylint: disable=too-few-public-methods
                     stop_loss_price=self.trade.stop_loss,
                     percentage_risk=single_trade_risk,
                     balance=balance,
-                    account_config=config,
+                    asset_type=config.asset_type,
+                    decimal_points=config.decimal_points,
+                    lot_size=config.lot_size,
                 )
             )
 

@@ -1,3 +1,4 @@
+import argparse
 import os
 from argparse import Namespace
 
@@ -11,7 +12,6 @@ from dash import Dash, Input, Output, State, callback, dash, dcc, html, page_con
 from db.database import init_db
 from quant_core.services.core_logger import CoreLogger
 from services.relay_bot import DiscordRelayBot  # pylint: disable=unused-import  # noqa: F401
-import argparse
 
 
 def parse_args() -> Namespace:
@@ -29,21 +29,20 @@ def parse_args() -> Namespace:
 
 
 def main() -> Dash:
+    """Initialize the Dash application and set up the layout."""
     init_db()
 
-    app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.COSMO])
-    server = app.server
+    dash_app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.COSMO])
 
-    TRADE_STORE_ID = "parsed-trade-store"
-
-    app.layout = dbc.Container(
+    trade_store_id = "parsed-trade-store"
+    dash_app.layout = dbc.Container(
         [
             dcc.Location(id="url", refresh=False),
             TopBar(),
             LogViewer().render(),
             page_container,
             NewTradeModal().render(),
-            dcc.Store(id=TRADE_STORE_ID),
+            dcc.Store(id=trade_store_id),
             html.Div(id="trade-status"),
             AlphaFloatingActionButton(
                 "+",
@@ -54,7 +53,7 @@ def main() -> Dash:
         style={"backgroundColor": colors.GREY_100, "minHeight": "100vh"},
     )
 
-    return app
+    return dash_app
 
 
 @callback(Output("log-preview", "children"), Input("log-refresh", "n_intervals"))
@@ -89,12 +88,11 @@ def toggle_log_modal(_, is_open: bool) -> tuple[bool, str]:
 
 if __name__ == "__main__":
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":  # Avoid starting the bot multiple times in debug mode
-        pass
-        # bot_instance = DiscordRelayBot()
-        # bot_instance.run()
+        bot_instance = DiscordRelayBot()
+        bot_instance.run()
 
     arguments = parse_args()
+    debug_mode = arguments.debug
 
     app = main()
-
-    app.run(debug=True)
+    app.run(debug=debug_mode)

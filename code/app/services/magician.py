@@ -14,7 +14,7 @@ class Magician:  # pylint: disable=too-few-public-methods
         """
         Casts a magic number based on the mode of the trade.
         """
-        return TradeMode(account_config.mode).value
+        return TradeMode(account_config.mode).to_magic_number()
 
     def cast(self, account_config: AccountConfig) -> int:
         """

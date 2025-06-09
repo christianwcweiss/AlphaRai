@@ -69,7 +69,7 @@ def sync_symbols_callback(_sync_button_clicks: int, uid: str) -> html.Div:
     if not account:
         raise dash.exceptions.PreventUpdate
 
-    AccountConfigService().sync_with_mt5(account_id=uid, secret_id=account.secret_name)
+    AccountConfigService().sync_with_mt5(account_uid=uid, secret_id=account.secret_name)
 
     return render_config_cards(uid)
 
@@ -89,7 +89,7 @@ def open_edit_modal(n_clicks: List[int], _is_open: bool, uid: str) -> Tuple[bool
     if all(click is None or click == 0 for click in n_clicks) or not triggered_symbol:
         raise dash.exceptions.PreventUpdate
 
-    config = AccountConfigService().get_config_by_account_and_symbol(account_id=uid, signal_asset_id=triggered_symbol)
+    config = AccountConfigService().get_config(account_uid=uid, platform_asset_id=triggered_symbol)
     if not config:
         raise dash.exceptions.PreventUpdate
 

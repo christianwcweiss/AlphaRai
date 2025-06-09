@@ -1,10 +1,9 @@
-from sqlalchemy import Boolean, Column, Enum, String
-from sqlalchemy.orm import relationship
 from models.main.main_base import Base
-
 from quant_core.entities.dto.account import AccountDTO
 from quant_core.enums.platform import Platform
 from quant_core.enums.prop_firm import PropFirm
+from sqlalchemy import Boolean, Column, Enum, String
+from sqlalchemy.orm import relationship
 
 
 class Account(Base):  # type: ignore  # pylint: disable=too-few-public-methods
@@ -25,11 +24,7 @@ class Account(Base):  # type: ignore  # pylint: disable=too-few-public-methods
 
     enabled = Column(Boolean, nullable=False, default=False)
 
-    account_configs = relationship(
-        "AccountConfig",
-        back_populates="account",
-        cascade="all, delete-orphan"
-    )
+    account_configs = relationship("AccountConfig", back_populates="account", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return (

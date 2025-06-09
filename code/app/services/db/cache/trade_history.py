@@ -29,7 +29,7 @@ def get_all_trades_df(enrich: bool = True) -> pd.DataFrame:
         accounts_df = accounts_df[[col for col in accounts_df.columns if not col.startswith("_sa_")]]
 
         trades_df = trades_df.merge(accounts_df, left_on="account_id", right_on="uid", how="left")
-        trades_df.drop(columns=["id_x", "id_y", "enabled", "uid"], inplace=True)
+        trades_df.drop(columns=["enabled", "uid"], inplace=True)
 
         accounts_config = AccountConfigService().get_all_configs()
         accounts_config_df = pd.DataFrame([c.__dict__ for c in accounts_config])
@@ -136,7 +136,7 @@ def sync_trades_from_all_accounts(days: int = 9999) -> str:
     Returns a summary string.
     """
 
-    tables = ["cache_trades", "cache_balance_over_time"]
+    tables = ["cache_trades"]
     for table in tables:
         truncate_table(table_name=table)
 

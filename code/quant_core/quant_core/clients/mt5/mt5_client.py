@@ -19,21 +19,7 @@ from quant_core.services.core_logger import CoreLogger
 try:
     import MetaTrader5 as mt5
 except ImportError:
-
-    class mt5:  # type: ignore  # pylint: disable=invalid-name, too-few-public-methods
-        """Mock class for MetaTrader5 to avoid import errors when not available."""
-
-
-ORDER_TYPE_MAP = {
-    0: "Buy",
-    1: "Sell",
-    2: "Buy Limit",
-    3: "Sell Limit",
-    4: "Buy Stop",
-    5: "Sell Stop",
-    6: "Buy Stop Limit",
-    7: "Sell Stop Limit",
-}
+    from quant_core.mock import mt5
 
 
 class Mt5Client:

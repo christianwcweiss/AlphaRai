@@ -1,9 +1,8 @@
 from components.atoms.buttons.general.button import AlphaButton, AlphaButtonColor
 from components.atoms.card.card import AlphaCard, AlphaCardBody, AlphaCardHeader
 from components.atoms.layout.layout import AlphaCol, AlphaRow
-from dash import html
-
 from constants import colors
+from dash import html
 from models.main.account import Account
 from pages.cockpit.cockpit_constants import (
     ACCOUNT_TOGGLE_ID,
@@ -27,6 +26,7 @@ def render_account_card(account: Account) -> html.Div:
 
 
 def render_account_cards() -> html.Div:
+    """Render a list of account cards based on the current accounts in the database."""
     accounts = AccountService().get_all_accounts()
 
     return html.Div(
@@ -40,7 +40,8 @@ def render_account_cards() -> html.Div:
                         md=4,
                         lg=3,
                         xl=3,
-                    ) for account in accounts
+                    )
+                    for account in accounts
                 ]
             )
         ]
@@ -49,6 +50,7 @@ def render_account_cards() -> html.Div:
 
 def render_account_management_row() -> html.Div:
     """Render a row of account cards based on the current accounts in the database."""
+
     return html.Div(
         children=[
             AlphaRow(
@@ -60,12 +62,12 @@ def render_account_management_row() -> html.Div:
                                 html.P(
                                     "Click on an account to toggle its enabled state.",
                                     style={"textAlign": "center", "color": colors.TEXT_DISABLED},
-                                )
+                                ),
                             ]
                         ).render(),
                         body=AlphaCardBody(
                             children=[
-                                html.Div(id="account-toggle-container"),
+                                html.Div(id="account-toggle-container", children=render_account_cards()),
                             ]
                         ).render(),
                         show_divider=True,
@@ -154,6 +156,7 @@ def render_tv_calendar_row() -> html.Div:
         ],
     )
 
+
 def render_bot_controls_row(bot_running: bool) -> html.Div:
     """Render the controls for the Discord bot, including start and stop buttons."""
     return html.Div(
@@ -176,7 +179,9 @@ def render_bot_controls_row(bot_running: bool) -> html.Div:
                                     AlphaButton(
                                         BOT_RUNNING_LABEL if bot_running else START_BOT_BTN_LABEL,
                                         button_id=START_BOT_BTN_ID,
-                                        button_color=AlphaButtonColor.SUCCESS if bot_running else AlphaButtonColor.ERROR,
+                                        button_color=(
+                                            AlphaButtonColor.SUCCESS if bot_running else AlphaButtonColor.ERROR
+                                        ),
                                     ).render(),
                                     xs=12,
                                     sm=6,
