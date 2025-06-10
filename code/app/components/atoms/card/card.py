@@ -22,7 +22,6 @@ class AlphaCardHeader(Atom):
         return html.Div(
             children=self.children if isinstance(self.children, list) else [self.children],
             style={
-                "marginBottom": "1rem",
                 "display": "flex",
                 "flexDirection": "column",
                 "alignItems": "center",
@@ -58,9 +57,9 @@ class AlphaCard(Atom):  # pylint: disable=too-many-instance-attributes
     DEFAULT_STYLE = {
         "padding": "1.5rem",
         "borderRadius": "0.5rem",
+        "border": "1px solid rgba(0, 0, 0, 0.1)",
         "backgroundColor": colors.PRIMARY_COLOR,
         "boxShadow": "0 4px 8px rgba(0, 0, 0, 0.05)",
-        "marginBottom": "1rem",
         "transition": "transform 0.2s ease",
         "display": "flex",
         "flexDirection": "column",
@@ -111,6 +110,7 @@ class AlphaCard(Atom):  # pylint: disable=too-many-instance-attributes
             )
         if self._subtitle:
             header_items.append(Paragraph(text=self._subtitle).render())
+
         return html.Div(header_items)
 
     def _render_children(self) -> List[Component]:

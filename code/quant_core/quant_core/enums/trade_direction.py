@@ -51,3 +51,23 @@ class TradeDirection(Enum):
             return TradeDirection.LONG.normalize()
 
         return self
+
+
+class EnabledTradeDirection(Enum):
+    DISABLED = "DISABLED"
+    LONG = "LONG"
+    SHORT = "SHORT"
+    BOTH = "BOTH"
+
+    def trading_enabled(self, direction: TradeDirection) -> bool:
+        """Check if trading is enabled for the given direction."""
+        if self == EnabledTradeDirection.DISABLED:
+            return False
+        if self == EnabledTradeDirection.BOTH:
+            return True
+        if self == EnabledTradeDirection.LONG and direction.normalize() is TradeDirection.LONG:
+            return True
+        if self == EnabledTradeDirection.SHORT and direction.normalize() is TradeDirection.SHORT:
+            return True
+
+        return False

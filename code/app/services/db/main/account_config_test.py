@@ -1,0 +1,3 @@
+
+class TestAccountConfigService:
+    pass
