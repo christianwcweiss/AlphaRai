@@ -26,6 +26,13 @@ class Confluence(ABC):
         Evaluate how strongly the confluence supports a trade in the given direction.
         """
 
+    @abstractmethod
+    def normalize(self, score: float, min_value: float, max_value: float) -> float:
+        """
+        Normalize the confluence score to a range of min_value to max_value.
+        """
+        pass
+
     def explain(self) -> str:
         """
         Optional explanation for UI/debug.
