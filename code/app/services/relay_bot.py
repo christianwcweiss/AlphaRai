@@ -59,7 +59,11 @@ class DiscordRelayBot:
         client = discord.Client(intents=intents)
 
         @client.event
-        async def on_ready():
+        async def on_ready() -> None:
+            if self._running:
+                CoreLogger().debug("Bot already running — skipping on_ready execution.")
+                return
+
             if self._on_ready_ran:
                 CoreLogger().debug("on_ready() already ran once — skipping duplicate execution.")
                 return

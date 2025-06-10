@@ -14,4 +14,4 @@ class AlphaCol(dbc.Col):  # pylint: disable=too-few-public-methods
 
     def __init__(self, *args, **kwargs) -> None:
         class_name = kwargs.pop("className", "")
-        super().__init__(*args, className=f"{class_name} px-2", **kwargs)
+        super().__init__(*args, className=f"{class_name} px-2", style={"padding": "5px"}, **kwargs)

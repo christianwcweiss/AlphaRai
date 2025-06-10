@@ -1,5 +1,7 @@
 from typing import List
 
+from typing_extensions import Tuple
+
 from entities.trade_details import TradeDetails
 from models.main.account import Account
 from models.main.account_config import AccountConfig
@@ -14,7 +16,6 @@ from quant_core.utils.trade_utils import calculate_position_size, get_stagger_le
 from services.db.main.account import AccountService
 from services.db.main.account_config import AccountConfigService
 from services.magician import Magician
-from typing_extensions import Tuple
 
 
 class TradeRouter:  # pylint: disable=too-few-public-methods
@@ -42,7 +43,7 @@ class TradeRouter:  # pylint: disable=too-few-public-methods
                 continue
 
             if config := AccountConfigService().get_config(account_uid=account.uid, platform_asset_id=trade.symbol):
-                if config.enabled:
+                if config.enabled_trade_direction.trading_enabled(trade.direction):
                     CoreLogger().info(f"Found config for {account.uid}: {config}")
                     matched_accounts.append((account, config))
                 else:

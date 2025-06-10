@@ -134,7 +134,7 @@ def _render_risk_preview(  # pylint: disable=too-many-locals
     configs: List[Tuple[Account, AccountConfig]] = []
     for account in all_accounts:
         if config := AccountConfigService().get_config(account_uid=account.uid, platform_asset_id=trade_details.symbol):
-            if config.enabled:
+            if config.enabled_trade_direction:
                 configs.append((account, config))
 
     if not configs:

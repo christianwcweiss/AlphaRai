@@ -1,8 +1,9 @@
 from models.main.main_base import Base
 from quant_core.enums.asset_type import AssetType
 from quant_core.enums.stagger_method import StaggerMethod
+from quant_core.enums.trade_direction import EnabledTradeDirection
 from quant_core.enums.trade_mode import TradeMode
-from sqlalchemy import Boolean, Column, Enum, Float, ForeignKey, Integer, PrimaryKeyConstraint, String
+from sqlalchemy import Column, Enum, Float, ForeignKey, Integer, PrimaryKeyConstraint, String
 from sqlalchemy.orm import relationship
 
 
@@ -26,7 +27,9 @@ class AccountConfig(Base):  # type: ignore  # pylint: disable=too-few-public-met
     lot_size = Column(Float, nullable=False, default=1.0)
     decimal_points = Column(Integer, nullable=False)
 
-    enabled = Column(Boolean, default=False)
+    enabled_trade_direction = Column(
+        Enum(EnabledTradeDirection), nullable=False, default=EnabledTradeDirection.DISABLED.name
+    )
 
     account = relationship("Account", back_populates="account_configs")
 
@@ -44,6 +47,6 @@ class AccountConfig(Base):  # type: ignore  # pylint: disable=too-few-public-met
             f"asset_type={self.asset_type}, "
             f"lot_size={self.lot_size}, "
             f"decimal_points={self.decimal_points}, "
-            f"enabled={self.enabled}"
+            f"enabled_trade_direction={self.enabled_trade_direction}"
             f")>"
         )

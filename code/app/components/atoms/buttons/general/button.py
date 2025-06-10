@@ -111,7 +111,7 @@ class AlphaButton(Atom):  # pylint: disable=too-many-instance-attributes
         return html.Div(
             children=[button],
             style={
-                "display": "inline-block",
+                "display": "none" if self._hidden else "inline-block",
                 "visibility": "hidden" if self._hidden else "visible",
                 "width": self._width,
                 "height": self._height,

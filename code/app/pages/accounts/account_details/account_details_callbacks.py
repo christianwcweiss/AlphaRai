@@ -123,7 +123,7 @@ def save_config(  # pylint: disable=too-many-arguments, too-many-positional-argu
     risk: float,
     mode: str,
     asset_type: str,
-    enabled: bool,
+    enabled_trade_direction: str,
     config_id: str,
     uid: str,
 ) -> Tuple[bool, html.Div]:
@@ -143,7 +143,7 @@ def save_config(  # pylint: disable=too-many-arguments, too-many-positional-argu
                 "risk_percent": risk,
                 "mode": mode,
                 "asset_type": asset_type,
-                "enabled": enabled,
+                "enabled_trade_direction": enabled_trade_direction,
             },
         )
         updated_cards = render_account_config_cards(AccountConfigService().get_configs_by_account(uid))

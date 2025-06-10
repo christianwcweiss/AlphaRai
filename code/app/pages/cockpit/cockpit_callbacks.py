@@ -37,11 +37,10 @@ def control_bot_and_toggle_accounts(
 
 
 @callback(
-    Output(BOT_CONTROLS_CONTAINER, "children", allow_duplicate=True),
+    Output(BOT_CONTROLS_CONTAINER, "children"),
     Input(START_BOT_BTN_ID, "n_clicks"),
     Input(STOP_BOT_BTN_ID, "n_clicks"),
     Input(BOT_STATUS_INTERVAL_ID, "n_intervals"),
-    prevent_initial_call=True,
 )
 def toggle_bot_on(_start_btn_clicks: int, _stop_btn_clicks: int, _nth_interval: int) -> html.Div:
     """Toggle the Discord bot on or off based on button clicks."""
