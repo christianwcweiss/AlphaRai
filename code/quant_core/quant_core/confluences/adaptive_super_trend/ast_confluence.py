@@ -37,7 +37,7 @@ class ConfluenceAdaptiveSuperTrendDirection(Confluence):
         if direction_column not in data_frame.columns or data_frame.empty:
             return 0.5
 
-        trend = data_frame[direction_column].iloc[-1]
+        trend = int(data_frame[direction_column].iloc[-1])
 
         if trend not in (0, 1):
             return 0.5
@@ -48,3 +48,11 @@ class ConfluenceAdaptiveSuperTrendDirection(Confluence):
             return 1.0 if trend == 0 else 0.0
 
         return 0.5
+
+
+    def normalize(self, score: float, min_value: float, max_value: float) -> float:
+        """
+        Normalize the confluence score to a range of min_value to max_value.
+        """
+
+        return min_value + (max_value - min_value) * (score / 1.0)

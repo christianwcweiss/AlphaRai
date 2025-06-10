@@ -28,7 +28,7 @@ class Builder:
 
     @staticmethod
     def get_random_chart_data_frame(file_name: Optional[str] = None) -> pd.DataFrame:
-        data_path = os.path.join(os.path.dirname(__file__), "..", "..", "data")
+        data_path = os.path.join(os.path.dirname(__file__), "data", "asset_data")
         files = os.listdir(data_path)
         if file_name:
             assert file_name in files, f"File {file_name} not found in {data_path}"
