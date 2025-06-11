@@ -11,6 +11,7 @@ class ConfluenceAdaptiveSuperTrendDirection(Confluence):
 
     __NAME__ = "Adaptive SuperTrend Direction"
     __DESCRIPTION__ = "Scores 1.0 if SuperTrend aligns with trade direction, 0.0 if opposite, 0.5 if unknown."
+    __IS_AUTOMATIC__ = True
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
@@ -48,7 +49,6 @@ class ConfluenceAdaptiveSuperTrendDirection(Confluence):
             return 1.0 if trend == 0 else 0.0
 
         return 0.5
-
 
     def normalize(self, score: float, min_value: float, max_value: float) -> float:
         """

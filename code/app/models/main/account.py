@@ -25,6 +25,7 @@ class Account(Base):  # type: ignore  # pylint: disable=too-few-public-methods
     enabled = Column(Boolean, nullable=False, default=False)
 
     account_configs = relationship("AccountConfig", back_populates="account", cascade="all, delete-orphan")
+    confluence_configs = relationship("ConfluenceConfig", back_populates="account", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return (
