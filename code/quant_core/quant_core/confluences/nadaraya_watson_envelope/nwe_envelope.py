@@ -14,6 +14,7 @@ class ConfluenceNadarayaWatsonEnvelopePosition(Confluence):
         "Scores close to 1.0 if price is near the favorable envelope edge (upper for short, lower for long), "
         "0.0 if near the unfavorable edge. 0.5 if in the middle."
     )
+    __IS_AUTOMATIC__ = True
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)

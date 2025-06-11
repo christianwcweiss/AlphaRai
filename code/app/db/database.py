@@ -3,7 +3,7 @@ import os
 from models.cache.trade_history import Trade
 from models.main.account import Account
 from models.main.account_config import AccountConfig
-from models.main.confluence import ConfluenceConfig
+from models.main.confluence_config import ConfluenceConfig
 from models.main.general_setting import GeneralSetting
 from quant_core.services.core_logger import CoreLogger
 from sqlalchemy import create_engine, inspect
