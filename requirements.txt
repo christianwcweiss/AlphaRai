@@ -1,5 +1,6 @@
 asttokens==3.0.0
 attrs==25.1.0
+binance-connector==3.12.0
 blinker==1.9.0
 boto3==1.37.1
 botocore==1.37.1
