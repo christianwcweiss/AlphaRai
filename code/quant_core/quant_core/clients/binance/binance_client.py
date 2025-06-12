@@ -10,7 +10,7 @@ class BinanceClient:
     def __init__(self, secret_id: str):
         self._secret_id = secret_id
         api_key, secret_id = self._get_binance_credentials()
-        self._spot_client = Spot(key=api_key, secret=secret_id)
+        self._spot_client = Spot(api_key=api_key, api_secret=secret_id)
 
 
     def _get_binance_credentials(self) -> tuple[str, str]:
@@ -24,15 +24,13 @@ class BinanceClient:
         return api_key, secret_key
 
 
-    def get_balance(self) -> float:
+    def get_balance(self, symbol: str = "USDC") -> float:
         """Get the current balance from Binance."""
         account = self._spot_client.account()
 
-        account.balances = account.get("balances", [])
+        balances = account.get("balances", [])
 
-
-if __name__ == "__main__":
-    # Example usage
-    binance_client = BinanceClient(secret_id="your_secret_id_here")
-    balance = binance_client.get_balance()
-
+        return next(
+            (float(balance["free"]) for balance in balances if balance["asset"] == symbol),
+            0.0
+        )
