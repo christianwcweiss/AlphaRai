@@ -197,6 +197,26 @@ def render_edit_modal_body(config: AccountConfig) -> html.Div:
                 [
                     dbc.Col(
                         [
+                            dbc.Label("Entry Offset (0.00 - 1.00)"),
+                            dcc.Slider(
+                                id=EDIT_ENTRY_OFFSET_ID,
+                                min=0.0,
+                                max=1.0,
+                                step=0.01,
+                                value=config.entry_offset if config.entry_offset is not None else 0.0,
+                                marks={i / 10: f"{i / 10:.1f}" for i in range(11)},
+                                tooltip={"placement": "bottom", "always_visible": False},
+                            ),
+                        ],
+                        md=12,
+                    ),
+                ],
+                className="mb-4",
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        [
                             dbc.Label("Risk %"),
                             dbc.Input(id=EDIT_RISK_ID, type="number", step=0.1, min=0.1, value=config.risk_percent),
                         ],

@@ -171,3 +171,30 @@ def calculate_position_size(  # pylint: disable=too-many-arguments, too-many-pos
         return float(entry_lot_size // 1)
 
     return round(max(entry_lot_size, 0.01), 2)
+
+
+def offset_entry_price(entry_price: float, stop_loss: float, offset: float) -> float:
+    """
+    Offset the entry price based on the stop loss and a given offset percentage.
+    The offset is applied in the direction of the stop loss.
+    """
+    if entry_price <= 0 or stop_loss <= 0 or offset < 0:
+        raise ValueError("Entry price, stop loss must be greater than zero and offset must be non-negative.")
+
+    new_entry_price = (
+        entry_price - (entry_price - stop_loss) * offset
+        if stop_loss > entry_price
+        else entry_price + (stop_loss - entry_price) * offset
+    )
+
+    if new_entry_price <= 0:
+        raise ValueError("Offsetted entry price must be greater than zero.")
+
+    if entry_price > stop_loss:
+        if new_entry_price < stop_loss:
+            raise ValueError("Offsetted entry price cannot be below stop loss for long trades.")
+    if entry_price < stop_loss:
+        if new_entry_price > stop_loss:
+            raise ValueError("Offsetted entry price cannot be above stop loss for short trades.")
+
+    return new_entry_price
