@@ -10,6 +10,7 @@ from pages.accounts.account_details.account_details_constants import (
     EDIT_ASSET_TYPE_ID,
     EDIT_CONFIG_ID,
     EDIT_ENABLED_ID,
+    EDIT_ENTRY_OFFSET_ID,
     EDIT_MODAL_BODY_ID,
     EDIT_MODAL_BUTTON_CANCEL_ID,
     EDIT_MODAL_BUTTON_SAVE_ID,
@@ -109,6 +110,7 @@ def open_edit_modal(n_clicks: List[int], _is_open: bool, uid: str) -> Tuple[bool
     State(EDIT_MODE_ID, "value"),
     State(EDIT_ASSET_TYPE_ID, "value"),
     State(EDIT_ENABLED_ID, "value"),
+    State(EDIT_ENTRY_OFFSET_ID, "value"),
     State(EDIT_CONFIG_ID, "data"),
     State(SETTINGS_UID, "children"),
     prevent_initial_call=True,
@@ -124,6 +126,7 @@ def save_config(  # pylint: disable=too-many-arguments, too-many-positional-argu
     mode: str,
     asset_type: str,
     enabled_trade_direction: str,
+    entry_offset: float,
     config_id: str,
     uid: str,
 ) -> Tuple[bool, html.Div]:
@@ -144,6 +147,7 @@ def save_config(  # pylint: disable=too-many-arguments, too-many-positional-argu
                 "mode": mode,
                 "asset_type": asset_type,
                 "enabled_trade_direction": enabled_trade_direction,
+                "entry_offset": max(0.0, min(1.0, entry_offset)),
             },
         )
         updated_cards = render_account_config_cards(AccountConfigService().get_configs_by_account(uid))

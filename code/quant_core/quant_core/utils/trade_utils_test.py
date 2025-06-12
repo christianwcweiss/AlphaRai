@@ -3,7 +3,7 @@ from typing import List
 import pytest
 from quant_core.enums.asset_type import AssetType
 from quant_core.enums.stagger_method import StaggerMethod
-from quant_core.utils.trade_utils import calculate_position_size, get_stagger_levels
+from quant_core.utils.trade_utils import calculate_position_size, get_stagger_levels, offset_entry_price
 
 
 class TestTradeUtils:
@@ -160,3 +160,35 @@ class TestTradeUtils:
         )
 
         assert actual_size == expected_size
+
+
+@pytest.mark.parametrize(
+    "entry_price, stop_loss, offset, expected_price",
+    [
+        (100.0, 90.0, 0.5, 95.0),
+        (200.0, 180.0, 0.1, 198.0),
+        (100.0, 110.0, 0.2, 104.0),
+        (100.0, 0, 0.0, 100.0),
+        (100.0, 200.0, 0.0, 100.0),
+    ],
+)
+def test_offset_entry_price(
+    entry_price: float,
+    stop_loss: float,
+    offset: float,
+    expected_price: float,
+) -> None:
+    """Test that the offset entry price is correctly calculated."""
+    # Test with a positive offset
+    entry_price = 100.0
+    stop_loss_price = 90
+    offset = 0.5
+    expected_price = 95.0
+
+    actual_price = offset_entry_price(
+        entry_price=entry_price,
+        stop_loss=stop_loss_price,
+        offset=offset,
+    )
+
+    assert actual_price == expected_price

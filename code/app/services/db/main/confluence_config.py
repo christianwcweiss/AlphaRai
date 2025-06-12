@@ -31,6 +31,7 @@ class ConfluenceConfigService:
             )
             if account:
                 return account.confluence_configs
+
             CoreLogger().warning(f"No account found for UID: {account_uid}")
             return []
 
