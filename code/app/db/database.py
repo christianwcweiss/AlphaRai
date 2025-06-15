@@ -1,5 +1,6 @@
 import os
 
+from models.cache.signals import Signal
 from models.cache.trade_history import Trade
 from models.main.account import Account
 from models.main.account_config import AccountConfig
@@ -26,7 +27,7 @@ MAIN_TABLES = [
     ("main_general_settings", GeneralSetting),
     ("main_account_configs", AccountConfig),
 ]
-CACHE_TABLES = [("cache_trades", Trade)]
+CACHE_TABLES = [("cache_trades", Trade), ("cache_signals", Signal)]
 
 main_engine = create_engine(MAIN_DATABASE_URL, echo=False)
 MainSessionLocal = sessionmaker(bind=main_engine)
