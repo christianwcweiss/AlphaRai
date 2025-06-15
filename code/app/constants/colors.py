@@ -1,14 +1,14 @@
 # Primary Theme Colors
-PRIMARY_COLOR = "#6200EE"  # Material Indigo 500
-PRIMARY_VARIANT = "#3700B3"  # Material Indigo 700
-SECONDARY_COLOR = "#03DAC6"  # Material Teal 200
-SECONDARY_VARIANT = "#018786"  # Material Teal 700
-ACCENT_COLOR = "#FF4081"  # Accent Pink A200
+PRIMARY_COLOR = "#2196F3"
+PRIMARY_VARIANT = "#1976D2"
+SECONDARY_COLOR = "#4CAF50"
+SECONDARY_VARIANT = "#2E7D32"
+ACCENT_COLOR = "#FF4081"
 
 # Background & Surface
-BACKGROUND_COLOR = "#F5F5F5"  # Light grey background
-BACKGROUND_WHITE = "#FFFFFF"  # Pure white background
-SURFACE_COLOR = "#FFFFFF"  # Card or surface color
+BACKGROUND_COLOR = "#F5F5F5"
+BACKGROUND_WHITE = "#FFFFFF"
+SURFACE_COLOR = "#FFFFFF"
 ELEVATED_SURFACE_COLOR = "#FAFAFA"
 SHADOW_COLOR = "rgba(0, 0, 0, 0.2)"
 
@@ -46,15 +46,23 @@ GREY_900 = "#212121"
 
 # Chart Colors (Material-inspired)
 CHART_PALETTE = [
-    "#6200EE",  # Primary
-    "#03DAC6",  # Secondary
-    "#F44336",  # Error
-    "#FF9800",  # Orange
-    "#4CAF50",  # Green
-    "#2196F3",  # Blue
-    "#9C27B0",  # Purple
-    "#FFEB3B",  # Yellow
-    "#795548",  # Brown
+    "#DD2C00",
+    "#FF6D00",
+    "#FFAB00",
+    "#FFAB00",
+    "#AEEA00",
+    "#64DD17",
+    "#00C853",
+    "#00BFA5",
+    "#00B8D4",
+    "#0091EA",
+    "#0091EA",
+    "#2962FF",
+    "#304FFE",
+    "#6200EA",
+    "#AA00FF",
+    "#C51162",
+    "#D50000",
 ]
 
 # Buttons

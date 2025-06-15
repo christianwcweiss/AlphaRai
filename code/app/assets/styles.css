@@ -3,3 +3,12 @@
 body {
     font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
+
+.navbar {
+    overflow: visible !important;
+    z-index: 1000;
+}
+
+.dropdown-menu {
+    z-index: 1050; /* Make sure it's above navbar (bootstrap default is fine) */
+}

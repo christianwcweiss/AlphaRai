@@ -3,6 +3,7 @@ from typing import List
 from entities.trade_details import TradeDetails
 from models.main.account import Account
 from models.main.account_config import AccountConfig
+from models.main.confluence_config import ConfluenceConfig
 from quant_core.clients.mt5.mt5_client import Mt5Client
 from quant_core.enums.order_type import OrderType
 from quant_core.enums.platform import Platform
@@ -10,9 +11,11 @@ from quant_core.enums.stagger_method import StaggerMethod
 from quant_core.enums.trade_direction import TradeDirection
 from quant_core.services.core_logger import CoreLogger
 from quant_core.trader.platforms.metatrader import Mt5Trader
-from quant_core.utils.trade_utils import calculate_position_size, get_stagger_levels
+from quant_core.utils.trade_utils import calculate_position_size, get_stagger_levels, offset_entry_price
+from services.confluence_orchestrator import ConfluenceOrchestrator
 from services.db.main.account import AccountService
 from services.db.main.account_config import AccountConfigService
+from services.db.main.confluence_config import ConfluenceConfigService
 from services.magician import Magician
 from typing_extensions import Tuple
 
@@ -31,7 +34,7 @@ class TradeRouter:  # pylint: disable=too-few-public-methods
         if self.trade.direction is TradeDirection.NEUTRAL:
             raise ValueError(f"Invalid trade direction: {self.trade.direction}. Neutral trades are not allowed.")
 
-    def _get_enabled_accounts(self, trade: TradeDetails) -> List[Tuple[Account, AccountConfig]]:
+    def _get_enabled_accounts(self, trade: TradeDetails) -> List[Tuple[Account, AccountConfig, List[ConfluenceConfig]]]:
         """Gets enabled accounts based on trade signal."""
         accounts = AccountService().get_all_accounts()
         matched_accounts = []
@@ -42,9 +45,10 @@ class TradeRouter:  # pylint: disable=too-few-public-methods
                 continue
 
             if config := AccountConfigService().get_config(account_uid=account.uid, platform_asset_id=trade.symbol):
-                if config.enabled:
+                if config.enabled_trade_direction.trading_enabled(trade.direction):
                     CoreLogger().info(f"Found config for {account.uid}: {config}")
-                    matched_accounts.append((account, config))
+                    confluence_configs = ConfluenceConfigService().get_configs_by_account(account.uid)
+                    matched_accounts.append((account, config, confluence_configs))
                 else:
                     CoreLogger().info(f"Config for {account.uid} is disabled. Skipping...")
 
@@ -52,8 +56,11 @@ class TradeRouter:  # pylint: disable=too-few-public-methods
 
     def _get_trade_entry_prices_details(self, config: AccountConfig) -> List[float]:
         """Get trade entry details."""
+
+        modified_entry_price = offset_entry_price(self.trade.entry, self.trade.stop_loss, config.entry_offset)
+
         return get_stagger_levels(
-            self.trade.entry,
+            modified_entry_price,
             self.trade.stop_loss,
             k=config.n_staggers,
             stagger_method=StaggerMethod(config.entry_stagger_method),
@@ -105,7 +112,9 @@ class TradeRouter:  # pylint: disable=too-few-public-methods
             magic=magic,
         )
 
-    def _place_trades(self, account: Account, account_config: AccountConfig) -> None:
+    def _place_trades(
+        self, account: Account, account_config: AccountConfig, confluence_configs: List[ConfluenceConfig]
+    ) -> None:
         CoreLogger().info(f"Placing trade in account {account.uid} for {self.trade.symbol}")
 
         entry_prices = self._get_trade_entry_prices_details(account_config)
@@ -114,6 +123,10 @@ class TradeRouter:  # pylint: disable=too-few-public-methods
             account=account,
             config=account_config,
         )
+        confluences_modifier = ConfluenceOrchestrator(
+            confluence_configs=confluence_configs, trade=self.trade
+        ).get_confluence_modifier()
+        sizes = [round(size * confluences_modifier, 2) for size in sizes]
         trader = Mt5Trader(secret_id=account.secret_name)
         group_magic = Magician().cast(account_config=account_config)
 
@@ -129,7 +142,7 @@ class TradeRouter:  # pylint: disable=too-few-public-methods
         self._validate_trade()
 
         if matched_accounts := self._get_enabled_accounts(self.trade):
-            for account, config in matched_accounts:
-                self._place_trades(account, config)
+            for account, config, confluence_configs in matched_accounts:
+                self._place_trades(account, config, confluence_configs)
         else:
             CoreLogger().info(f"No matching configurations found for {self.trade.symbol}")

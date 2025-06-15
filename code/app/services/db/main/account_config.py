@@ -5,6 +5,7 @@ from models.main.account import Account
 from models.main.account_config import AccountConfig
 from quant_core.clients.mt5.mt5_client import Mt5Client
 from quant_core.enums.stagger_method import StaggerMethod
+from quant_core.enums.trade_direction import EnabledTradeDirection
 from quant_core.enums.trade_mode import TradeMode
 from quant_core.services.core_logger import CoreLogger
 from services.symbol_lookup import ALL_SYMBOLS
@@ -128,7 +129,7 @@ class AccountConfigService:
                 "risk_percent": 0.5,
                 "decimal_points": symbol.digits,
                 "lot_size": symbol.trade_contract_size,
-                "enabled": False,
+                "enabled_trade_direction": EnabledTradeDirection.DISABLED.name,
                 "asset_type": ALL_SYMBOLS.get(symbol.name),
                 "mode": TradeMode.DEFAULT.name,
             }

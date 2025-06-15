@@ -69,9 +69,9 @@ class AccountConfigCard:  # pylint: disable=too-few-public-methods
 
         return html.Div(
             [
-                info_row("Stagger", f"{ cfg.n_staggers} @ {cfg.entry_stagger_method}"),
+                info_row("Stagger", f"{ cfg.n_staggers} @ {cfg.entry_stagger_method.value}"),
                 info_row("Risk %", f"{cfg.risk_percent:.2f}"),
-                info_row("Enabled", "Yes" if cfg.enabled else "No"),
+                info_row("Enabled", cfg.enabled_trade_direction.value),
             ],
             style={
                 "padding": "12px",

@@ -29,6 +29,7 @@ from pages.accounts.account_details.account_details_constants import (
 )
 from quant_core.enums.asset_type import AssetType
 from quant_core.enums.stagger_method import StaggerMethod
+from quant_core.enums.trade_direction import EnabledTradeDirection
 from quant_core.enums.trade_mode import TradeMode
 
 
@@ -121,7 +122,8 @@ def render_account_config_cards(account_configs: List[AccountConfig]) -> html.Di
                         xl=3,
                     )
                     for account_config in sorted(account_configs, key=lambda x: x.platform_asset_id)
-                    if account_config.enabled
+                    if account_config.enabled_trade_direction
+                    in (EnabledTradeDirection.LONG, EnabledTradeDirection.SHORT, EnabledTradeDirection.BOTH)
                 ]
             ),
             AlphaRow(
@@ -137,7 +139,7 @@ def render_account_config_cards(account_configs: List[AccountConfig]) -> html.Di
                         xl=3,
                     )
                     for account_config in sorted(account_configs, key=lambda x: x.platform_asset_id)
-                    if not account_config.enabled
+                    if account_config.enabled_trade_direction is EnabledTradeDirection.DISABLED
                 ]
             ),
         ]
@@ -146,9 +148,6 @@ def render_account_config_cards(account_configs: List[AccountConfig]) -> html.Di
 
 def render_edit_modal_body(config: AccountConfig) -> html.Div:
     """Render the body of the edit modal for an account configuration."""
-
-    print(config.mode, config.entry_stagger_method)
-
     return html.Div(
         [
             dbc.Row(
@@ -198,6 +197,26 @@ def render_edit_modal_body(config: AccountConfig) -> html.Div:
                 [
                     dbc.Col(
                         [
+                            dbc.Label("Entry Offset (0.00 - 1.00)"),
+                            dcc.Slider(
+                                id=EDIT_ENTRY_OFFSET_ID,
+                                min=0.0,
+                                max=1.0,
+                                step=0.01,
+                                value=config.entry_offset if config.entry_offset is not None else 0.0,
+                                marks={i / 10: f"{i / 10:.1f}" for i in range(11)},
+                                tooltip={"placement": "bottom", "always_visible": False},
+                            ),
+                        ],
+                        md=12,
+                    ),
+                ],
+                className="mb-4",
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        [
                             dbc.Label("Risk %"),
                             dbc.Input(id=EDIT_RISK_ID, type="number", step=0.1, min=0.1, value=config.risk_percent),
                         ],
@@ -235,7 +254,15 @@ def render_edit_modal_body(config: AccountConfig) -> html.Div:
                     dbc.Col(
                         [
                             dbc.Label("Enabled"),
-                            dbc.Checkbox(id=EDIT_ENABLED_ID, value=config.enabled, label="Enabled"),
+                            dcc.Dropdown(
+                                id=EDIT_ENABLED_ID,
+                                options=[
+                                    {"label": enabled_option.name, "value": enabled_option.name}
+                                    for enabled_option in EnabledTradeDirection
+                                ],
+                                value=config.enabled_trade_direction.name if config.enabled_trade_direction else None,
+                                clearable=True,
+                            ),
                         ],
                         md=6,
                     ),

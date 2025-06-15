@@ -13,6 +13,7 @@ class Confluence(ABC):
 
     __NAME__: str = "Unnamed Confluence"
     __DESCRIPTION__: str = "No description provided."
+    __IS_AUTOMATIC__: bool = True
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         """
@@ -24,6 +25,12 @@ class Confluence(ABC):
     def check(self, data_frame: pd.DataFrame, direction: TradeDirection) -> float:
         """
         Evaluate how strongly the confluence supports a trade in the given direction.
+        """
+
+    @abstractmethod
+    def normalize(self, score: float, min_value: float, max_value: float) -> float:
+        """
+        Normalize the confluence score to a range of min_value to max_value.
         """
 
     def explain(self) -> str:
